@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOS Placa</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            color: #004aad;
+        }
+        .menu, .tela {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px auto;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 8px;
+            background-color: #004aad;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #00307a;
+        }
+        input {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            width: calc(100% - 20px);
+        }
+        .placa-seletor img {
+            width: 120px;
+            margin: 5px;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .placa-seletor input[type="radio"]:checked + img {
+            border: 2px solid #004aad;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>SOS PLACA</h1>
+
+    <div id="menu" class="menu">
+        <h2>Selecione a opção desejada:</h2>
+        <button onclick="abrirTela('perdi')">Perdi</button>
+        <button onclick="abrirTela('achei')">Achei</button>
+    </div>
+
+    <!-- Tela PERDI -->
+    <div id="tela-perdi" class="tela" style="display:none;">
+        <h2>Buscar Placa Perdida</h2>
+        <div class="placa-seletor">
+            <label>
+                <input type="radio" name="tipoPerdi" value="comum" checked hidden>
+                <img src="comum.png" onclick="selecionarTipo('Perdi','comum')">
+            </label>
+            <label>
+                <input type="radio" name="tipoPerdi" value="mercosul" hidden>
+                <img src="mercosul.png" onclick="selecionarTipo('Perdi','mercosul')">
+            </label>
+        </div>
+        <input type="text" id="placaPerdi" placeholder="Digite a placa">
+        <button onclick="buscarPlaca()">Buscar</button>
+        <div id="resultadoPerdi"></div>
+        <button onclick="voltar()">Voltar ao Menu</button>
+    </div>
+
+    <!-- Tela ACHEI -->
+    <div id="tela-achei" class="tela" style="display:none;">
+        <h2>Cadastrar Placa Encontrada</h2>
+        <div class="placa-seletor">
+            <label>
+                <input type="radio" name="tipoAchei" value="comum" checked hidden>
+                <img src="comum.png" onclick="selecionarTipo('Achei','comum')">
+            </label>
+            <label>
+                <input type="radio" name="tipoAchei" value="mercosul" hidden>
+                <img src="mercosul.png" onclick="selecionarTipo('Achei','mercosul')">
+            </label>
+        </div>
+        <input type="text" id="placaAchei" placeholder="Digite a placa">
+        <input type="text" id="nomeAchei" placeholder="Seu nome">
+        <input type="text" id="telefoneAchei" placeholder="Seu telefone">
+        <button onclick="cadastrarPlaca()">Cadastrar</button>
+        <div id="resultadoAchei"></div>
+        <button onclick="voltar()">Voltar ao Menu</button>
+    </div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script>
+    // 🔥 Configuração do Firebase
+    const firebaseConfig = {
+        databaseURL: "https://teste-c702e-default-rtdb.firebaseio.com/"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // 🔥 Funções Gerais
+    function abrirTela(tela) {
+        document.getElementById('menu').style.display = 'none';
+        document.getElementById('tela-perdi').style.display = tela === 'perdi' ? 'block' : 'none';
+        document.getElementById('tela-achei').style.display = tela === 'achei' ? 'block' : 'none';
+    }
+    function voltar() {
+        document.getElementById('menu').style.display = 'block';
+        document.getElementById('tela-perdi').style.display = 'none';
+        document.getElementById('tela-achei').style.display = 'none';
+        document.getElementById('resultadoPerdi').innerHTML = '';
+        document.getElementById('resultadoAchei').innerHTML = '';
+    }
+
+    function selecionarTipo(tela, tipo) {
+        document.querySelector(`input[name="tipo${tela}"][value="${tipo}"]`).checked = true;
+    }
+
+    function formatarPlaca(valor, tipo) {
+        valor = valor.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        if (tipo === 'comum') {
+            if (valor.length > 3) valor = valor.slice(0,3) + '-' + valor.slice(3);
+            return valor.slice(0,8);
+        } else {
+            return valor.slice(0,7);
+        }
+    }
+
+    // 🔍 Buscar Placa (PERDI)
+    function buscarPlaca() {
+        const tipo = document.querySelector('input[name="tipoPerdi"]:checked').value;
+        const placa = formatarPlaca(document.getElementById('placaPerdi').value, tipo);
+        if (!placa) {
+            alert('Digite uma placa válida.');
+            return;
+        }
+        db.ref('placas').child(placa).once('value').then(snapshot => {
+            if (snapshot.exists()) {
+                const dados = snapshot.val();
+                let msg = `<p><strong>Encontrado por:</strong> ${dados.nome}<br><strong>Telefone:</strong> ${dados.telefone}</p>`;
+                msg += `<a href="https://wa.me/55${dados.telefone.replace(/\D/g, '')}?text=Olá! Vi através do site SOS PLACA que você encontrou a placa do meu carro." target="_blank">
+                    <button>Chamar no WhatsApp</button></a>`;
+                msg += `<br><button onclick="removerPlaca('${placa}')">Remover Placa</button>`;
+                document.getElementById('resultadoPerdi').innerHTML = msg;
+            } else {
+                document.getElementById('resultadoPerdi').innerHTML = '<p>Placa não encontrada. Tente novamente mais tarde.</p>';
+            }
+        });
+    }
+
+    // ➕ Cadastrar Placa (ACHEI)
+    function cadastrarPlaca() {
+        const tipo = document.querySelector('input[name="tipoAchei"]:checked').value;
+        const placa = formatarPlaca(document.getElementById('placaAchei').value, tipo);
+        const nome = document.getElementById('nomeAchei').value.trim();
+        const telefone = document.getElementById('telefoneAchei').value.trim();
+
+        if (!placa || !nome || !telefone) {
+            alert('Preencha todos os campos.');
+            return;
+        }
+
+        db.ref('placas').child(placa).once('value').then(snapshot => {
+            if (snapshot.exists()) {
+                document.getElementById('resultadoAchei').innerHTML = '<p>Essa placa já está cadastrada como encontrada.</p>';
+            } else {
+                db.ref('placas').child(placa).set({nome, telefone});
+                document.getElementById('resultadoAchei').innerHTML = '<p>Placa cadastrada com sucesso!</p>';
+            }
+        });
+    }
+
+    // ❌ Remover Placa
+    function removerPlaca(placa) {
+        if (confirm('Deseja realmente remover essa placa?')) {
+            db.ref('placas').child(placa).remove();
+            document.getElementById('resultadoPerdi').innerHTML = '<p>Placa removida com sucesso.</p>';
+        }
+    }
+
+    // 🔡 Formatar campos enquanto digita
+    document.getElementById('placaPerdi').addEventListener('input', function() {
+        const tipo = document.querySelector('input[name="tipoPerdi"]:checked').value;
+        this.value = formatarPlaca(this.value, tipo);
+    });
+    document.getElementById('placaAchei').addEventListener('input', function() {
+        const tipo = document.querySelector('input[name="tipoAchei"]:checked').value;
+        this.value = formatarPlaca(this.value, tipo);
+    });
+</script>
+
+</body>
+</html>
