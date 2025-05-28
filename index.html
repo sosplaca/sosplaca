@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOS PLACA - Ajude a reunir placas perdidas com seus donos</title>
+    <title>SOS PLACA — Menos placas perdidas, mais gente feliz!</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -243,7 +243,7 @@
     <header>
         <div class="container">
             <div class="logo">SOS PLACA</div>
-            <h1>Ajude a reunir placas perdidas com seus donos</h1>
+            <h1>SOS PLACA — Menos placas perdidas, mais gente feliz!</h1>
         </div>
     </header>
     
@@ -366,7 +366,7 @@
     
     <footer>
         <div class="container">
-            <p>SOS PLACA &copy; 2023 - Ajude a reunir placas perdidas com seus donos</p>
+            <p>SOS PLACA &copy; 2024 - SOS PLACA — 1 ano ajudando a comunidade!</p>
         </div>
     </footer>
 
@@ -602,7 +602,7 @@
                     showResult(
                         perdiResult, 
                         'error', 
-                        `A placa ${placa} não foi encontrada em nosso sistema.`,
+                        `A placa ${placa} não foi encontrada em nosso sistema. Tente novamente mais tarde!`,
                         'Se alguém encontrar e cadastrar, entraremos em contato.'
                     );
                     perdiRemoverBtn.style.display = 'none';
@@ -629,7 +629,7 @@
                 whatsappBtn.className = 'btn btn-whatsapp';
                 whatsappBtn.textContent = 'Contatar via WhatsApp';
                 
-                const mensagem = `Olá ${contato.nome || ''}, vi seu contato no SOS PLACA sobre a placa ${perdiPlacaInput.value.trim()} que encontrou. Podemos conversar sobre a devolução?`;
+                const mensagem = `Olá ${contato.nome || ''}, vi seu contato no SOS PLACA sobre a placa ${perdiPlacaInput.value.trim()} que encontrou.`;
                 const whatsappLink = `https://wa.me/${contato.telefone.replace(/\D/g, '')}?text=${encodeURIComponent(mensagem)}`;
                 whatsappBtn.onclick = () => window.open(whatsappLink, '_blank');
                 
@@ -641,7 +641,7 @@
         
         // Remover placa do sistema
         perdiRemoverBtn.addEventListener('click', async function() {
-            if (!currentPlaca || !confirm('Tem certeza que deseja remover esta placa do sistema?')) {
+            if (!currentPlaca || !confirm('Tem certeza que deseja remover esta placa do sistema? Faça isso se já estiver em contato com quem a encontrou.')) {
                 return;
             }
             
