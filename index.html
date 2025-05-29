@@ -218,56 +218,6 @@
             color: #7f8c8d;
             font-size: 0.9rem;
         }
-
-        /* NOVOS ESTILOS PARA A LISTAGEM DE PLACAS */
-        .placa-card {
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            padding: 20px;
-            margin: 15px 0;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            position: relative;
-            min-height: 100px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        
-        .placa-card.comum {
-            background-image: url('comum_encontrada.png');
-        }
-        
-        .placa-card.mercosul {
-            background-image: url('mercosul_encontrada.png');
-        }
-        
-        .placa-number {
-            font-size: 1.8rem;
-            font-weight: bold;
-            text-align: center;
-            color: #333;
-            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
-            margin-bottom: 10px;
-        }
-        
-        .contato-info-placa {
-            background-color: rgba(255,255,255,0.8);
-            padding: 8px;
-            border-radius: 4px;
-            margin-top: 5px;
-        }
-        
-        .lista-placas {
-            margin-top: 20px;
-        }
-        
-        .no-results {
-            text-align: center;
-            padding: 20px;
-            color: #7f8c8d;
-        }
         
         @media (max-width: 600px) {
             .container {
@@ -286,15 +236,6 @@
             .placa-type-container {
                 margin-left: 0;
             }
-
-            .placa-card {
-                padding: 15px;
-                min-height: 80px;
-            }
-            
-            .placa-number {
-                font-size: 1.5rem;
-            }
         }
     </style>
 </head>
@@ -307,15 +248,14 @@
     </header>
     
     <div class="container">
-        <!-- Tela Inicial (Atualizada com novo botão) -->
+        <!-- Tela Inicial -->
         <div id="home-screen" class="screen active">
             <h2>O que você deseja fazer?</h2>
             <p>Selecione uma opção abaixo para continuar:</p>
             
-            <div class="actions" style="flex-direction: column; gap: 10px;">
+            <div class="actions">
                 <button id="perdi-btn" class="btn">Perdi uma placa</button>
                 <button id="achei-btn" class="btn btn-success">Achei uma placa</button>
-                <button id="listar-btn" class="btn btn-secondary">Placas Encontradas</button>
             </div>
         </div>
         
@@ -422,21 +362,6 @@
                 <p id="achei-result-text"></p>
             </div>
         </div>
-
-        <!-- NOVA TELA: Listagem de Placas Encontradas -->
-        <div id="listar-screen" class="screen">
-            <h2>Placas Encontradas</h2>
-            <p>Lista de todas as placas que foram encontradas e ainda não foram devolvidas:</p>
-            
-            <div class="actions">
-                <button id="listar-voltar" class="btn btn-secondary">Voltar</button>
-            </div>
-            
-            <div id="placas-list" class="lista-placas">
-                <!-- As placas serão carregadas aqui via JavaScript -->
-                <div class="no-results">Carregando placas encontradas...</div>
-            </div>
-        </div>
     </div>
     
     <footer>
@@ -472,7 +397,6 @@
         const homeScreen = document.getElementById('home-screen');
         const perdiBtn = document.getElementById('perdi-btn');
         const acheiBtn = document.getElementById('achei-btn');
-        const listarBtn = document.getElementById('listar-btn');
         
         // Elementos da tela "Perdi"
         const perdiScreen = document.getElementById('perdi-screen');
@@ -500,11 +424,6 @@
         const acheiResult = document.getElementById('achei-result');
         const acheiResultText = document.getElementById('achei-result-text');
         
-        // Elementos da nova tela "Listar"
-        const listarScreen = document.getElementById('listar-screen');
-        const listarVoltarBtn = document.getElementById('listar-voltar');
-        const placasList = document.getElementById('placas-list');
-        
         // Variáveis globais
         let currentPlaca = '';
         
@@ -520,12 +439,6 @@
             acheiScreen.classList.add('active');
             resetAcheiScreen();
         });
-
-        listarBtn.addEventListener('click', () => {
-            homeScreen.classList.remove('active');
-            listarScreen.classList.add('active');
-            carregarPlacasEncontradas();
-        });
         
         perdiVoltarBtn.addEventListener('click', () => {
             perdiScreen.classList.remove('active');
@@ -534,11 +447,6 @@
         
         acheiVoltarBtn.addEventListener('click', () => {
             acheiScreen.classList.remove('active');
-            homeScreen.classList.add('active');
-        });
-
-        listarVoltarBtn.addEventListener('click', () => {
-            listarScreen.classList.remove('active');
             homeScreen.classList.add('active');
         });
         
@@ -839,89 +747,6 @@
                 console.error('Erro ao cadastrar placa:', error);
             }
         });
-
-        // NOVA FUNÇÃO: Carregar placas encontradas
-        async function carregarPlacasEncontradas() {
-            try {
-                placasList.innerHTML = '<div class="no-results">Carregando placas encontradas...</div>';
-                
-                const dbRef = ref(database, 'placas');
-                const snapshot = await get(dbRef);
-                
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    placasList.innerHTML = '';
-                    
-                    let placasCarregadas = 0;
-                    
-                    for (const placa in data) {
-                        if (data.hasOwnProperty(placa)) {
-                            const placaData = data[placa];
-                            let contatos = [];
-                            
-                            // Verifica se é formato antigo (único cadastro) ou novo (múltiplos)
-                            if (placaData.nome) {
-                                contatos.push(placaData);
-                            } else {
-                                // Formato novo com múltiplos cadastros
-                                for (const key in placaData) {
-                                    if (placaData.hasOwnProperty(key)) {
-                                        contatos.push(placaData[key]);
-                                    }
-                                }
-                            }
-                            
-                            // Determina o tipo da placa (comum ou mercosul)
-                            const tipoPlaca = placa.length === 7 ? (placa.includes('-') ? 'comum' : 'mercosul') : 
-                                             /[A-Za-z]{3}\d[A-Za-z]\d{2}/.test(placa) ? 'mercosul' : 'comum';
-                            
-                            // Formata o número da placa para exibição
-                            let placaFormatada = placa;
-                            if (tipoPlaca === 'comum' && placa.length === 7 && !placa.includes('-')) {
-                                placaFormatada = placa.slice(0, 3) + '-' + placa.slice(3);
-                            }
-                            
-                            // Cria o card da placa
-                            const placaCard = document.createElement('div');
-                            placaCard.className = `placa-card ${tipoPlaca}`;
-                            
-                            const placaNumber = document.createElement('div');
-                            placaNumber.className = 'placa-number';
-                            placaNumber.textContent = placaFormatada;
-                            
-                            placaCard.appendChild(placaNumber);
-                            
-                            // Adiciona os contatos
-                            contatos.forEach(contato => {
-                                const contatoDiv = document.createElement('div');
-                                contatoDiv.className = 'contato-info-placa';
-                                contatoDiv.innerHTML = `
-                                    <strong>${contato.nome || 'Nome não informado'}</strong><br>
-                                    ${contato.telefone || 'Telefone não informado'}
-                                    ${contato.telefone ? `<button class="btn btn-whatsapp" style="margin-top:5px;padding:5px 10px;font-size:0.8rem;" 
-                                        onclick="window.open('https://wa.me/${contato.telefone.replace(/\D/g, '')}?text=${encodeURIComponent(`Olá ${contato.nome || ''}, vi seu contato no SOS PLACA sobre a placa ${placaFormatada} que encontrou. Podemos conversar sobre a devolução?`)}', '_blank')">
-                                        WhatsApp
-                                    </button>` : ''}
-                                `;
-                                placaCard.appendChild(contatoDiv);
-                            });
-                            
-                            placasList.appendChild(placaCard);
-                            placasCarregadas++;
-                        }
-                    }
-                    
-                    if (placasCarregadas === 0) {
-                        placasList.innerHTML = '<div class="no-results">Nenhuma placa encontrada no momento.</div>';
-                    }
-                } else {
-                    placasList.innerHTML = '<div class="no-results">Nenhuma placa encontrada no momento.</div>';
-                }
-            } catch (error) {
-                console.error('Erro ao carregar placas:', error);
-                placasList.innerHTML = '<div class="no-results">Ocorreu um erro ao carregar as placas. Tente novamente.</div>';
-            }
-        }
         
         // Mostra mensagem de resultado
         function showResult(element, type, text, additionalText = '') {
