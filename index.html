@@ -262,25 +262,70 @@
     elementos.buttons.perdiBuscar.onclick = buscarPlaca;
     elementos.buttons.acheiSalvar.onclick = () => salvarPlaca(false);
     elementos.buttons.acheiSalvarOutra.onclick = () => salvarPlaca(true);
-  }
+  elementos.inputs.acheiTelefone.addEventListener('input', formatarTelefone);
 
+function formatarTelefone(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    
+    if (value.length > 11) value = value.substring(0, 11);
+    
+    if (value.length > 0) {
+        value = `(${value.substring(0, 2)}`;
+    }
+    if (value.length > 3) {
+        value += `) ${value.substring(3, 7)}`;
+    }
+    if (value.length > 10) {
+        value += `-${value.substring(10, 15)}`;
+    } else if (value.length > 7) {
+        value += `-${value.substring(7, 11)}`;
+    }
+    
+    e.target.value = value;
+}
   function checkConnectionStatus() {
     onValue(ref(database, '.info/connected'), (snap) => {
       if (!snap.val()) showError('Você está offline. Algumas funcionalidades podem não estar disponíveis.');
     });
   }
 
-  function loadUFs() {
-    // Implementar carregamento de UFs via API ou dados estáticos
-    const ufs = ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 
-                 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 
-                 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'];
+  // Adicione este objeto com cidades por estado (exemplo simplificado)
+const cidadesPorEstado = {
+  'AC': ['Rio Branco', 'Cruzeiro do Sul', 'Sena Madureira'],
+  'AL': ['Maceió', 'Arapiraca', 'Palmeira dos Índios'],
+  // Adicione todos os estados...
+  'SP': ['São Paulo', 'Campinas', 'Santos']
+};
+
+// Modifique a função loadUFs para incluir evento de change
+function loadUFs() {
+    const ufs = Object.keys(cidadesPorEstado);
     
     ufs.forEach(uf => {
-      elementos.inputs.uf.perdi.appendChild(new Option(uf, uf));
-      elementos.inputs.uf.achei.appendChild(new Option(uf, uf));
+        elementos.inputs.uf.perdi.appendChild(new Option(uf, uf));
+        elementos.inputs.uf.achei.appendChild(new Option(uf, uf));
     });
-  }
+
+    // Adicione listeners para carregar cidades quando UF for selecionada
+    elementos.inputs.uf.perdi.addEventListener('change', (e) => loadCidades('perdi', e.target.value));
+    elementos.inputs.uf.achei.addEventListener('change', (e) => loadCidades('achei', e.target.value));
+}
+
+function loadCidades(tela, uf) {
+    const selectMunicipio = tela === 'perdi' 
+        ? elementos.inputs.municipio.perdi 
+        : elementos.inputs.municipio.achei;
+    
+    // Limpa options existentes
+    selectMunicipio.innerHTML = '';
+    selectMunicipio.appendChild(new Option('Selecione o município', ''));
+    
+    if (uf && cidadesPorEstado[uf]) {
+        cidadesPorEstado[uf].forEach(cidade => {
+            selectMunicipio.appendChild(new Option(cidade, cidade));
+        });
+    }
+}
 
   function switchScreen(hide, show) {
     hide.classList.remove('active');
@@ -339,8 +384,7 @@
   function validarTelefone(telefone) {
     const nums = telefone.replace(/\D/g, '');
     return nums.length === 10 || nums.length === 11;
-  }
-
+}
   async function buscarPlaca() {
     try {
       toggleLoading(true, elementos.buttons.perdiBuscar);
@@ -362,10 +406,10 @@
       }
 
       const path = tipo === 'comum' 
-        ? `placas/comum/${placa}:${uf}:${municipio}`
-        : `placas/mercosul/${placa}`;
+        ? `placas/${placa}:${uf}:${municipio}`
+        : `placas/${placa}:null:null:true`;
 
-      const snapshot = await get(ref(database, path));
+    const snapshot = await get(ref(database, path));
 
       if (snapshot.exists()) {
         const dados = snapshot.val();
@@ -418,18 +462,19 @@
 
       // Estrutura de dados
       const dados = {
-        nome,
-        telefone,
-        tipo,
-        uf: tipo === 'comum' ? uf : '',
-        municipio: tipo === 'comum' ? municipio : '',
-        timestamp: Date.now()
-      };
+    nome,
+    telefone,
+    tipo,
+    uf: tipo === 'comum' ? uf : null,
+    municipio: tipo === 'comum' ? municipio : null,
+    mercosul: tipo === 'mercosul',
+    timestamp: Date.now()
+};
 
       // Caminho no Firebase
       const path = tipo === 'comum' 
-        ? `placas/comum/${placa}:${uf}:${municipio}`
-        : `placas/mercosul/${placa}`;
+    ? `placas/${placa}:${uf}:${municipio}`
+    : `placas/${placa}:null:null:true`;
 
       // Salvar no Firebase
       await set(ref(database, path), dados);
@@ -472,9 +517,8 @@
   }
 
   function showSuccess(message) {
-    elementos.results.success.textContent = message;
-    elementos.results.success.style.display = 'block';
-    setTimeout(() => elementos.results.success.style.display = 'none', 5000);
+    elementos.results.achei.textContent = "Obrigado! Agora, assim que o dono procurar pela placa, ele poderá entrar em contato pelo número informado!";
+elementos.results.achei.parentElement.style.display = 'block';
   }
 </script>
 </body>
