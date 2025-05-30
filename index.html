@@ -349,25 +349,47 @@
   }
 
   function formatarTelefone(e) {
+    // Obtém a posição do cursor
+    const cursorPosition = e.target.selectionStart;
+    
+    // Remove todos os caracteres não numéricos
     let value = e.target.value.replace(/\D/g, '');
     
-    if (value.length > 11) value = value.substring(0, 11);
+    // Limita o tamanho máximo (11 para celular com DDD)
+    if (value.length > 11) {
+        value = value.substring(0, 11);
+    }
+    
+    // Aplica a máscara dinamicamente
+    let formattedValue = '';
     
     if (value.length > 0) {
-      value = `(${value.substring(0, 2)}`;
+        formattedValue = `(${value.substring(0, 2)}`;
     }
-    if (value.length > 3) {
-      value += `) ${value.substring(3, 7)}`;
+    if (value.length > 2) {
+        formattedValue += `) ${value.substring(2, 7)}`;
     }
-    if (value.length > 10) {
-      value += `-${value.substring(10, 15)}`;
-    } else if (value.length > 7) {
-      value += `-${value.substring(7, 11)}`;
+    if (value.length > 7) {
+        formattedValue += `-${value.substring(7, 11)}`;
     }
     
-    e.target.value = value;
-  }
+    // Atualiza o valor do campo
+    e.target.value = formattedValue;
+    
+    // Mantém a posição do cursor correta durante a digitação
+    if (cursorPosition === 1 && e.inputType === 'insertText') {
+        e.target.setSelectionRange(3, 3); // Posiciona após "("
+    } else if (cursorPosition === 3 && e.inputType === 'insertText') {
+        e.target.setSelectionRange(4, 4); // Posiciona após ")"
+    }
+}
 
+// Função de validação complementar
+function validarTelefone(telefone) {
+    const nums = telefone.replace(/\D/g, '');
+    // Verifica se tem 10 (fixo) ou 11 (celular) dígitos
+    return nums.length === 10 || nums.length === 11;
+}
   function formatarPlaca(placa) {
     return placa.replace('-', '').toUpperCase();
   }
