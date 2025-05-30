@@ -169,7 +169,6 @@
     const database = getDatabase(app);
     const firestore = getFirestore(app);
 
-    // ========== Navegação entre telas ==========
     const homeScreen = document.getElementById('home-screen');
     const perdiScreen = document.getElementById('perdi-screen');
     const acheiScreen = document.getElementById('achei-screen');
@@ -186,13 +185,15 @@
     document.getElementById('achei-voltar').onclick = () => switchScreen(acheiScreen, homeScreen);
     document.getElementById('aviso-voltar').onclick = () => switchScreen(avisoScreen, homeScreen);
 
-    // ========== Alternância entre tipos de placa ==========
+    // ===== Alternância de tipo de placa corrigida =====
     let tipoPerdi = 'comum';
     let tipoAchei = 'comum';
 
     const alternarTipo = (grupo, tipo) => {
-      document.querySelectorAll(`#${grupo}-screen .tipo-btn`).forEach(btn => btn.classList.remove('ativo'));
+      document.getElementById(`btn-${grupo}-comum`).classList.remove('ativo');
+      document.getElementById(`btn-${grupo}-mercosul`).classList.remove('ativo');
       document.getElementById(`btn-${grupo}-${tipo}`).classList.add('ativo');
+
       if (grupo === 'perdi') {
         tipoPerdi = tipo;
         document.getElementById('perdi-localizacao').style.display = tipo === 'comum' ? 'block' : 'none';
@@ -207,7 +208,28 @@
     document.getElementById('btn-achei-comum').onclick = () => alternarTipo('achei', 'comum');
     document.getElementById('btn-achei-mercosul').onclick = () => alternarTipo('achei', 'mercosul');
 
-    // ========== Funções auxiliares ==========
+    // ===== Máscara para digitação da placa =====
+    function aplicarMascaraPlaca(input, tipo) {
+      let value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      if (tipo === 'comum') {
+        value = value.slice(0, 7);
+        if (value.length > 3) {
+          value = value.slice(0, 3) + '-' + value.slice(3);
+        }
+      } else {
+        value = value.slice(0, 7);
+      }
+      input.value = value;
+    }
+
+    document.getElementById('achei-placa').addEventListener('input', (e) => {
+      aplicarMascaraPlaca(e.target, tipoAchei);
+    });
+
+    document.getElementById('perdi-placa').addEventListener('input', (e) => {
+      aplicarMascaraPlaca(e.target, tipoPerdi);
+    });
+
     function gerarCaminho(tipo, placa, uf, municipio) {
       return tipo === 'comum' ? `${placa}:${uf}:${municipio}` : `${placa}:null:null:true`;
     }
@@ -225,7 +247,7 @@
       return tipo === 'comum' ? (uf && municipio) : true;
     }
 
-    // ========== Buscar placa ==========
+    // ===== Buscar placa =====
     document.getElementById('perdi-buscar').onclick = async () => {
       const tipo = tipoPerdi;
       const placaBruta = document.getElementById('perdi-placa').value.trim();
@@ -257,7 +279,7 @@
       }
     };
 
-    // ========== Salvar placa ==========
+    // ===== Salvar placa =====
     async function salvarPlaca(outra = false) {
       const tipo = tipoAchei;
       const placaBruta = document.getElementById('achei-placa').value.trim();
