@@ -23,6 +23,30 @@
     .btn-secondary:hover { background-color: #7f8c8d; }
     .btn-danger { background-color: #e74c3c; }
     .btn-danger:hover { background-color: #c0392b; }
+
+    .tipo-btns {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .tipo-btn {
+      flex: 1;
+      padding: 12px;
+      text-align: center;
+      border: 2px solid #ccc;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 500;
+      background-color: #fff;
+    }
+
+    .tipo-btn.ativo {
+      background-color: #3498db;
+      color: white;
+      border-color: #2980b9;
+    }
+
     .form-group { margin-bottom: 20px; }
     label { display: block; margin-bottom: 8px; font-weight: 500; }
     input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem; }
@@ -34,6 +58,7 @@
       .container { padding: 10px; }
       .screen { padding: 15px; }
       .btn { padding: 10px 15px; font-size: 0.9rem; }
+      .tipo-btns { flex-direction: column; }
     }
   </style>
 </head>
@@ -45,7 +70,6 @@
     <a href="https://play.google.com/store/apps/details?id=fabricioramosdasilva.sos_placa" target="_blank" class="btn btn-success">📲 Baixe o App</a>
   </div>
 </header>
-
 <div class="container">
 
   <!-- Tela inicial -->
@@ -56,25 +80,22 @@
       <button id="achei-btn" class="btn btn-success">Achei uma placa</button>
     </div>
   </div>
+
   <!-- Tela Perdi -->
   <div id="perdi-screen" class="screen">
     <h2>Buscar placa perdida</h2>
     <div class="form-group">
       <label>Tipo de placa:</label>
-      <div>
-        <input type="radio" id="perdi-tipo-comum" name="perdi-tipo-placa" value="comum" checked>
-        <label for="perdi-tipo-comum">Padrão antigo (ABC-1234)</label>
-      </div>
-      <div>
-        <input type="radio" id="perdi-tipo-mercosul" name="perdi-tipo-placa" value="mercosul">
-        <label for="perdi-tipo-mercosul">Mercosul (ABC1D23)</label>
+      <div class="tipo-btns">
+        <div id="btn-perdi-comum" class="tipo-btn ativo">Comum</div>
+        <div id="btn-perdi-mercosul" class="tipo-btn">Mercosul</div>
       </div>
     </div>
     <div class="form-group">
       <label for="perdi-placa">Número da placa:</label>
       <input type="text" id="perdi-placa" class="placa-input" placeholder="Digite a placa">
     </div>
-    <div class="form-group" id="perdi-localizacao" style="display:none;">
+    <div class="form-group" id="perdi-localizacao" style="display:block;">
       <label for="perdi-uf">UF:</label>
       <select id="perdi-uf"></select>
       <label for="perdi-municipio">Município:</label>
@@ -96,20 +117,16 @@
     <h2>Cadastrar placa encontrada</h2>
     <div class="form-group">
       <label>Tipo de placa:</label>
-      <div>
-        <input type="radio" id="achei-tipo-comum" name="achei-tipo-placa" value="comum" checked>
-        <label for="achei-tipo-comum">Padrão antigo (ABC-1234)</label>
-      </div>
-      <div>
-        <input type="radio" id="achei-tipo-mercosul" name="achei-tipo-placa" value="mercosul">
-        <label for="achei-tipo-mercosul">Mercosul (ABC1D23)</label>
+      <div class="tipo-btns">
+        <div id="btn-achei-comum" class="tipo-btn ativo">Comum</div>
+        <div id="btn-achei-mercosul" class="tipo-btn">Mercosul</div>
       </div>
     </div>
     <div class="form-group">
       <label for="achei-placa">Número da placa:</label>
       <input type="text" id="achei-placa" class="placa-input" placeholder="Digite a placa">
     </div>
-    <div class="form-group" id="achei-localizacao" style="display:none;">
+    <div class="form-group" id="achei-localizacao" style="display:block;">
       <label for="achei-uf">UF:</label>
       <select id="achei-uf"></select>
       <label for="achei-municipio">Município:</label>
@@ -132,41 +149,9 @@
       <p id="achei-result-text"></p>
     </div>
   </div>
-  <!-- Tela Cadastro para ser avisado -->
-  <div id="aviso-screen" class="screen">
-    <h2>Quer ser avisado?</h2>
-    <p>Não encontramos sua placa no momento. Preencha seus dados para ser avisado por e-mail caso alguém a cadastre como encontrada.</p>
-    <div class="form-group">
-      <label for="aviso-nome">Seu nome:</label>
-      <input type="text" id="aviso-nome" placeholder="Digite seu nome completo">
-    </div>
-    <div class="form-group">
-      <label for="aviso-email">Seu e-mail:</label>
-      <input type="email" id="aviso-email" placeholder="email@exemplo.com">
-    </div>
-    <div class="form-group">
-      <label for="aviso-placa">Placa:</label>
-      <input type="text" id="aviso-placa" readonly>
-    </div>
-    <div>
-      <button id="aviso-voltar" class="btn btn-secondary">Voltar</button>
-      <button id="aviso-salvar" class="btn btn-success">Quero ser avisado</button>
-    </div>
-    <div id="aviso-result" class="result">
-      <p id="aviso-result-text"></p>
-    </div>
-  </div>
-
-  <footer>
-    <div class="container">
-      <p>SOS PLACA &copy; 2025 - Todos os direitos reservados.</p>
-    </div>
-  </footer>
-
-<!-- ======================= SCRIPT ======================= -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-  import { getDatabase, ref, set, get, remove } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+  import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
   import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -183,129 +168,48 @@
   const database = getDatabase(app);
   const firestore = getFirestore(app);
 
-  console.log('Firebase conectado com sucesso ✅');
+  // ==== Alternância dos botões Comum/Mercosul ====
+  let tipoPerdi = 'comum';
+  let tipoAchei = 'comum';
 
-  // ==================== Estados e Cidades ====================
-  const estadosECidades = {
-    "SP": ["São Paulo", "Campinas", "Santos", "Ubatuba"],
-    "RJ": ["Rio de Janeiro", "Niterói", "Petrópolis"],
-    "MG": ["Belo Horizonte", "Uberlândia", "Juiz de Fora"],
-    "BA": ["Salvador", "Feira de Santana", "Ilhéus"],
-    "PR": ["Curitiba", "Londrina", "Maringá"],
-    "RS": ["Porto Alegre", "Caxias do Sul", "Pelotas"],
-    "SC": ["Florianópolis", "Joinville", "Blumenau"]
+  const alternarTipo = (grupo, tipo) => {
+    document.querySelectorAll(`#${grupo} .tipo-btn`).forEach(btn => btn.classList.remove('ativo'));
+    document.getElementById(`btn-${grupo}-${tipo}`).classList.add('ativo');
+    if (grupo === 'perdi') {
+      tipoPerdi = tipo;
+      document.getElementById('perdi-localizacao').style.display = tipo === 'comum' ? 'block' : 'none';
+    } else {
+      tipoAchei = tipo;
+      document.getElementById('achei-localizacao').style.display = tipo === 'comum' ? 'block' : 'none';
+    }
   };
 
-  function preencherEstados(ufEl, municipioEl) {
-    ufEl.innerHTML = `<option value=''>Selecione o Estado</option>`;
-    for (const estado in estadosECidades) {
-      ufEl.innerHTML += `<option value='${estado}'>${estado}</option>`;
-    }
-    ufEl.addEventListener('change', () => {
-      municipioEl.innerHTML = `<option value=''>Selecione o Município</option>`;
-      const cidades = estadosECidades[ufEl.value] || [];
-      cidades.forEach(cidade => {
-        municipioEl.innerHTML += `<option value='${cidade}'>${cidade}</option>`;
-      });
-    });
-  }
+  document.getElementById('btn-perdi-comum').onclick = () => alternarTipo('perdi', 'comum');
+  document.getElementById('btn-perdi-mercosul').onclick = () => alternarTipo('perdi', 'mercosul');
+  document.getElementById('btn-achei-comum').onclick = () => alternarTipo('achei', 'comum');
+  document.getElementById('btn-achei-mercosul').onclick = () => alternarTipo('achei', 'mercosul');
 
-  preencherEstados(document.getElementById('perdi-uf'), document.getElementById('perdi-municipio'));
-  preencherEstados(document.getElementById('achei-uf'), document.getElementById('achei-municipio'));
-  // ==================== Máscara de placas ====================
-  function aplicarMascaraPlaca(input, tipo) {
-    let value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-    if (tipo === 'comum') {
-      if (value.length > 7) value = value.slice(0, 7);
-      if (value.length > 3) value = value.slice(0, 3) + '-' + value.slice(3);
-    } else {
-      if (value.length > 7) value = value.slice(0, 7);
-    }
-    input.value = value;
-  }
-
-  // ==================== Máscara de telefone ====================
-  function aplicarMascaraTelefone(input) {
-    let value = input.value.replace(/\D/g, '');
-    if (value.length > 11) value = value.slice(0, 11);
-    if (value.length > 10) {
-      value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
-    } else {
-      value = value.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
-    }
-    input.value = value;
-  }
-
-  // ==================== Eventos máscara telefone ====================
-  ['achei-telefone'].forEach(id => {
-    const input = document.getElementById(id);
-    input.addEventListener('input', () => aplicarMascaraTelefone(input));
-  });
-
-  // ==================== Navegação ====================
-  const homeScreen = document.getElementById('home-screen');
-  const perdiScreen = document.getElementById('perdi-screen');
-  const acheiScreen = document.getElementById('achei-screen');
-  const avisoScreen = document.getElementById('aviso-screen');
-
-  function switchScreen(hide, show) {
-    hide.classList.remove('active');
-    show.classList.add('active');
-  }
-
-  document.getElementById('perdi-btn').onclick = () => switchScreen(homeScreen, perdiScreen);
-  document.getElementById('achei-btn').onclick = () => switchScreen(homeScreen, acheiScreen);
-  document.getElementById('perdi-voltar').onclick = () => switchScreen(perdiScreen, homeScreen);
-  document.getElementById('achei-voltar').onclick = () => switchScreen(acheiScreen, homeScreen);
-  document.getElementById('aviso-voltar').onclick = () => switchScreen(avisoScreen, homeScreen);
-
-  // ==================== Controle localização (UF/Município) ====================
-  const perdeuTipoComum = document.getElementById('perdi-tipo-comum');
-  const perdeuTipoMercosul = document.getElementById('perdi-tipo-mercosul');
-  const perdeuLocalizacao = document.getElementById('perdi-localizacao');
-
-  const acheiTipoComum = document.getElementById('achei-tipo-comum');
-  const acheiTipoMercosul = document.getElementById('achei-tipo-mercosul');
-  const acheiLocalizacao = document.getElementById('achei-localizacao');
-
-  function atualizarPerdiLocalizacao() {
-    perdeuLocalizacao.style.display = perdeuTipoComum.checked ? 'block' : 'none';
-  }
-  function atualizarAcheiLocalizacao() {
-    acheiLocalizacao.style.display = acheiTipoComum.checked ? 'block' : 'none';
-  }
-
-  perdeuTipoComum.addEventListener('change', atualizarPerdiLocalizacao);
-  perdeuTipoMercosul.addEventListener('change', atualizarPerdiLocalizacao);
-  acheiTipoComum.addEventListener('change', atualizarAcheiLocalizacao);
-  acheiTipoMercosul.addEventListener('change', atualizarAcheiLocalizacao);
-
-  atualizarPerdiLocalizacao();
-  atualizarAcheiLocalizacao();
-  // ==================== Validação de placa ====================
-  function validarPlaca(placa, tipo) {
-    if (tipo === 'comum') {
-      return /^[A-Z]{3}-\d{4}$/.test(placa);
-    } else {
-      return /^[A-Z]{3}\d[A-Z]\d{2}$/.test(placa);
-    }
+  // ==== Geração de caminho corrigida ====
+  function gerarCaminho(tipo, placa, uf, municipio) {
+    return tipo === 'comum' ? `${placa}:${uf}:${municipio}` : `${placa}:null:null:true`;
   }
 
   function formatarPlaca(placa) {
     return placa.replace('-', '').toUpperCase();
   }
 
+  function validarPlaca(placa, tipo) {
+    if (tipo === 'comum') return /^[A-Z]{3}-\d{4}$/.test(placa);
+    else return /^[A-Z]{3}\d[A-Z]\d{2}$/.test(placa);
+  }
+
   function validarLocalizacao(tipo, uf, municipio) {
     return tipo === 'comum' ? (uf && municipio) : true;
   }
 
-  function gerarCaminho(tipo, placa, uf, municipio) {
-    return tipo === 'comum' ? `${placa}:${uf}:${municipio}` : placa;
-  }
-
-  // ==================== Buscar placa ====================
+  // ==== Buscar Placa ====
   document.getElementById('perdi-buscar').onclick = async () => {
-    const tipo = perdeuTipoComum.checked ? 'comum' : 'mercosul';
+    const tipo = tipoPerdi;
     const placaBruta = document.getElementById('perdi-placa').value.trim();
     const placa = formatarPlaca(placaBruta);
     const uf = document.getElementById('perdi-uf').value;
@@ -315,14 +219,14 @@
       alert('Placa inválida!');
       return;
     }
+
     if (!validarLocalizacao(tipo, uf, municipio)) {
       alert('UF e Município obrigatórios para placa comum.');
       return;
     }
 
     const path = gerarCaminho(tipo, placa, uf, municipio);
-    const dbRef = ref(database, path);
-    const snapshot = await get(dbRef);
+    const snapshot = await get(ref(database, path));
 
     if (snapshot.exists()) {
       const dados = snapshot.val();
@@ -330,34 +234,36 @@
     } else {
       if (confirm('Placa não encontrada. Deseja ser avisado quando ela for cadastrada?')) {
         document.getElementById('aviso-placa').value = placa;
-        switchScreen(perdiScreen, avisoScreen);
+        switchScreen(document.getElementById('perdi-screen'), document.getElementById('aviso-screen'));
       }
     }
   };
 
-  // ==================== Salvar placa (simples ou outra) ====================
+  // ==== Salvar Placa com confirmação ====
   async function salvarPlaca(outra = false) {
-    const tipo = acheiTipoComum.checked ? 'comum' : 'mercosul';
+    const tipo = tipoAchei;
     const placaBruta = document.getElementById('achei-placa').value.trim();
+    const placa = formatarPlaca(placaBruta);
     const nome = document.getElementById('achei-nome').value.trim();
     const telefone = document.getElementById('achei-telefone').value.trim();
     const uf = document.getElementById('achei-uf').value;
     const municipio = document.getElementById('achei-municipio').value;
 
-    const placa = formatarPlaca(placaBruta);
-
     if (!validarPlaca(placaBruta, tipo)) {
       alert('Placa inválida!');
       return;
     }
+
     if (!nome || nome.length < 3) {
       alert('Digite seu nome.');
       return;
     }
+
     if (!telefone || telefone.replace(/\D/g, '').length < 10) {
       alert('Telefone inválido.');
       return;
     }
+
     if (!validarLocalizacao(tipo, uf, municipio)) {
       alert('UF e Município obrigatórios para placa comum.');
       return;
@@ -374,54 +280,20 @@
     };
 
     await set(ref(database, path), dados);
-    document.getElementById('achei-result').className = 'result success';
-    document.getElementById('achei-result-text').innerText = `Placa ${placaBruta} cadastrada com sucesso!`;
+    alert(`✅ Placa ${placaBruta} cadastrada com sucesso!`);
 
     if (outra) {
       document.getElementById('achei-placa').value = '';
       document.getElementById('achei-uf').value = '';
       document.getElementById('achei-municipio').value = '';
     } else {
-      switchScreen(acheiScreen, homeScreen);
+      switchScreen(document.getElementById('achei-screen'), document.getElementById('home-screen'));
     }
   }
 
   document.getElementById('achei-salvar').onclick = () => salvarPlaca(false);
   document.getElementById('achei-salvar-outra').onclick = () => salvarPlaca(true);
 
-  // ==================== Cadastro para ser avisado ====================
-  document.getElementById('aviso-salvar').onclick = async () => {
-    const nome = document.getElementById('aviso-nome').value.trim();
-    const email = document.getElementById('aviso-email').value.trim();
-    const placa = document.getElementById('aviso-placa').value.trim();
-
-    if (!nome || !email) {
-      document.getElementById('aviso-result').className = 'result error';
-      document.getElementById('aviso-result-text').innerText = 'Preencha seu nome e e-mail.';
-      return;
-    }
-
-    const userRef = doc(firestore, "users", email);
-    const userSnap = await getDoc(userRef);
-
-    if (userSnap.exists()) {
-      await updateDoc(userRef, {
-        placas: arrayUnion(placa),
-        dataCadastro: new Date().toISOString()
-      });
-      document.getElementById('aviso-result').className = 'result success';
-      document.getElementById('aviso-result-text').innerText = 'Cadastro atualizado! Você será avisado.';
-    } else {
-      await setDoc(userRef, {
-        nome,
-        email,
-        placas: [placa],
-        dataCadastro: new Date().toISOString()
-      });
-      document.getElementById('aviso-result').className = 'result success';
-      document.getElementById('aviso-result-text').innerText = 'Cadastro realizado! Você será avisado.';
-    }
-  };
 </script>
 </body>
 </html>
