@@ -49,7 +49,6 @@
 </header>
 
 <div class="container">
-
   <!-- Tela inicial -->
   <div id="home-screen" class="screen active">
     <h2>O que você deseja fazer?</h2>
@@ -59,7 +58,6 @@
       <button id="achei-btn" class="btn btn-success">Achei uma placa</button>
     </div>
   </div>
-
   <!-- Tela Perdi -->
   <div id="perdi-screen" class="screen">
     <h2>Buscar placa perdida</h2>
@@ -94,6 +92,7 @@
       <button id="perdi-remover-btn" class="btn btn-danger" style="display:none;">Remover placa</button>
     </div>
   </div>
+
   <!-- Tela Achei -->
   <div id="achei-screen" class="screen">
     <h2>Cadastrar placa encontrada</h2>
@@ -167,7 +166,7 @@
 </footer>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-  import { getDatabase, ref, set, get, remove, push } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+  import { getDatabase, ref, set, get, remove } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
   import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -184,16 +183,15 @@
   const database = getDatabase(app);
   const firestore = getFirestore(app);
 
-  // ===================== Dados de UF e Municípios =====================
+  // ================== UF e Municípios ==================
   const estadosECidades = {
-    "SP": ["Adamantina", "Adolfo", "Aguaí", "Águas da Prata", "Águas de Lindóia", "Águas de Santa Bárbara", "Águas de São Pedro", "Agudos", "Alambari", "Alfredo Marcondes", "Altair", "Altinópolis", "Alto Alegre", "Alumínio", "Álvares Florence", "Álvares Machado", "Álvaro de Carvalho", "Alvinlândia", "Americana", "Américo Brasiliense", "Américo de Campos", "Amparo", "Analândia", "Andradina", "Angatuba", "Anhembi", "Anhumas", "Aparecida", "Aparecida d'Oeste", "Apiaí", "Araçariguama", "Araçatuba", "Araçoiaba da Serra", "Aramina", "Arandu", "Arapeí", "Araraquara", "Araras", "Arco-Íris", "Arealva", "Areias", "Areiópolis", "Ariranha", "Artur Nogueira", "Arujá", "Aspásia", "Assis", "Atibaia", "Auriflama", "Avaí", "Avanhandava", "Avaré", "Bady Bassitt", "Balbinos", "Bálsamo", "Bananal", "Barão de Antonina", "Barbosa", "Bariri", "Barra Bonita", "Barra do Chapéu", "Barra do Turvo", "Barretos", "Barrinha", "Barueri", "Bastos", "Batatais", "Bauru", "Bebedouro", "Bento de Abreu", "Bernardino de Campos", "Bertioga", "Bilac", "Birigui", "Biritiba Mirim", "Boa Esperança do Sul", "Bocaina", "Bofete", "Boituva", "Bom Jesus dos Perdões", "Bom Sucesso de Itararé", "Borá", "Boraceia", "Borborema", "Borebi", "Botucatu", "Bragança Paulista", "Braúna", "Brejo Alegre", "Brodowski", "Brotas", "Buri", "Buritama", "Buritizal", "Cabrália Paulista", "Cabreúva", "Caçapava", "Cachoeira Paulista", "Caconde", "Cafelândia", "Caiabu", "Caieiras", "Caiuá", "Cajamar", "Cajati", "Cajobi", "Cajuru", "Campina do Monte Alegre", "Campinas", "Campo Limpo Paulista", "Campos do Jordão", "Campos Novos Paulista", "Cananéia", "Canas", "Cândido Mota", "Cândido Rodrigues", "Canitar", "Capão Bonito", "Capela do Alto", "Capivari", "Caraguatatuba", "Carapicuíba", "Cardoso", "Casa Branca", "Cássia dos Coqueiros", "Castilho", "Catanduva", "Catiguá", "Cedral", "Cerqueira César", "Cerquilho", "Cesário Lange", "Charqueada", "Chavantes", "Clementina", "Colina", "Colômbia", "Conchal", "Conchas", "Cordeirópolis", "Coroados", "Coronel Macedo", "Corumbataí", "Cosmópolis", "Cosmorama", "Cotia", "Cravinhos", "Cristais Paulista", "Cruzália", "Cruzeiro", "Cubatão", "Cunha", "Descalvado", "Diadema", "Dirce Reis", "Divinolândia", "Dobrada", "Dois Córregos", "Dolcinópolis", "Dourado", "Dracena", "Duartina", "Dumont", "Echaporã", "Eldorado", "Elias Fausto", "Elisiário", "Embaúba", "Embu das Artes", "Embu-Guaçu", "Emilianópolis", "Engenheiro Coelho", "Espírito Santo do Pinhal", "Espírito Santo do Turvo", "Estiva Gerbi", "Estrela do Norte", "Estrela d'Oeste", "Euclides da Cunha Paulista", "Fartura", "Fernando Prestes", "Fernandópolis", "Fernão", "Ferraz de Vasconcelos", "Flora Rica", "Floreal", "Flórida Paulista", "Florínea", "Franca", "Francisco Morato", "Franco da Rocha", "Gabriel Monteiro", "Gália", "Garça", "Gastão Vidigal", "Gavião Peixoto", "General Salgado", "Getulina", "Glicério", "Guaiçara", "Guaimbê", "Guaíra", "Guapiaçu", "Guapiara", "Guará", "Guaraçaí", "Guaraci", "Guarani d'Oeste", "Guarantã", "Guararapes", "Guararema", "Guaratinguetá", "Guareí", "Guariba", "Guarujá", "Guarulhos", "Guzolândia", "Herculândia", "Holambra", "Hortolândia", "Iacanga", "Iacri", "Iaras", "Ibaté", "Ibirá", "Ibirarema", "Ibitinga", "Ibiúna", "Icém", "Iepê", "Igaraçu do Tietê", "Igarapava", "Igaratá", "Iguape", "Ilha Comprida", "Ilha Solteira", "Ilhabela", "Indaiatuba", "Indiana", "Indiaporã", "Inúbia Paulista", "Ipaussu", "Iperó", "Ipeúna", "Ipiguá", "Iporanga", "Ipuã", "Iracemápolis", "Irapuã", "Irapuru", "Itaberá", "Itaí", "Itajobi", "Itaju", "Itanhaém", "Itaoca", "Itapecerica da Serra", "Itapetininga", "Itapeva", "Itapevi", "Itapira", "Itapirapuã Paulista", "Itápolis", "Itaporanga", "Itapuí", "Itapura", "Itaquaquecetuba", "Itararé", "Itariri", "Itatiba", "Itatinga", "Itirapina", "Itirapuã", "Itobi", "Itu", "Itupeva", "Ituverava", "Jaborandi", "Jaboticabal", "Jaci", "Jacupiranga", "Jaguariúna", "Jales", "Jambeiro", "Jandira", "Jardinópolis", "Jarinu", "Jaú", "Jeriquara", "Joanópolis", "João Ramalho", "José Bonifácio", "Júlio Mesquita", "Jumirim", "Jundiaí", "Junqueirópolis", "Juquiá", "Juquitiba", "Lagoinha", "Laranjal Paulista", "Lavínia", "Lavrinhas", "Leme", "Lençóis Paulista", "Limeira", "Lindoia", "Lins", "Lorena", "Lourdes", "Louveira", "Lucélia", "Lucianópolis", "Luiz Antônio", "Luiziânia", "Lupércio", "Lutécia", "Macatuba", "Macaubal", "Macedônia", "Magda", "Mairinque", "Mairiporã", "Manduri", "Marabá Paulista", "Maracaí", "Marapoama", "Mariápolis", "Marília", "Marinópolis", "Martinópolis", "Matão", "Mauá", "Mendonça", "Meridiano", "Mesópolis", "Miguelópolis", "Mineiros do Tietê", "Mira Estrela", "Miracatu", "Mirandópolis", "Mirante do Paranapanema", "Mirassol", "Mirassolândia", "Mococa", "Mogi das Cruzes", "Mogi Guaçu", "Mogi Mirim", "Mombuca", "Monções", "Mongaguá", "Monte Alegre do Sul", "Monte Alto", "Monte Aprazível", "Monte Azul Paulista", "Monte Castelo", "Monte Mor", "Monteiro Lobato", "Morro Agudo", "Morungaba", "Motuca", "Murutinga do Sul", "Nantes", "Narandiba", "Natividade da Serra", "Nazaré Paulista", "Neves Paulista", "Nhandeara", "Nipoã", "Nova Aliança", "Nova Campina", "Nova Canaã Paulista", "Nova Castilho", "Nova Europa", "Nova Granada", "Nova Guataporanga", "Nova Independência", "Nova Luzitânia", "Nova Odessa", "Novais", "Novo Horizonte", "Nuporanga", "Ocauçu", "Óleo", "Olímpia", "Onda Verde", "Oriente", "Orindiúva", "Orlândia", "Osasco", "Oscar Bressane", "Osvaldo Cruz", "Ourinhos", "Ouro Verde", "Ouroeste", "Pacaembu", "Palestina", "Palmares Paulista", "Palmeira d'Oeste", "Palmital", "Panorama", "Paraguaçu Paulista", "Paraibuna", "Paraíso", "Paranapanema", "Paranapuã", "Parapuã", "Pardinho", "Pariquera-Açu", "Parisi", "Patrocínio Paulista", "Paulicéia", "Paulínia", "Paulistânia", "Paulo de Faria", "Pederneiras", "Pedra Bela", "Pedranópolis", "Pedregulho", "Pedreira", "Pedrinhas Paulista", "Pedro de Toledo", "Penápolis", "Pereira Barreto", "Pereiras", "Peruíbe", "Piacatu", "Piedade", "Pilar do Sul", "Pindamonhangaba", "Pindorama", "Pinhalzinho", "Piquerobi", "Piquete", "Piracaia", "Piracicaba", "Piraju", "Pirajuí", "Pirangi", "Pirapora do Bom Jesus", "Pirapozinho", "Pirassununga", "Piratininga", "Pitangueiras", "Planalto", "Platina", "Poá", "Poloni", "Pompeia", "Pongaí", "Pontal", "Pontalinda", "Pontes Gestal", "Populina", "Porangaba", "Porto Feliz", "Porto Ferreira", "Potim", "Potirendaba", "Pracinha", "Pradópolis", "Praia Grande", "Pratânia", "Presidente Alves", "Presidente Bernardes", "Presidente Epitácio", "Presidente Prudente", "Presidente Venceslau", "Promissão", "Quadra", "Quatá", "Queiroz", "Queluz", "Quintana", "Rafard", "Rancharia", "Redenção da Serra", "Regente Feijó", "Reginópolis", "Registro", "Restinga", "Ribeira", "Ribeirão Bonito", "Ribeirão Branco", "Ribeirão Corrente", "Ribeirão do Sul", "Ribeirão dos Índios", "Ribeirão Grande", "Ribeirão Pires", "Ribeirão Preto", "Rifaina", "Rincão", "Rinópolis", "Rio Claro", "Rio das Pedras", "Rio Grande da Serra", "Riolândia", "Riversul", "Rosana", "Roseira", "Rubiácea", "Rubinéia", "Sabino", "Sagres", "Sales", "Sales Oliveira", "Salesópolis", "Salmourão", "Saltinho", "Salto", "Salto de Pirapora", "Salto Grande", "Sandovalina", "Santa Adélia", "Santa Albertina", "Santa Bárbara d'Oeste", "Santa Branca", "Santa Clara d'Oeste", "Santa Cruz da Conceição", "Santa Cruz da Esperança", "Santa Cruz das Palmeiras", "Santa Cruz do Rio Pardo", "Santa Ernestina", "Santa Fé do Sul", "Santa Gertrudes", "Santa Isabel", "Santa Lúcia", "Santa Maria da Serra", "Santa Mercedes", "Santa Rita do Passa Quatro", "Santa Rita d'Oeste", "Santa Rosa de Viterbo", "Santa Salete", "Santana da Ponte Pensa", "Santana de Parnaíba", "Santo Anastácio", "Santo André", "Santo Antônio da Alegria", "Santo Antônio de Posse", "Santo Antônio do Aracanguá", "Santo Antônio do Jardim", "Santo Antônio do Pinhal", "Santo Expedito", "Santópolis do Aguapeí", "Santos", "São Bento do Sapucaí", "São Bernardo do Campo", "São Caetano do Sul", "São Carlos", "São Francisco", "São João da Boa Vista", "São João das Duas Pontes", "São João de Iracema", "São João do Pau-d'Alho", "São Joaquim da Barra", "São José da Bela Vista", "São José do Barreiro", "São José do Rio Pardo", "São José do Rio Preto", "São José dos Campos", "São Lourenço da Serra", "São Luiz do Paraitinga", "São Manuel", "São Miguel Arcanjo", "São Paulo", "São Pedro", "São Pedro do Turvo", "São Roque", "São Sebastião", "São Sebastião da Grama", "São Simão", "São Vicente", "Sarapuí", "Sarutaiá", "Sebastianópolis do Sul", "Serra Azul", "Serra Negra", "Serrana", "Sertãozinho", "Sete Barras", "Severínia", "Silveiras", "Socorro", "Sorocaba", "Sud Mennucci", "Sumaré", "Suzanápolis", "Suzano", "Tabapuã", "Tabatinga", "Taboão da Serra", "Taciba", "Taguaí", "Taiaçu", "Taiúva", "Tambaú", "Tanabi", "Tapiraí", "Tapiratiba", "Taquaral", "Taquaritinga", "Taquarituba", "Taquarivaí", "Tarabai", "Tarumã", "Tatuí", "Taubaté", "Tejupá", "Teodoro Sampaio", "Terra Roxa", "Tietê", "Timburi", "Torre de Pedra", "Torrinha", "Trabiju", "Tremembé", "Três Fronteiras", "Tuiuti", "Tupã", "Tupi Paulista", "Turiúba", "Turmalina", "Ubarana", "Ubatuba", "Ubirajara", "Uchoa", "União Paulista", "Urânia", "Uru", "Urupês", "Valentim Gentil", "Valinhos", "Valparaíso", "Vargem", "Vargem Grande do Sul", "Vargem Grande Paulista", "Várzea Paulista", "Vera Cruz", "Vinhedo", "Viradouro", "Vista Alegre do Alto", "Vitória Brasil", "Votorantim", "Votuporanga", "Zacarias"],
+    "SP": ["São Paulo", "Campinas", "Santos", "Ubatuba"],
     "RJ": ["Rio de Janeiro", "Niterói", "Petrópolis"],
     "MG": ["Belo Horizonte", "Uberlândia", "Juiz de Fora"],
     "BA": ["Salvador", "Feira de Santana", "Ilhéus"],
     "PR": ["Curitiba", "Londrina", "Maringá"],
     "RS": ["Porto Alegre", "Caxias do Sul", "Pelotas"],
     "SC": ["Florianópolis", "Joinville", "Blumenau"]
-    // 🔥 Adicione mais estados e municípios conforme quiser.
   };
 
   const ufElements = [
@@ -215,11 +213,21 @@
     });
   });
 
-  // ===================== Manipulação de telas =====================
+  // ================== Telas ==================
   const homeScreen = document.getElementById('home-screen');
   const perdiScreen = document.getElementById('perdi-screen');
   const acheiScreen = document.getElementById('achei-screen');
   const avisoScreen = document.getElementById('aviso-screen');
+
+  const perdeuTipoComum = document.getElementById('perdi-tipo-comum');
+  const acheiTipoComum = document.getElementById('achei-tipo-comum');
+  const perdeuLocalizacao = document.getElementById('perdi-localizacao');
+  const acheiLocalizacao = document.getElementById('achei-localizacao');
+
+  function switchScreen(hide, show) {
+    hide.classList.remove('active');
+    show.classList.add('active');
+  }
 
   document.getElementById('perdi-btn').onclick = () => switchScreen(homeScreen, perdiScreen);
   document.getElementById('achei-btn').onclick = () => switchScreen(homeScreen, acheiScreen);
@@ -227,16 +235,139 @@
   document.getElementById('achei-voltar').onclick = () => switchScreen(acheiScreen, homeScreen);
   document.getElementById('aviso-voltar').onclick = () => switchScreen(avisoScreen, homeScreen);
 
-  function switchScreen(hide, show) {
-    hide.classList.remove('active');
-    show.classList.add('active');
+  perdeuTipoComum.addEventListener('change', () => {
+    perdeuLocalizacao.style.display = perdeuTipoComum.checked ? 'block' : 'none';
+  });
+  acheiTipoComum.addEventListener('change', () => {
+    acheiLocalizacao.style.display = acheiTipoComum.checked ? 'block' : 'none';
+  });
+
+  perdeuLocalizacao.style.display = perdeuTipoComum.checked ? 'block' : 'none';
+  acheiLocalizacao.style.display = acheiTipoComum.checked ? 'block' : 'none';
+
+  // ================== Máscara de placas ==================
+  function aplicarMascaraPlaca(input, tipo) {
+    let value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (tipo === 'comum') {
+      if (value.length > 7) value = value.slice(0, 7);
+      if (value.length > 3) value = value.slice(0, 3) + '-' + value.slice(3);
+    } else {
+      if (value.length > 7) value = value.slice(0, 7);
+    }
+    input.value = value;
   }
 
-  // ===================== Cadastro para receber aviso =====================
+  document.getElementById('perdi-placa').addEventListener('input', function () {
+    const tipo = perdeuTipoComum.checked ? 'comum' : 'mercosul';
+    aplicarMascaraPlaca(this, tipo);
+  });
+
+  document.getElementById('achei-placa').addEventListener('input', function () {
+    const tipo = acheiTipoComum.checked ? 'comum' : 'mercosul';
+    aplicarMascaraPlaca(this, tipo);
+  });
+</script>
+<script type="module">
+  // ========== Validação de placa ==========
+  function validarPlaca(placa, tipo) {
+    if (tipo === 'comum') {
+      return /^[A-Z]{3}-\d{4}$/.test(placa);
+    } else {
+      return /^[A-Z]{3}\d[A-Z]\d{2}$/.test(placa);
+    }
+  }
+
+  function formatarPlaca(placa) {
+    return placa.replace('-', '').toUpperCase();
+  }
+
+  function validarLocalizacao(tipo, uf, municipio) {
+    return tipo === 'comum' ? (uf && municipio) : true;
+  }
+
+  // ========== Buscar placa perdida ==========
+  document.getElementById('perdi-buscar').onclick = async () => {
+    const tipo = perdeuTipoComum.checked ? 'comum' : 'mercosul';
+    const placa = formatarPlaca(document.getElementById('perdi-placa').value.trim());
+    const uf = document.getElementById('perdi-uf').value;
+    const municipio = document.getElementById('perdi-municipio').value;
+
+    if (!validarPlaca(document.getElementById('perdi-placa').value.trim(), tipo)) {
+      alert('Placa inválida!');
+      return;
+    }
+
+    if (!validarLocalizacao(tipo, uf, municipio)) {
+      alert('UF e Município obrigatórios para placa comum.');
+      return;
+    }
+
+    const path = tipo === 'comum' ? `${uf}_${municipio}_${placa}` : placa;
+    const dbRef = ref(database, 'placas/' + path);
+    const snapshot = await get(dbRef);
+
+    if (snapshot.exists()) {
+      const dados = snapshot.val();
+      alert(`Placa encontrada!\n\nContato: ${dados.nome} - ${dados.telefone}`);
+    } else {
+      if (confirm('Placa não encontrada. Deseja ser avisado quando ela for cadastrada?')) {
+        document.getElementById('aviso-placa').value = placa;
+        switchScreen(perdiScreen, avisoScreen);
+      }
+    }
+  };
+
+  // ========== Salvar placa encontrada ==========
+  document.getElementById('achei-salvar').onclick = async () => {
+    const tipo = acheiTipoComum.checked ? 'comum' : 'mercosul';
+    const placaInput = document.getElementById('achei-placa').value.trim();
+    const placa = formatarPlaca(placaInput);
+    const nome = document.getElementById('achei-nome').value.trim();
+    const telefone = document.getElementById('achei-telefone').value.trim();
+    const uf = document.getElementById('achei-uf').value;
+    const municipio = document.getElementById('achei-municipio').value;
+
+    if (!validarPlaca(placaInput, tipo)) {
+      alert('Placa inválida!');
+      return;
+    }
+
+    if (!nome || nome.length < 3) {
+      alert('Digite seu nome.');
+      return;
+    }
+
+    if (!telefone || telefone.replace(/\D/g, '').length < 11) {
+      alert('Telefone inválido.');
+      return;
+    }
+
+    if (!validarLocalizacao(tipo, uf, municipio)) {
+      alert('UF e Município obrigatórios para placa comum.');
+      return;
+    }
+
+    const path = tipo === 'comum' ? `${uf}_${municipio}_${placa}` : placa;
+    const dados = {
+      nome,
+      telefone,
+      tipo,
+      uf: tipo === 'comum' ? uf : '',
+      municipio: tipo === 'comum' ? municipio : '',
+      timestamp: Date.now()
+    };
+
+    await set(ref(database, 'placas/' + path), dados);
+    alert('Placa cadastrada com sucesso!');
+
+    // 🔥 Aqui você pode incluir o código para disparar e-mails pelo Firebase Extensions
+  };
+
+  // ========== Cadastro para ser avisado ==========
+  const avisoSalvar = document.getElementById('aviso-salvar');
   const avisoNome = document.getElementById('aviso-nome');
   const avisoEmail = document.getElementById('aviso-email');
   const avisoPlaca = document.getElementById('aviso-placa');
-  const avisoSalvar = document.getElementById('aviso-salvar');
   const avisoResult = document.getElementById('aviso-result');
   const avisoResultText = document.getElementById('aviso-result-text');
 
@@ -263,8 +394,8 @@
       avisoResultText.innerText = 'Cadastro atualizado! Você será avisado.';
     } else {
       await setDoc(userRef, {
-        nome: nome,
-        email: email,
+        nome,
+        email,
         placas: [placa],
         dataCadastro: new Date().toISOString()
       });
@@ -273,126 +404,5 @@
     }
   };
 </script>
-<script type="module">
-  // ===================== Validação de placa =====================
-  function validarPlaca(placa, tipo) {
-    if (tipo === 'comum') {
-      const regex = /^[A-Z]{3}-?\d{4}$/;
-      return regex.test(placa);
-    } else {
-      const regex = /^[A-Z]{3}\d[A-Z]\d{2}$/;
-      return regex.test(placa);
-    }
-  }
-
-  function formatarPlaca(placa) {
-    return placa.replace('-', '').toUpperCase();
-  }
-
-  function validarLocalizacao(tipo, uf, municipio) {
-    if (tipo === 'comum' && (!uf || !municipio)) {
-      return false;
-    }
-    return true;
-  }
-
-  // ===================== Buscar placa perdida =====================
-  document.getElementById('perdi-buscar').onclick = async () => {
-    const tipo = document.getElementById('perdi-tipo-comum').checked ? 'comum' : 'mercosul';
-    const placa = formatarPlaca(document.getElementById('perdi-placa').value.trim());
-    const uf = document.getElementById('perdi-uf').value;
-    const municipio = document.getElementById('perdi-municipio').value;
-
-    if (!validarPlaca(placa, tipo)) {
-      alert('Placa inválida!');
-      return;
-    }
-
-    if (!validarLocalizacao(tipo, uf, municipio)) {
-      alert('Informe UF e Município para placas comuns.');
-      return;
-    }
-
-    const path = tipo === 'comum' ? `${uf}_${municipio}_${placa}` : placa;
-    const dbRef = ref(database, 'placas/' + path);
-    const snapshot = await get(dbRef);
-
-    if (snapshot.exists()) {
-      const dados = snapshot.val();
-      alert(`Placa encontrada! Contato: ${dados.nome} - ${dados.telefone}`);
-    } else {
-      if (confirm('Placa não encontrada. Deseja ser avisado quando ela for cadastrada?')) {
-        avisoPlaca.value = placa;
-        switchScreen(perdiScreen, avisoScreen);
-      } else {
-        alert('Continue procurando!');
-      }
-    }
-  };
-
-  // ===================== Cadastrar placa encontrada =====================
-  document.getElementById('achei-salvar').onclick = async () => {
-    const tipo = document.getElementById('achei-tipo-comum').checked ? 'comum' : 'mercosul';
-    const placa = formatarPlaca(document.getElementById('achei-placa').value.trim());
-    const nome = document.getElementById('achei-nome').value.trim();
-    const telefone = document.getElementById('achei-telefone').value.trim();
-    const uf = document.getElementById('achei-uf').value;
-    const municipio = document.getElementById('achei-municipio').value;
-
-    if (!validarPlaca(placa, tipo)) {
-      alert('Placa inválida!');
-      return;
-    }
-
-    if (!nome || nome.length < 3) {
-      alert('Digite seu nome.');
-      return;
-    }
-
-    if (!telefone || telefone.replace(/\D/g, '').length < 11) {
-      alert('Telefone inválido.');
-      return;
-    }
-
-    if (!validarLocalizacao(tipo, uf, municipio)) {
-      alert('Informe UF e Município para placas comuns.');
-      return;
-    }
-
-    const path = tipo === 'comum' ? `${uf}_${municipio}_${placa}` : placa;
-    const dados = {
-      nome,
-      telefone,
-      tipo,
-      uf: tipo === 'comum' ? uf : '',
-      municipio: tipo === 'comum' ? municipio : '',
-      timestamp: Date.now()
-    };
-
-    await set(ref(database, 'placas/' + path), dados);
-    alert('Placa cadastrada com sucesso!');
-
-    // 🔥 Aqui você poderá configurar a integração com Firebase Extensions → Trigger Email
-    // para verificar no Firestore quem está aguardando essa placa e disparar o e-mail automaticamente.
-  };
-
-  // ===================== Controle dos campos de localização (UF e Município) =====================
-  const perdiTipoComum = document.getElementById('perdi-tipo-comum');
-  const acheiTipoComum = document.getElementById('achei-tipo-comum');
-  const perdiLocalizacao = document.getElementById('perdi-localizacao');
-  const acheiLocalizacao = document.getElementById('achei-localizacao');
-
-  function atualizarLocalizacaoPerdi() {
-    perdiLocalizacao.style.display = perdiTipoComum.checked ? 'block' : 'none';
-  }
-
-  function atualizarLocalizacaoAchei() {
-    acheiLocalizacao.style.display = acheiTipoComum.checked ? 'block' : 'none';
-  }
-
-  perdiTipoComum.addEventListener('change', atualizarLocalizacaoPerdi);
-  acheiTipoComum.addEventListener('change', atualizarLocalizacaoAchei);
-
-  atualizarLocalizacaoPerdi();
-  atualizarLocalizacaoAchei();
-</script>
+</body>
+</html>
