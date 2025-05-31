@@ -34,12 +34,7 @@
   <div class="container">
     <div class="logo">SOS PLACA</div>
     <h1>Ajude a reunir placas perdidas com seus donos</h1>
-    <a href="https://play.google.com/store/apps/details?id=fabricioramosdasilva.sos_placa" 
-       target="_blank" 
-       rel="noopener noreferrer"
-       class="btn btn-success"
-       aria-label="Baixe nosso aplicativo na Play Store">📲 Baixe o App</a>
-</div>
+  </div>
 </header>
 
 <div class="container">
@@ -74,7 +69,9 @@
         <option value="ES">ES</option>
       </select>
       <label for="perdi-municipio">Município:</label>
-      <input type="text" id="perdi-municipio" placeholder="Digite o município">
+      <select id="perdi-municipio">
+        <option value="" disabled selected>Selecione o município</option>
+      </select>
     </div>
     <div>
       <button id="perdi-verificar" class="btn btn-success">Verificar Placa</button>
@@ -106,7 +103,9 @@
         <option value="ES">ES</option>
       </select>
       <label for="achei-municipio">Município:</label>
-      <input type="text" id="achei-municipio" placeholder="Digite o município">
+      <select id="achei-municipio">
+        <option value="" disabled selected>Selecione o município</option>
+      </select>
     </div>
     <div class="form-group">
       <label for="achei-nome">Seu nome:</label>
@@ -143,42 +142,7 @@
   const firestore = getFirestore(app);
   const realtimeDb = getDatabase(app);
 
-// 🔥 🔗 Lista de estados e seus municípios
-const cidadesPorEstado = {
-  SP: ["Ubatuba", "Caraguatatuba", "São Paulo", "Campinas"],
-  RJ: ["Rio de Janeiro", "Niterói", "Petrópolis"],
-  MG: ["Belo Horizonte", "Uberlândia", "Contagem"],
-  ES: ["Vitória", "Vila Velha", "Serra"]
-};
-
-// 🔥 🧠 Função para atualizar municípios
-function atualizarMunicipios(ufId, municipioId) {
-  const uf = document.getElementById(ufId).value;
-  const municipioSelect = document.getElementById(municipioId);
-
-  municipioSelect.innerHTML = '<option value="" disabled selected>Selecione o município</option>';
-
-  if (cidadesPorEstado[uf]) {
-    cidadesPorEstado[uf].forEach(cidade => {
-      const option = document.createElement('option');
-      option.value = cidade;
-      option.textContent = cidade;
-      municipioSelect.appendChild(option);
-    });
-  }
-}
-
-// 🔥 🎯 Eventos que disparam o carregamento dos municípios
-document.getElementById('achei-uf').addEventListener('change', () => {
-  atualizarMunicipios('achei-uf', 'achei-municipio');
-});
-
-document.getElementById('perdi-uf').addEventListener('change', () => {
-  atualizarMunicipios('perdi-uf', 'perdi-municipio');
-});
-
-
-  // Função para alternar telas
+  // Funções de navegação
   function mostrarTela(id) {
     document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
     document.getElementById(id).classList.add('active');
@@ -188,12 +152,44 @@ document.getElementById('perdi-uf').addEventListener('change', () => {
     mostrarTela('menu-screen');
   }
   window.voltarMenu = voltarMenu;
+  // 🔗 Lista de estados e municípios
+  const cidadesPorEstado = {
+    SP: ["Ubatuba", "Caraguatatuba", "São Paulo", "Campinas"],
+    RJ: ["Rio de Janeiro", "Niterói", "Petrópolis"],
+    MG: ["Belo Horizonte", "Uberlândia", "Contagem"],
+    ES: ["Vitória", "Vila Velha", "Serra"]
+  };
 
+  // 🧠 Função atualizar municípios
+  function atualizarMunicipios(ufId, municipioId) {
+    const uf = document.getElementById(ufId).value;
+    const municipioSelect = document.getElementById(municipioId);
+    municipioSelect.innerHTML = '<option value="" disabled selected>Selecione o município</option>';
 
-  // Botões do menu inicial
+    if (cidadesPorEstado[uf]) {
+      cidadesPorEstado[uf].forEach(cidade => {
+        const option = document.createElement('option');
+        option.value = cidade;
+        option.textContent = cidade;
+        municipioSelect.appendChild(option);
+      });
+    }
+  }
+
+  // 🎯 Eventos para UF → Município
+  document.getElementById('achei-uf').addEventListener('change', () => {
+    atualizarMunicipios('achei-uf', 'achei-municipio');
+  });
+
+  document.getElementById('perdi-uf').addEventListener('change', () => {
+    atualizarMunicipios('perdi-uf', 'perdi-municipio');
+  });
+
+  // 🎯 Botões do menu
   document.getElementById('btn-achei').addEventListener('click', () => mostrarTela('achei-screen'));
   document.getElementById('btn-perdi').addEventListener('click', () => mostrarTela('perdi-screen'));
-  // Controle do tipo de placa — Achei
+
+  // 🛠️ Controle do tipo de placa — Achei
   document.querySelectorAll('#btn-achei-comum, #btn-achei-mercosul').forEach(btn => {
     btn.addEventListener('click', function() {
       document.querySelectorAll('#achei-screen .btn').forEach(b => b.classList.remove('ativo'));
@@ -205,7 +201,7 @@ document.getElementById('perdi-uf').addEventListener('change', () => {
     });
   });
 
-  // Controle do tipo de placa — Perdi
+  // 🛠️ Controle do tipo de placa — Perdi
   document.querySelectorAll('#btn-perdi-comum, #btn-perdi-mercosul').forEach(btn => {
     btn.addEventListener('click', function() {
       document.querySelectorAll('#perdi-screen .btn').forEach(b => b.classList.remove('ativo'));
@@ -217,7 +213,7 @@ document.getElementById('perdi-uf').addEventListener('change', () => {
     });
   });
 
-  // Máscara telefone
+  // 📲 Máscara telefone
   document.getElementById('achei-telefone').addEventListener('input', function() {
     let value = this.value.replace(/\D/g, '').slice(0, 11);
     if (value.length > 2) value = `(${value.substring(0, 2)}) ${value.substring(2)}`;
@@ -225,7 +221,7 @@ document.getElementById('perdi-uf').addEventListener('change', () => {
     this.value = value;
   });
 
-  // Máscara placas
+  // 📄 Máscara placas
   function aplicarMascaraPlaca(inputId, isComum) {
     const input = document.getElementById(inputId);
     let value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -248,14 +244,14 @@ document.getElementById('perdi-uf').addEventListener('change', () => {
     aplicarMascaraPlaca('perdi-placa', isComum);
   });
 
-  // ✅ Função salvar placa encontrada
+  // ✅ Salvar placa encontrada
   document.getElementById('achei-salvar').addEventListener('click', async () => {
     const isComum = document.getElementById('btn-achei-comum').classList.contains('ativo');
     const placa = document.getElementById('achei-placa').value.toUpperCase().trim();
     const nome = document.getElementById('achei-nome').value.trim();
     const telefone = document.getElementById('achei-telefone').value.trim();
     const uf = document.getElementById('achei-uf').value;
-    const cidade = document.getElementById('achei-municipio').value.trim();
+    const cidade = document.getElementById('achei-municipio').value;
 
     const result = document.getElementById('achei-result');
     result.style.display = 'none';
@@ -292,7 +288,7 @@ document.getElementById('perdi-uf').addEventListener('change', () => {
       document.getElementById('achei-nome').value = '';
       document.getElementById('achei-telefone').value = '';
       document.getElementById('achei-uf').value = '';
-      document.getElementById('achei-municipio').value = '';
+      document.getElementById('achei-municipio').innerHTML = '<option value="" disabled selected>Selecione o município</option>';
 
     } catch (error) {
       console.error('Erro ao salvar:', error);
@@ -301,12 +297,12 @@ document.getElementById('perdi-uf').addEventListener('change', () => {
     }
   });
 
-  // ✅ Função verificar placa perdida
+  // ✅ Verificar placa perdida
   document.getElementById('perdi-verificar').addEventListener('click', async () => {
     const isComum = document.getElementById('btn-perdi-comum').classList.contains('ativo');
     const placa = document.getElementById('perdi-placa').value.toUpperCase().trim();
     const uf = document.getElementById('perdi-uf').value;
-    const cidade = document.getElementById('perdi-municipio').value.trim();
+    const cidade = document.getElementById('perdi-municipio').value;
 
     const result = document.getElementById('perdi-result');
     result.style.display = 'none';
@@ -325,7 +321,6 @@ document.getElementById('perdi-uf').addEventListener('change', () => {
       const snapshot = await get(child(ref(realtimeDb), keyRealtime));
 
       if (snapshot.exists()) {
-        // Buscar no Firestore quem cadastrou
         const q = query(collection(firestore, 'foundPlates'), where('plate', '==', placa));
         const querySnapshot = await getDocs(q);
 
@@ -356,7 +351,7 @@ document.getElementById('perdi-uf').addEventListener('change', () => {
     }
   });
 
-  // Inicialização
+  // 🚀 Inicialização
   document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-achei-comum').click();
     document.getElementById('btn-perdi-comum').click();
