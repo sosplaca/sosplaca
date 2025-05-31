@@ -143,6 +143,41 @@
   const firestore = getFirestore(app);
   const realtimeDb = getDatabase(app);
 
+// 🔥 🔗 Lista de estados e seus municípios
+const cidadesPorEstado = {
+  SP: ["Ubatuba", "Caraguatatuba", "São Paulo", "Campinas"],
+  RJ: ["Rio de Janeiro", "Niterói", "Petrópolis"],
+  MG: ["Belo Horizonte", "Uberlândia", "Contagem"],
+  ES: ["Vitória", "Vila Velha", "Serra"]
+};
+
+// 🔥 🧠 Função para atualizar municípios
+function atualizarMunicipios(ufId, municipioId) {
+  const uf = document.getElementById(ufId).value;
+  const municipioSelect = document.getElementById(municipioId);
+
+  municipioSelect.innerHTML = '<option value="" disabled selected>Selecione o município</option>';
+
+  if (cidadesPorEstado[uf]) {
+    cidadesPorEstado[uf].forEach(cidade => {
+      const option = document.createElement('option');
+      option.value = cidade;
+      option.textContent = cidade;
+      municipioSelect.appendChild(option);
+    });
+  }
+}
+
+// 🔥 🎯 Eventos que disparam o carregamento dos municípios
+document.getElementById('achei-uf').addEventListener('change', () => {
+  atualizarMunicipios('achei-uf', 'achei-municipio');
+});
+
+document.getElementById('perdi-uf').addEventListener('change', () => {
+  atualizarMunicipios('perdi-uf', 'perdi-municipio');
+});
+
+
   // Função para alternar telas
   function mostrarTela(id) {
     document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
