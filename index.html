@@ -62,7 +62,6 @@
   </div>
 </header>
 <div class="container">
-  <!-- Feedback messages -->
   <div id="error-message" class="result error" style="display:none;"></div>
   <div id="success-message" class="result success" style="display:none;"></div>
 
@@ -113,6 +112,7 @@
       <button id="perdi-remover-btn" class="btn btn-danger" style="display:none;">Remover placa</button>
     </div>
   </div>
+
   <!-- Tela Achei -->
   <div id="achei-screen" class="screen" role="region" aria-labelledby="achei-title">
     <h2 id="achei-title">Cadastrar placa encontrada</h2>
@@ -143,11 +143,18 @@
     </div>
     <div class="form-group">
       <label for="achei-nome">Seu nome:</label>
-      <input type="text" id="achei-nome" placeholder="Digite seu nome completo" required minlength="3">
+      <input type="text" id="achei-nome" 
+             placeholder="Digite seu nome completo"
+             required
+             minlength="3">
     </div>
     <div class="form-group">
       <label for="achei-telefone">Seu telefone:</label>
-      <input type="tel" id="achei-telefone" placeholder="(00) 00000-0000 ou (00) 0000-0000" required>
+      <input type="tel" id="achei-telefone" 
+             placeholder="(00) 00000-0000 ou (00) 0000-0000"
+             aria-describedby="telefone-help"
+             required>
+      <small id="telefone-help" class="sr-only">Formato: (00) 00000-0000 ou (00) 0000-0000</small>
     </div>
     <div class="form-actions">
       <button id="achei-voltar" class="btn btn-secondary">Voltar</button>
@@ -161,7 +168,6 @@
 </div>
 
 <script type="module">
-// Firebase imports e inicialização
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
 import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
@@ -180,62 +186,58 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 const firestore = getFirestore(app);
 
-// Funções utilitárias
-const tipoBtns = document.querySelectorAll(".tipo-btn");
-tipoBtns.forEach(btn => {
-  btn.addEventListener("click", () => {
-    const grupo = btn.parentElement;
-    grupo.querySelectorAll(".tipo-btn").forEach(b => b.classList.remove("ativo"));
-    btn.classList.add("ativo");
-  });
-});
-
-function aplicarMascaraPlaca(input, btnComum, btnMercosul) {
-  input.addEventListener("input", () => {
-    let valor = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-    if (btnComum.classList.contains("ativo")) {
-      valor = valor.slice(0, 7);
-      if (valor.length > 3) valor = valor.slice(0, 3) + '-' + valor.slice(3);
-    } else {
-      valor = valor.slice(0, 7);
-    }
-    input.value = valor;
-  });
+// Navegação
+function switchScreen(from, to) {
+  from.classList.remove('active');
+  to.classList.add('active');
 }
 
-aplicarMascaraPlaca(perdiPlaca = document.getElementById("perdi-placa"), 
-  document.getElementById("btn-perdi-comum"), 
-  document.getElementById("btn-perdi-mercosul"));
-
-aplicarMascaraPlaca(acheiPlaca = document.getElementById("achei-placa"), 
-  document.getElementById("btn-achei-comum"), 
-  document.getElementById("btn-achei-mercosul"));
-
-document.getElementById("achei-telefone").addEventListener("input", function () {
-  let v = this.value.replace(/\D/g, "").slice(0, 11);
-  if (v.length <= 10) {
-    this.value = v.replace(/(\\d{2})(\\d{4})(\\d{0,4})/, "($1)$2-$3");
-  } else {
-    this.value = v.replace(/(\\d{2})(\\d{5})(\\d{0,4})/, "($1)$2-$3");
-  }
-});
-
-// Troca de telas
 const screens = {
   home: document.getElementById('home-screen'),
   perdi: document.getElementById('perdi-screen'),
   achei: document.getElementById('achei-screen')
 };
 
-function switchScreen(from, to) {
-  from.classList.remove("active");
-  to.classList.add("active");
+document.getElementById('perdi-btn').onclick = () => switchScreen(screens.home, screens.perdi);
+document.getElementById('achei-btn').onclick = () => switchScreen(screens.home, screens.achei);
+document.getElementById('perdi-voltar').onclick = () => switchScreen(screens.perdi, screens.home);
+document.getElementById('achei-voltar').onclick = () => switchScreen(screens.achei, screens.home);
+
+// Tipo de placa toggle
+document.querySelectorAll('.tipo-btns').forEach(grupo => {
+  grupo.querySelectorAll('.tipo-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      grupo.querySelectorAll('.tipo-btn').forEach(b => b.classList.remove('ativo'));
+      btn.classList.add('ativo');
+    });
+  });
+});
+
+// Máscara placa
+function aplicarMascaraPlaca(input, isComumSelector) {
+  input.addEventListener('input', () => {
+    let raw = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    let isComum = document.querySelector(isComumSelector).classList.contains('ativo');
+    raw = raw.slice(0, 7);
+    if (isComum && raw.length > 3) {
+      raw = raw.slice(0, 3) + '-' + raw.slice(3);
+    }
+    input.value = raw;
+  });
 }
 
-document.getElementById("perdi-btn").onclick = () => switchScreen(screens.home, screens.perdi);
-document.getElementById("achei-btn").onclick = () => switchScreen(screens.home, screens.achei);
-document.getElementById("perdi-voltar").onclick = () => switchScreen(screens.perdi, screens.home);
-document.getElementById("achei-voltar").onclick = () => switchScreen(screens.achei, screens.home);
+aplicarMascaraPlaca(document.getElementById('perdi-placa'), '#btn-perdi-comum');
+aplicarMascaraPlaca(document.getElementById('achei-placa'), '#btn-achei-comum');
+
+// Máscara telefone
+document.getElementById('achei-telefone').addEventListener('input', function () {
+  let v = this.value.replace(/\\D/g, '').slice(0, 11);
+  if (v.length <= 10) {
+    this.value = v.replace(/(\\d{2})(\\d{4})(\\d{0,4})/, '($1) $2-$3');
+  } else {
+    this.value = v.replace(/(\\d{2})(\\d{5})(\\d{0,4})/, '($1) $2-$3');
+  }
+});
 </script>
 </body>
 </html>
