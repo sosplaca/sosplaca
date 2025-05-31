@@ -90,8 +90,7 @@
       <input type="text" id="perdi-placa" class="placa-input" 
              placeholder="AAA-0000 ou AAA0A00"
              aria-describedby="perdi-placa-help"
-             required
-             pattern="[A-Z]{3}-?\d[0-9A-Z]\d{2}">
+             required>
       <small id="perdi-placa-help" class="sr-only">Formato: AAA-0000 para comum ou AAA0A00 para Mercosul</small>
     </div>
     <div class="form-group" id="perdi-localizacao">
@@ -114,7 +113,6 @@
       <button id="perdi-remover-btn" class="btn btn-danger" style="display:none;">Remover placa</button>
     </div>
   </div>
-
   <!-- Tela Achei -->
   <div id="achei-screen" class="screen" role="region" aria-labelledby="achei-title">
     <h2 id="achei-title">Cadastrar placa encontrada</h2>
@@ -130,8 +128,7 @@
       <input type="text" id="achei-placa" class="placa-input" 
              placeholder="AAA-0000 ou AAA0A00"
              aria-describedby="achei-placa-help"
-             required
-             pattern="[A-Z]{3}-?\d[0-9A-Z]\d{2}">
+             required>
       <small id="achei-placa-help" class="sr-only">Formato: AAA-0000 para comum ou AAA0A00 para Mercosul</small>
     </div>
     <div class="form-group" id="achei-localizacao">
@@ -146,19 +143,11 @@
     </div>
     <div class="form-group">
       <label for="achei-nome">Seu nome:</label>
-      <input type="text" id="achei-nome" 
-             placeholder="Digite seu nome completo"
-             required
-             minlength="3">
+      <input type="text" id="achei-nome" placeholder="Digite seu nome completo" required minlength="3">
     </div>
     <div class="form-group">
       <label for="achei-telefone">Seu telefone:</label>
-      <input type="tel" id="achei-telefone" 
-             placeholder="(00) 00000-0000 ou (00) 0000-0000"
-             aria-describedby="telefone-help"
-             required
-             pattern="(\(\d{2}\)\s?)?\d{4,5}[-\s]?\d{4}">
-      <small id="telefone-help" class="sr-only">Formato: (00) 00000-0000 ou (00) 0000-0000</small>
+      <input type="tel" id="achei-telefone" placeholder="(00) 00000-0000 ou (00) 0000-0000" required>
     </div>
     <div class="form-actions">
       <button id="achei-voltar" class="btn btn-secondary">Voltar</button>
@@ -170,232 +159,83 @@
     </div>
   </div>
 </div>
+
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-  import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
-  import { getFirestore, collection, addDoc, serverTimestamp, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+// Firebase imports e inicialização
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyBjetihGmlo_z01jx-GW9Ith0oDCS0jwYc",
-    authDomain: "sosplaca-73cf7.firebaseapp.com",
-    databaseURL: "https://sosplaca-73cf7-default-rtdb.firebaseio.com",
-    projectId: "sosplaca-73cf7",
-    storageBucket: "sosplaca-73cf7.appspot.com",
-    messagingSenderId: "658059385722",
-    appId: "1:658059385722:web:5ed0e8fd7f7a2931d894c3"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const database = getDatabase(app);
-  const firestore = getFirestore(app);
-
-  // ... (código anterior de elementos DOM e estados)
-
-  async function buscarPlaca() {
-    try {
-      toggleLoading(true, elementos.buttons.perdiBuscar);
-      
-      const { tipoPerdi: tipo } = state;
-      const placaBruta = elementos.inputs.placas.perdi.value.trim();
-      const placa = formatarPlaca(placaBruta);
-      const uf = elementos.inputs.uf.perdi.value;
-      const municipio = elementos.inputs.municipio.perdi.value;
-
-      if (!validarPlaca(placaBruta, tipo)) {
-        showError('Placa inválida! Verifique o formato.');
-        return;
-      }
-
-      if (tipo === 'comum' && (!uf || !municipio)) {
-        showError('UF e Município são obrigatórios para placa comum.');
-        return;
-      }
-
-      // 1. Busca no Firestore (formato do app)
-      const q = query(collection(firestore, "foundPlates"), 
-                where("plate", "==", tipo === 'comum' ? placaBruta : placa));
-      
-      const querySnapshot = await getDocs(q);
-      
-      if (!querySnapshot.empty) {
-        querySnapshot.forEach((doc) => {
-          const dados = doc.data();
-          const telefoneFormatado = formatarTelefoneExibicao(dados.founderPhone);
-          elementos.results.perdi.textContent = `Placa encontrada! Contato: ${dados.founderName} - ${telefoneFormatado}`;
-          elementos.results.perdi.parentElement.style.display = 'block';
-        });
-        return;
-      }
-
-      // 2. Busca alternativa no Firestore (formato do site)
-      const qAlternativo = query(collection(firestore, "foundPlates"), 
-                where("plate", "==", placa));
-      
-      const querySnapshotAlternativo = await getDocs(qAlternativo);
-      
-      if (!querySnapshotAlternativo.empty) {
-        querySnapshotAlternativo.forEach((doc) => {
-          const dados = doc.data();
-          const telefoneFormatado = formatarTelefoneExibicao(dados.founderPhone);
-          elementos.results.perdi.textContent = `Placa encontrada! Contato: ${dados.founderName} - ${telefoneFormatado}`;
-          elementos.results.perdi.parentElement.style.display = 'block';
-        });
-        return;
-      }
-
-      // 3. Busca no Realtime Database (para compatibilidade)
-      const path = `placas/${tipo === 'comum' ? placaBruta : placa}:${uf || 'null'}:${municipio || 'null'}${tipo === 'mercosul' ? ':true' : ''}`;
-
-      const snapshot = await get(ref(database, path));
-
-      if (snapshot.exists()) {
-        const dados = snapshot.val();
-        const telefoneFormatado = formatarTelefoneExibicao(dados.telefone);
-        elementos.results.perdi.textContent = `Placa encontrada! Contato: ${dados.nome} - ${telefoneFormatado}`;
-        elementos.results.perdi.parentElement.style.display = 'block';
-      } else {
-        elementos.results.perdi.textContent = 'Placa não encontrada em nosso sistema.';
-        elementos.results.perdi.parentElement.style.display = 'block';
-      }
-    } catch (error) {
-      console.error('Erro ao buscar placa:', error);
-      showError('Erro ao buscar placa. Tente novamente.');
-    } finally {
-      toggleLoading(false, elementos.buttons.perdiBuscar);
-    }
-  }
-
-  async function salvarPlaca(outra = false) {
-    try {
-      toggleLoading(true, outra ? elementos.buttons.acheiSalvarOutra : elementos.buttons.acheiSalvar);
-      
-      const { tipoAchei: tipo } = state;
-      const placaBruta = elementos.inputs.placas.achei.value.trim();
-      const placa = formatarPlaca(placaBruta);
-      const nome = elementos.inputs.acheiNome.value.trim();
-      let telefone = elementos.inputs.acheiTelefone.value.trim();
-      const uf = elementos.inputs.uf.achei.value;
-      const municipio = elementos.inputs.municipio.achei.value;
-
-      // Validações
-      if (!validarPlaca(placaBruta, tipo)) {
-        showError('Placa inválida! Verifique o formato.');
-        return;
-      }
-
-      if (!nome || nome.length < 3) {
-        showError('Digite seu nome completo (mínimo 3 caracteres).');
-        return;
-      }
-
-      telefone = telefone.replace(/\D/g, ''); // Remove formatação para salvar
-
-      if (!validarTelefone(telefone)) {
-        showError('Telefone inválido. Use (00) 00000-0000 ou (00) 0000-0000');
-        return;
-      }
-
-      if (tipo === 'comum' && (!uf || !municipio)) {
-        showError('UF e Município são obrigatórios para placa comum.');
-        return;
-      }
-
-      // 1. Salva no Firestore (formato compatível com app)
-      const docData = {
-        plate: tipo === 'comum' ? placaBruta : placa, // Mantém o hífen para comum
-        founderName: nome,
-        founderPhone: telefone, // Apenas números
-        location: {
-          city: tipo === 'comum' ? municipio : "",
-          uf: tipo === 'comum' ? uf : ""
-        },
-        foundDate: serverTimestamp()
-      };
-
-      // Adiciona isMercosul apenas se for verdadeiro (como no site)
-      if (tipo === 'mercosul') {
-        docData.isMercosul = true;
-      }
-
-      const docRef = await addDoc(collection(firestore, "foundPlates"), docData);
-
-      // 2. Salva no Realtime Database (formato compatível com app)
-      const path = `placas/${tipo === 'comum' ? placaBruta : placa}:${uf || 'null'}:${municipio || 'null'}${tipo === 'mercosul' ? ':true' : ''}`;
-      
-      await set(ref(database, path), {
-        nome: nome,
-        telefone: telefone,
-        tipo: tipo,
-        uf: tipo === 'comum' ? uf : null,
-        municipio: tipo === 'comum' ? municipio : null,
-        mercosul: tipo === 'mercosul',
-        timestamp: Date.now(),
-        firestoreId: docRef.id
-      });
-
-      // Feedback
-      elementos.results.achei.textContent = "Obrigado! Agora, assim que o dono procurar pela placa, ele poderá entrar em contato pelo número informado!";
-      elementos.results.achei.parentElement.style.display = 'block';
-      
-      // Reset ou navegação
-      if (outra) {
-        elementos.inputs.placas.achei.value = '';
-        elementos.inputs.placas.achei.focus();
-      } else {
-        switchScreen(elementos.screens.achei, elementos.screens.home);
-      }
-    } catch (error) {
-      console.error('Erro ao salvar placa:', error);
-      showError('Erro ao cadastrar placa. Tente novamente.');
-    } finally {
-      toggleLoading(false, outra ? elementos.buttons.acheiSalvarOutra : elementos.buttons.acheiSalvar);
-    }
-  }
-
-  // Função auxiliar para formatar telefone para exibição
-  function formatarTelefoneExibicao(telefone) {
-    const nums = telefone.toString().replace(/\D/g, '');
-    if (nums.length === 10) {
-      return `(${nums.substring(0, 2)}) ${nums.substring(2, 6)}-${nums.substring(6, 10)}`;
-    } else if (nums.length === 11) {
-      return `(${nums.substring(0, 2)}) ${nums.substring(2, 7)}-${nums.substring(7, 11)}`;
-    }
-    return telefone; // Retorna original se não puder formatar
-  }
-
-  // ... (restante das funções permanece igual)
-// Referência aos elementos de tela
-const elementos = {
-  screens: {
-    home: document.getElementById('home-screen'),
-    perdi: document.getElementById('perdi-screen'),
-    achei: document.getElementById('achei-screen')
-  }
+const firebaseConfig = {
+  apiKey: "AIzaSyBjetihGmlo_z01jx-GW9Ith0oDCS0jwYc",
+  authDomain: "sosplaca-73cf7.firebaseapp.com",
+  databaseURL: "https://sosplaca-73cf7-default-rtdb.firebaseio.com",
+  projectId: "sosplaca-73cf7",
+  storageBucket: "sosplaca-73cf7.appspot.com",
+  messagingSenderId: "658059385722",
+  appId: "1:658059385722:web:5ed0e8fd7f7a2931d894c3"
 };
 
-// Função para trocar de tela
-function switchScreen(de, para) {
-  de.classList.remove('active');
-  para.classList.add('active');
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
+const firestore = getFirestore(app);
+
+// Funções utilitárias
+const tipoBtns = document.querySelectorAll(".tipo-btn");
+tipoBtns.forEach(btn => {
+  btn.addEventListener("click", () => {
+    const grupo = btn.parentElement;
+    grupo.querySelectorAll(".tipo-btn").forEach(b => b.classList.remove("ativo"));
+    btn.classList.add("ativo");
+  });
+});
+
+function aplicarMascaraPlaca(input, btnComum, btnMercosul) {
+  input.addEventListener("input", () => {
+    let valor = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (btnComum.classList.contains("ativo")) {
+      valor = valor.slice(0, 7);
+      if (valor.length > 3) valor = valor.slice(0, 3) + '-' + valor.slice(3);
+    } else {
+      valor = valor.slice(0, 7);
+    }
+    input.value = valor;
+  });
 }
 
-// Botões da tela inicial
-document.getElementById('perdi-btn').addEventListener('click', () => {
-  switchScreen(elementos.screens.home, elementos.screens.perdi);
+aplicarMascaraPlaca(perdiPlaca = document.getElementById("perdi-placa"), 
+  document.getElementById("btn-perdi-comum"), 
+  document.getElementById("btn-perdi-mercosul"));
+
+aplicarMascaraPlaca(acheiPlaca = document.getElementById("achei-placa"), 
+  document.getElementById("btn-achei-comum"), 
+  document.getElementById("btn-achei-mercosul"));
+
+document.getElementById("achei-telefone").addEventListener("input", function () {
+  let v = this.value.replace(/\D/g, "").slice(0, 11);
+  if (v.length <= 10) {
+    this.value = v.replace(/(\\d{2})(\\d{4})(\\d{0,4})/, "($1)$2-$3");
+  } else {
+    this.value = v.replace(/(\\d{2})(\\d{5})(\\d{0,4})/, "($1)$2-$3");
+  }
 });
 
-document.getElementById('achei-btn').addEventListener('click', () => {
-  switchScreen(elementos.screens.home, elementos.screens.achei);
-});
+// Troca de telas
+const screens = {
+  home: document.getElementById('home-screen'),
+  perdi: document.getElementById('perdi-screen'),
+  achei: document.getElementById('achei-screen')
+};
 
-// Botões de "Voltar"
-document.getElementById('perdi-voltar').addEventListener('click', () => {
-  switchScreen(elementos.screens.perdi, elementos.screens.home);
-});
+function switchScreen(from, to) {
+  from.classList.remove("active");
+  to.classList.add("active");
+}
 
-document.getElementById('achei-voltar').addEventListener('click', () => {
-  switchScreen(elementos.screens.achei, elementos.screens.home);
-});
+document.getElementById("perdi-btn").onclick = () => switchScreen(screens.home, screens.perdi);
+document.getElementById("achei-btn").onclick = () => switchScreen(screens.home, screens.achei);
+document.getElementById("perdi-voltar").onclick = () => switchScreen(screens.perdi, screens.home);
+document.getElementById("achei-voltar").onclick = () => switchScreen(screens.achei, screens.home);
 </script>
 </body>
 </html>
