@@ -22,6 +22,7 @@
     input, select { width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 0.3125rem; font-size: 1rem; }
     .result { margin-top: 1.25rem; padding: 0.9375rem; border-radius: 0.3125rem; background-color: #f8f9fa; display: none; }
     .result.success { display: block; border-left: 4px solid #27ae60; }
+    .result.error { display: block; border-left: 4px solid #e74c3c; }
     @media (max-width:600px) {
       .container { padding: 0.625rem; }
       .btn { padding: 0.625rem 0.9375rem; }
@@ -35,12 +36,49 @@
     <h1>Ajude a reunir placas perdidas com seus donos</h1>
   </div>
 </header>
-<div class="container">
-  <div id="error-message" class="result error" style="display:none;"></div>
-  <div id="success-message" class="result success" style="display:none;"></div>
 
-  <!-- Tela Achei -->
-  <div id="achei-screen" class="screen active">
+<div class="container">
+  <!-- Menu Inicial -->
+  <div id="menu-screen" class="screen active">
+    <h2>O que você deseja fazer?</h2>
+    <button id="btn-perdi" class="btn btn-success">Perdi uma placa</button>
+    <button id="btn-achei" class="btn btn-success">Achei uma placa</button>
+  </div>
+
+  <!-- Tela Perdi uma Placa -->
+  <div id="perdi-screen" class="screen">
+    <h2>Verificar placa perdida</h2>
+    <div class="form-group">
+      <label>Tipo de placa:</label>
+      <div style="display: flex; gap: 0.625rem;">
+        <button id="btn-perdi-comum" class="btn ativo">Comum</button>
+        <button id="btn-perdi-mercosul" class="btn">Mercosul</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="perdi-placa">Número da placa:</label>
+      <input type="text" id="perdi-placa" placeholder="AAA-0000 ou AAA0A00" required>
+    </div>
+    <div class="form-group" id="perdi-localizacao">
+      <label for="perdi-uf">UF:</label>
+      <select id="perdi-uf">
+        <option value="" disabled selected>Selecione o estado</option>
+        <option value="SP">SP</option>
+        <option value="RJ">RJ</option>
+        <option value="MG">MG</option>
+        <option value="ES">ES</option>
+      </select>
+      <label for="perdi-municipio">Município:</label>
+      <input type="text" id="perdi-municipio" placeholder="Digite o município">
+    </div>
+    <div>
+      <button id="perdi-verificar" class="btn btn-success">Verificar Placa</button>
+      <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
+    </div>
+    <div id="perdi-result" class="result"></div>
+  </div>
+  <!-- Tela Achei uma Placa -->
+  <div id="achei-screen" class="screen">
     <h2>Cadastrar placa encontrada</h2>
     <div class="form-group">
       <label>Tipo de placa:</label>
@@ -55,13 +93,12 @@
     </div>
     <div class="form-group" id="achei-localizacao">
       <label for="achei-uf">UF:</label>
-      <select id="achei-uf" required>
+      <select id="achei-uf">
         <option value="" disabled selected>Selecione o estado</option>
         <option value="SP">SP</option>
         <option value="RJ">RJ</option>
         <option value="MG">MG</option>
         <option value="ES">ES</option>
-        <!-- Pode adicionar todos os estados do Brasil -->
       </select>
       <label for="achei-municipio">Município:</label>
       <input type="text" id="achei-municipio" placeholder="Digite o município">
@@ -76,6 +113,7 @@
     </div>
     <div>
       <button id="achei-salvar" class="btn btn-success">Salvar Placa</button>
+      <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
     </div>
     <div id="achei-result" class="result"></div>
   </div>
@@ -83,8 +121,8 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-  import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+  import { getFirestore, collection, addDoc, serverTimestamp, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+  import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyBjetihGmlo_z01jx-GW9Ith0oDCS0jwYc",
@@ -99,19 +137,45 @@
   const app = initializeApp(firebaseConfig);
   const firestore = getFirestore(app);
   const realtimeDb = getDatabase(app);
-  // Controle do tipo de placa
+
+  // Função para alternar telas
+  function mostrarTela(id) {
+    document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  function voltarMenu() {
+    mostrarTela('menu-screen');
+  }
+
+  // Botões do menu inicial
+  document.getElementById('btn-achei').addEventListener('click', () => mostrarTela('achei-screen'));
+  document.getElementById('btn-perdi').addEventListener('click', () => mostrarTela('perdi-screen'));
+  // Controle do tipo de placa — Achei
   document.querySelectorAll('#btn-achei-comum, #btn-achei-mercosul').forEach(btn => {
     btn.addEventListener('click', function() {
       document.querySelectorAll('#achei-screen .btn').forEach(b => b.classList.remove('ativo'));
       this.classList.add('ativo');
-      
+
       const isComum = this.id === 'btn-achei-comum';
       document.getElementById('achei-placa').placeholder = isComum ? 'AAA-0000' : 'AAA0A00';
       document.getElementById('achei-localizacao').style.display = isComum ? 'block' : 'none';
     });
   });
 
-  // Máscara para telefone
+  // Controle do tipo de placa — Perdi
+  document.querySelectorAll('#btn-perdi-comum, #btn-perdi-mercosul').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('#perdi-screen .btn').forEach(b => b.classList.remove('ativo'));
+      this.classList.add('ativo');
+
+      const isComum = this.id === 'btn-perdi-comum';
+      document.getElementById('perdi-placa').placeholder = isComum ? 'AAA-0000' : 'AAA0A00';
+      document.getElementById('perdi-localizacao').style.display = isComum ? 'block' : 'none';
+    });
+  });
+
+  // Máscara telefone
   document.getElementById('achei-telefone').addEventListener('input', function() {
     let value = this.value.replace(/\D/g, '').slice(0, 11);
     if (value.length > 2) value = `(${value.substring(0, 2)}) ${value.substring(2)}`;
@@ -119,21 +183,30 @@
     this.value = value;
   });
 
-  // Máscara para placa
-  document.getElementById('achei-placa').addEventListener('input', function() {
-    let value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-    const isComum = document.getElementById('btn-achei-comum').classList.contains('ativo');
-    
+  // Máscara placas
+  function aplicarMascaraPlaca(inputId, isComum) {
+    const input = document.getElementById(inputId);
+    let value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
     if (isComum) {
       value = value.slice(0, 7);
       if (value.length > 3) value = `${value.slice(0, 3)}-${value.slice(3)}`;
     } else {
       value = value.slice(0, 7);
     }
-    this.value = value;
+    input.value = value;
+  }
+
+  document.getElementById('achei-placa').addEventListener('input', function() {
+    const isComum = document.getElementById('btn-achei-comum').classList.contains('ativo');
+    aplicarMascaraPlaca('achei-placa', isComum);
   });
 
-  // Função para salvar os dados
+  document.getElementById('perdi-placa').addEventListener('input', function() {
+    const isComum = document.getElementById('btn-perdi-comum').classList.contains('ativo');
+    aplicarMascaraPlaca('perdi-placa', isComum);
+  });
+
+  // ✅ Função salvar placa encontrada
   document.getElementById('achei-salvar').addEventListener('click', async () => {
     const isComum = document.getElementById('btn-achei-comum').classList.contains('ativo');
     const placa = document.getElementById('achei-placa').value.toUpperCase().trim();
@@ -145,41 +218,34 @@
     const result = document.getElementById('achei-result');
     result.style.display = 'none';
 
-    // Validação
     if (!placa || !nome || !telefone || (isComum && (!uf || !cidade))) {
       result.textContent = 'Preencha todos os campos obrigatórios.';
       result.style.display = 'block';
       return;
     }
 
-    // Dados para Firestore
     const firestoreData = {
       plate: placa,
       founderName: nome,
       founderPhone: telefone,
       foundDate: serverTimestamp(),
       location: {
-        uf: isComum ? uf : '',
-        city: isComum ? cidade : ''
+        uf: isComum ? uf : 'null',
+        city: isComum ? cidade : 'null'
       }
     };
 
-    // Chave para o Realtime Database
     const keyRealtime = isComum
       ? `${placa}:${uf}:${cidade}`
       : `${placa}:null:null`;
 
     try {
-      // Salvar no Firestore
       await addDoc(collection(firestore, 'foundPlates'), firestoreData);
-
-      // Salvar no Realtime Database
       await set(ref(realtimeDb, keyRealtime), true);
 
       result.textContent = 'Placa cadastrada com sucesso!';
       result.style.display = 'block';
 
-      // Limpa os campos
       document.getElementById('achei-placa').value = '';
       document.getElementById('achei-nome').value = '';
       document.getElementById('achei-telefone').value = '';
@@ -193,9 +259,65 @@
     }
   });
 
+  // ✅ Função verificar placa perdida
+  document.getElementById('perdi-verificar').addEventListener('click', async () => {
+    const isComum = document.getElementById('btn-perdi-comum').classList.contains('ativo');
+    const placa = document.getElementById('perdi-placa').value.toUpperCase().trim();
+    const uf = document.getElementById('perdi-uf').value;
+    const cidade = document.getElementById('perdi-municipio').value.trim();
+
+    const result = document.getElementById('perdi-result');
+    result.style.display = 'none';
+
+    if (!placa || (isComum && (!uf || !cidade))) {
+      result.textContent = 'Preencha todos os campos obrigatórios.';
+      result.style.display = 'block';
+      return;
+    }
+
+    const keyRealtime = isComum
+      ? `${placa}:${uf}:${cidade}`
+      : `${placa}:null:null`;
+
+    try {
+      const snapshot = await get(child(ref(realtimeDb), keyRealtime));
+
+      if (snapshot.exists()) {
+        // Buscar no Firestore quem cadastrou
+        const q = query(collection(firestore, 'foundPlates'), where('plate', '==', placa));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+          const data = querySnapshot.docs[0].data();
+          result.innerHTML = `
+            ✅ <strong>Placa encontrada!</strong><br>
+            <strong>Responsável:</strong> ${data.founderName}<br>
+            <strong>Telefone:</strong> ${data.founderPhone}
+          `;
+        } else {
+          result.innerHTML = '✅ Placa encontrada, mas dados do responsável não localizados.';
+        }
+
+      } else {
+        result.innerHTML = `
+          ❌ <strong>Placa não localizada.</strong><br>
+          Tente novamente mais tarde ou cadastre-se em nosso App para receber notificação assim que alguém a encontrar.
+        `;
+      }
+
+      result.style.display = 'block';
+
+    } catch (error) {
+      console.error('Erro na verificação:', error);
+      result.textContent = 'Erro na verificação. Tente novamente.';
+      result.style.display = 'block';
+    }
+  });
+
   // Inicialização
   document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-achei-comum').click();
+    document.getElementById('btn-perdi-comum').click();
   });
 </script>
 </body>
