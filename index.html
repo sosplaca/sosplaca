@@ -364,6 +364,38 @@
   }
 
   // ... (restante das funções permanece igual)
+// Referência aos elementos de tela
+const elementos = {
+  screens: {
+    home: document.getElementById('home-screen'),
+    perdi: document.getElementById('perdi-screen'),
+    achei: document.getElementById('achei-screen')
+  }
+};
+
+// Função para trocar de tela
+function switchScreen(de, para) {
+  de.classList.remove('active');
+  para.classList.add('active');
+}
+
+// Botões da tela inicial
+document.getElementById('perdi-btn').addEventListener('click', () => {
+  switchScreen(elementos.screens.home, elementos.screens.perdi);
+});
+
+document.getElementById('achei-btn').addEventListener('click', () => {
+  switchScreen(elementos.screens.home, elementos.screens.achei);
+});
+
+// Botões de "Voltar"
+document.getElementById('perdi-voltar').addEventListener('click', () => {
+  switchScreen(elementos.screens.perdi, elementos.screens.home);
+});
+
+document.getElementById('achei-voltar').addEventListener('click', () => {
+  switchScreen(elementos.screens.achei, elementos.screens.home);
+});
 </script>
 </body>
 </html>
