@@ -167,7 +167,7 @@
     // Chave para o Realtime Database
     const keyRealtime = isComum
       ? `${placa}:${uf}:${cidade}`
-      : `${placa}::`;
+      : `${placa}:null:null`;
 
     try {
       // Salvar no Firestore
