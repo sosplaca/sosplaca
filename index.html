@@ -40,15 +40,8 @@
   <div id="error-message" class="result error" style="display:none;"></div>
   <div id="success-message" class="result success" style="display:none;"></div>
 
-  <!-- Tela inicial -->
-  <div id="home-screen" class="screen active">
-    <h2>O que você deseja fazer?</h2>
-    <button id="perdi-btn" class="btn">Perdi uma placa</button>
-    <button id="achei-btn" class="btn btn-success">Achei uma placa</button>
-  </div>
-
   <!-- Tela Achei -->
-  <div id="achei-screen" class="screen">
+  <div id="achei-screen" class="screen active">
     <h2>Cadastrar placa encontrada</h2>
     <div class="form-group">
       <label>Tipo de placa:</label>
@@ -65,10 +58,14 @@
       <label for="achei-uf">UF:</label>
       <select id="achei-uf" required>
         <option value="" disabled selected>Selecione o estado</option>
+        <option value="SP">SP</option>
+        <option value="RJ">RJ</option>
       </select>
       <label for="achei-municipio">Município:</label>
       <select id="achei-municipio" required>
         <option value="" disabled selected>Selecione o município</option>
+        <option value="Ubatuba">Ubatuba</option>
+        <option value="Caraguatatuba">Caraguatatuba</option>
       </select>
     </div>
     <div class="form-group">
@@ -80,7 +77,6 @@
       <input type="tel" id="achei-telefone" placeholder="(00) 00000-0000" required>
     </div>
     <div>
-      <button id="achei-voltar" class="btn btn-secondary">Voltar</button>
       <button id="achei-salvar" class="btn btn-success">Salvar Placa</button>
     </div>
     <div id="achei-result" class="result"></div>
@@ -89,7 +85,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-  import { getFirestore, collection, addDoc, serverTimestamp, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
   import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
 
   const firebaseConfig = {
@@ -106,71 +102,7 @@
   const firestore = getFirestore(app);
   const database = getDatabase(app);
 
-  // Dados de estados e municípios
-  const estadosMunicipios = {
-    'SP': ['Ubatuba', 'Caraguatatuba'],
-    'RJ': ['Paraty', 'Angra dos Reis']
-  };
-
-  // [Continuação do script da Parte 1]
-
-  // Preencher selects de UF e municípios
-  function preencherUFs() {
-    const ufSelects = document.querySelectorAll('select[id$="-uf"]');
-    ufSelects.forEach(select => {
-      while (select.options.length > 1) select.remove(1);
-      Object.keys(estadosMunicipios).forEach(uf => {
-        const option = document.createElement('option');
-        option.value = uf;
-        option.textContent = uf;
-        select.appendChild(option);
-      });
-      select.addEventListener('change', function() {
-        const municipioSelect = this.closest('.form-group').querySelector('select[id$="-municipio"]');
-        atualizarMunicipios(this.value, municipioSelect);
-      });
-    });
-  }
-
-  function atualizarMunicipios(uf, municipioSelect) {
-    while (municipioSelect.options.length > 1) municipioSelect.remove(1);
-    if (uf && estadosMunicipios[uf]) {
-      estadosMunicipios[uf].forEach(municipio => {
-        const option = document.createElement('option');
-        option.value = municipio;
-        option.textContent = municipio;
-        municipioSelect.appendChild(option);
-      });
-    }
-  }
-
-  // Navegação entre telas
-  const screens = {
-    home: document.getElementById('home-screen'),
-    achei: document.getElementById('achei-screen')
-  };
-
-  document.getElementById('achei-btn').addEventListener('click', () => {
-    screens.home.classList.remove('active');
-    screens.achei.classList.add('active');
-  });
-
-  document.getElementById('achei-voltar').addEventListener('click', () => {
-    screens.achei.classList.remove('active');
-    screens.home.classList.add('active');
-  });
-
-  // Máscaras de entrada
-  document.getElementById('achei-telefone').addEventListener('input', function(e) {
-    let value = this.value.replace(/\D/g, '').slice(0, 11);
-    if (value.length > 2) value = `(${value.substring(0, 2)}) ${value.substring(2)}`;
-    if (value.length > 10) value = `${value.substring(0, 10)}-${value.substring(10)}`;
-    this.value = value;
-  });
-
-  // [Continuação do script da Parte 2]
-
-  // Tipo de placa (Comum/Mercosul)
+  // Controle do tipo de placa
   document.querySelectorAll('#btn-achei-comum, #btn-achei-mercosul').forEach(btn => {
     btn.addEventListener('click', function() {
       document.querySelectorAll('#achei-screen .btn').forEach(b => b.classList.remove('ativo'));
@@ -180,6 +112,14 @@
       document.getElementById('achei-placa').placeholder = isComum ? 'AAA-0000' : 'AAA0A00';
       document.getElementById('achei-localizacao').style.display = isComum ? 'block' : 'none';
     });
+  });
+
+  // Máscara para telefone
+  document.getElementById('achei-telefone').addEventListener('input', function(e) {
+    let value = this.value.replace(/\D/g, '').slice(0, 11);
+    if (value.length > 2) value = `(${value.substring(0, 2)}) ${value.substring(2)}`;
+    if (value.length > 10) value = `${value.substring(0, 10)}-${value.substring(10)}`;
+    this.value = value;
   });
 
   // Máscara para placa
@@ -196,56 +136,55 @@
     this.value = value;
   });
 
-  // Cadastrar placa encontrada
+  // Função para salvar no formato correto
   document.getElementById('achei-salvar').addEventListener('click', async () => {
     const isComum = document.getElementById('btn-achei-comum').classList.contains('ativo');
-    const placa = document.getElementById('achei-placa').value.toUpperCase().replace(/-/g, '');
+    let placa = document.getElementById('achei-placa').value.toUpperCase();
     const nome = document.getElementById('achei-nome').value.trim();
     const telefone = document.getElementById('achei-telefone').value.replace(/\D/g, '');
-
+    
+    // Validação básica
     if (!placa || !nome || !telefone || (isComum && (!document.getElementById('achei-uf').value || !document.getElementById('achei-municipio').value))) {
       document.getElementById('achei-result').textContent = 'Preencha todos os campos corretamente.';
       document.getElementById('achei-result').style.display = 'block';
       return;
     }
 
+    // Formata os dados conforme solicitado
     const plateData = {
-      plate: placa,
+      plate: isComum ? placa : placa.replace(/-/g, ''), // Mantém hífen apenas no Firestore
       founderName: nome,
       founderPhone: telefone,
-      timestamp: serverTimestamp(),
+      foundDate: serverTimestamp(),
       ...(isComum && {
         location: {
-          uf: document.getElementById('achei-uf').value,
-          city: document.getElementById('achei-municipio').value
+          city: document.getElementById('achei-municipio').value,
+          uf: document.getElementById('achei-uf').value
         }
       })
     };
 
     try {
-      // Verifica se já existe cadastro igual
-      const querySnapshot = await getDocs(
-        query(
-          collection(firestore, 'foundPlates'),
-          where('plate', '==', placa),
-          where('founderPhone', '==', telefone)
-        )
-      );
+      // Salva no Firestore (com hífen se for comum)
+      await addDoc(collection(firestore, 'foundPlates'), {
+        ...plateData,
+        plate: placa // Mantém o hífen visual no Firestore
+      });
 
-      if (querySnapshot.empty) {
-        await addDoc(collection(firestore, 'foundPlates'), plateData);
-        await set(ref(database, `foundPlates/${placa}`), plateData);
-        
-        document.getElementById('achei-result').textContent = 'Placa cadastrada com sucesso!';
-        document.getElementById('achei-result').style.display = 'block';
-        
-        // Limpa o formulário
-        document.getElementById('achei-placa').value = '';
-        document.getElementById('achei-nome').value = '';
-      } else {
-        document.getElementById('achei-result').textContent = 'Esta placa já foi cadastrada por este telefone.';
-        document.getElementById('achei-result').style.display = 'block';
-      }
+      // Salva no Realtime Database (na raíz, sem hífen)
+      await set(ref(database, `${placa.replace(/-/g, '')}`), {
+        ...plateData,
+        plate: placa.replace(/-/g, '') // Remove hífen no Realtime
+      });
+
+      document.getElementById('achei-result').textContent = 'Placa cadastrada com sucesso!';
+      document.getElementById('achei-result').style.display = 'block';
+      
+      // Limpa o formulário
+      document.getElementById('achei-placa').value = '';
+      document.getElementById('achei-nome').value = '';
+      document.getElementById('achei-telefone').value = '';
+      
     } catch (error) {
       console.error('Erro ao cadastrar:', error);
       document.getElementById('achei-result').textContent = 'Erro ao cadastrar placa. Tente novamente.';
@@ -255,7 +194,6 @@
 
   // Inicialização
   document.addEventListener('DOMContentLoaded', () => {
-    preencherUFs();
     document.getElementById('btn-achei-comum').click();
   });
 </script>
