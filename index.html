@@ -3,19 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Ajude a reunir placas de veículos perdidas com seus donos">
+  <meta name="theme-color" content="#2c3e50">
   <title>SOS PLACA</title>
-  <link rel="icon" type="image/png" href="logo.png">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="logo.png" sizes="32x32">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"></noscript>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
     body { background-color: #f5f5f5; color: #333; line-height: 1.6; }
     .container { max-width: 900px; margin: 0 auto; padding: 20px; }
-    header { background-color: #2c3e50; color: white; padding: 20px; text-align: center; border-radius: 0 0 10px 10px; }
+    header { background-color: #2c3e50; color: #fff; padding: 1.25rem; text-align: center; border-radius: 0 0 0.625rem 0.625rem; }
     .logo { font-size: 2.5rem; font-weight: bold; }
     h1 { font-size: 1.5rem; }
-    .screen { background-color: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; display: none; }
+    .screen { background-color: #fff; padding: 1.5rem; border-radius: 0.625rem; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 1.25rem; display: none; }
     .screen.active { display: block; }
-    .btn { display: inline-block; background-color: #3498db; color: white; padding: 12px 24px; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem; font-weight: 500; margin: 10px 5px; }
+    .btn { display: inline-block; background-color: #3498db; color: #fff; padding: 0.75rem 1.5rem; border: none; border-radius: 0.3125rem; cursor: pointer; font-size: 1rem; font-weight: 500; margin: 0.625rem 0.3125rem; transition: background-color 0.3s; }
     .btn:hover { background-color: #2980b9; }
     .btn-success { background-color: #27ae60; }
     .btn-success:hover { background-color: #219653; }
@@ -23,89 +27,88 @@
     .btn-secondary:hover { background-color: #7f8c8d; }
     .btn-danger { background-color: #e74c3c; }
     .btn-danger:hover { background-color: #c0392b; }
-
-    .tipo-btns {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 15px;
-    }
-
-    .tipo-btn {
-      flex: 1;
-      padding: 12px;
-      text-align: center;
-      border: 2px solid #ccc;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: 500;
-      background-color: #fff;
-    }
-
-    .tipo-btn.ativo {
-      background-color: #3498db;
-      color: white;
-      border-color: #2980b9;
-    }
-
-    .form-group { margin-bottom: 20px; }
-    label { display: block; margin-bottom: 8px; font-weight: 500; }
-    input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem; }
-    .result { margin-top: 20px; padding: 15px; border-radius: 5px; background-color: #f8f9fa; display: none; }
+    .tipo-btns { display: flex; gap: 0.625rem; margin-bottom: 0.9375rem; }
+    .tipo-btn { flex: 1; padding: 0.75rem; text-align: center; border: 2px solid #ccc; border-radius: 0.3125rem; cursor: pointer; font-weight: 500; background-color: #fff; transition: all 0.3s; }
+    .tipo-btn.ativo { background-color: #3498db; color: #fff; border-color: #2980b9; }
+    .form-group { margin-bottom: 1.25rem; }
+    label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+    input, select { width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 0.3125rem; font-size: 1rem; transition: border-color 0.3s; }
+    input:invalid { border-color: #e74c3c; }
+    .result { margin-top: 1.25rem; padding: 0.9375rem; border-radius: 0.3125rem; background-color: #f8f9fa; display: none; }
     .result.success { display: block; border-left: 4px solid #27ae60; }
     .result.error { display: block; border-left: 4px solid #e74c3c; }
-    footer { text-align: center; padding: 20px; background-color: #ecf0f1; margin-top: 30px; }
+    footer { text-align: center; padding: 1.25rem; background-color: #ecf0f1; margin-top: 1.875rem; }
+    .spinner { display: inline-block; width: 1rem; height: 1rem; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
     @media (max-width:600px) {
-      .container { padding: 10px; }
-      .screen { padding: 15px; }
-      .btn { padding: 10px 15px; font-size: 0.9rem; }
+      .container { padding: 0.625rem; }
+      .screen { padding: 0.9375rem; }
+      .btn { padding: 0.625rem 0.9375rem; font-size: 0.9rem; }
       .tipo-btns { flex-direction: column; }
     }
   </style>
 </head>
 <body>
-<header>
+<header role="banner">
   <div class="container">
-    <div class="logo">SOS PLACA</div>
+    <div class="logo" aria-label="SOS Placa">SOS PLACA</div>
     <h1>Ajude a reunir placas perdidas com seus donos</h1>
-    <a href="https://play.google.com/store/apps/details?id=fabricioramosdasilva.sos_placa" target="_blank" class="btn btn-success">📲 Baixe o App</a>
+    <a href="https://play.google.com/store/apps/details?id=fabricioramosdasilva.sos_placa" 
+       target="_blank" 
+       rel="noopener noreferrer"
+       class="btn btn-success"
+       aria-label="Baixe nosso aplicativo na Play Store">📲 Baixe o App</a>
   </div>
 </header>
 <div class="container">
+  <!-- Feedback messages -->
+  <div id="error-message" class="result error" style="display:none;"></div>
+  <div id="success-message" class="result success" style="display:none;"></div>
 
   <!-- Tela inicial -->
-  <div id="home-screen" class="screen active">
-    <h2>O que você deseja fazer?</h2>
-    <div>
-      <button id="perdi-btn" class="btn">Perdi uma placa</button>
-      <button id="achei-btn" class="btn btn-success">Achei uma placa</button>
+  <div id="home-screen" class="screen active" role="region" aria-labelledby="home-title">
+    <h2 id="home-title">O que você deseja fazer?</h2>
+    <div class="form-actions">
+      <button id="perdi-btn" class="btn" aria-label="Reportar placa perdida">Perdi uma placa</button>
+      <button id="achei-btn" class="btn btn-success" aria-label="Cadastrar placa encontrada">Achei uma placa</button>
     </div>
   </div>
 
   <!-- Tela Perdi -->
-  <div id="perdi-screen" class="screen">
-    <h2>Buscar placa perdida</h2>
+  <div id="perdi-screen" class="screen" role="region" aria-labelledby="perdi-title">
+    <h2 id="perdi-title">Buscar placa perdida</h2>
     <div class="form-group">
-      <label>Tipo de placa:</label>
-      <div class="tipo-btns">
-        <div id="btn-perdi-comum" class="tipo-btn ativo">Comum</div>
-        <div id="btn-perdi-mercosul" class="tipo-btn">Mercosul</div>
+      <label id="perdi-tipo-label">Tipo de placa:</label>
+      <div class="tipo-btns" role="group" aria-labelledby="perdi-tipo-label">
+        <button type="button" id="btn-perdi-comum" class="tipo-btn ativo" aria-pressed="true">Comum</button>
+        <button type="button" id="btn-perdi-mercosul" class="tipo-btn" aria-pressed="false">Mercosul</button>
       </div>
     </div>
     <div class="form-group">
       <label for="perdi-placa">Número da placa:</label>
-      <input type="text" id="perdi-placa" class="placa-input" placeholder="Digite a placa">
+      <input type="text" id="perdi-placa" class="placa-input" 
+             placeholder="AAA-0000 ou AAA0A00"
+             aria-describedby="perdi-placa-help"
+             required
+             pattern="[A-Z]{3}-?\d[0-9A-Z]\d{2}">
+      <small id="perdi-placa-help" class="sr-only">Formato: AAA-0000 para comum ou AAA0A00 para Mercosul</small>
     </div>
-    <div class="form-group" id="perdi-localizacao" style="display:block;">
+    <div class="form-group" id="perdi-localizacao">
       <label for="perdi-uf">UF:</label>
-      <select id="perdi-uf"></select>
+      <select id="perdi-uf" required aria-required="true">
+        <option value="" disabled selected>Selecione seu estado</option>
+      </select>
       <label for="perdi-municipio">Município:</label>
-      <select id="perdi-municipio"></select>
+      <select id="perdi-municipio" required aria-required="true">
+        <option value="" disabled selected>Selecione seu município</option>
+      </select>
     </div>
-    <div>
+    <div class="form-actions">
       <button id="perdi-voltar" class="btn btn-secondary">Voltar</button>
       <button id="perdi-buscar" class="btn">Buscar Placa</button>
     </div>
-    <div id="perdi-result" class="result">
+    <div id="perdi-result" class="result" aria-live="polite">
       <p id="perdi-result-text"></p>
       <div id="perdi-result-contatos"></div>
       <button id="perdi-remover-btn" class="btn btn-danger" style="display:none;">Remover placa</button>
@@ -113,230 +116,406 @@
   </div>
 
   <!-- Tela Achei -->
-  <div id="achei-screen" class="screen">
-    <h2>Cadastrar placa encontrada</h2>
+  <div id="achei-screen" class="screen" role="region" aria-labelledby="achei-title">
+    <h2 id="achei-title">Cadastrar placa encontrada</h2>
     <div class="form-group">
-      <label>Tipo de placa:</label>
-      <div class="tipo-btns">
-        <div id="btn-achei-comum" class="tipo-btn ativo">Comum</div>
-        <div id="btn-achei-mercosul" class="tipo-btn">Mercosul</div>
+      <label id="achei-tipo-label">Tipo de placa:</label>
+      <div class="tipo-btns" role="group" aria-labelledby="achei-tipo-label">
+        <button type="button" id="btn-achei-comum" class="tipo-btn ativo" aria-pressed="true">Comum</button>
+        <button type="button" id="btn-achei-mercosul" class="tipo-btn" aria-pressed="false">Mercosul</button>
       </div>
     </div>
     <div class="form-group">
       <label for="achei-placa">Número da placa:</label>
-      <input type="text" id="achei-placa" class="placa-input" placeholder="Digite a placa">
+      <input type="text" id="achei-placa" class="placa-input" 
+             placeholder="AAA-0000 ou AAA0A00"
+             aria-describedby="achei-placa-help"
+             required
+             pattern="[A-Z]{3}-?\d[0-9A-Z]\d{2}">
+      <small id="achei-placa-help" class="sr-only">Formato: AAA-0000 para comum ou AAA0A00 para Mercosul</small>
     </div>
-    <div class="form-group" id="achei-localizacao" style="display:block;">
+    <div class="form-group" id="achei-localizacao">
       <label for="achei-uf">UF:</label>
-      <select id="achei-uf"></select>
+      <select id="achei-uf" required aria-required="true">
+        <option value="" disabled selected>Selecione o estado</option>
+      </select>
       <label for="achei-municipio">Município:</label>
-      <select id="achei-municipio"></select>
+      <select id="achei-municipio" required aria-required="true">
+        <option value="" disabled selected>Selecione o município</option>
+      </select>
     </div>
     <div class="form-group">
       <label for="achei-nome">Seu nome:</label>
-      <input type="text" id="achei-nome" placeholder="Digite seu nome completo">
+      <input type="text" id="achei-nome" 
+             placeholder="Digite seu nome completo"
+             required
+             minlength="3">
     </div>
     <div class="form-group">
       <label for="achei-telefone">Seu telefone:</label>
-      <input type="tel" id="achei-telefone" placeholder="(00) 00000-0000 ou (00) 0000-0000">
+      <input type="tel" id="achei-telefone" 
+             placeholder="(00) 00000-0000 ou (00) 0000-0000"
+             aria-describedby="telefone-help"
+             required
+             pattern="(\(\d{2}\)\s?)?\d{4,5}[-\s]?\d{4}">
+      <small id="telefone-help" class="sr-only">Formato: (00) 00000-0000 ou (00) 0000-0000</small>
     </div>
-    <div>
+    <div class="form-actions">
       <button id="achei-voltar" class="btn btn-secondary">Voltar</button>
       <button id="achei-salvar" class="btn btn-success">Salvar Placa</button>
-      <button id="achei-salvar-outra" class="btn btn-success">Salvar e Cadastrar Outra Placa</button>
+      <button id="achei-salvar-outra" class="btn btn-success">Salvar e Cadastrar Outra</button>
     </div>
-    <div id="achei-result" class="result">
+    <div id="achei-result" class="result" aria-live="polite">
       <p id="achei-result-text"></p>
     </div>
   </div>
+</div>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-  import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
-  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+  import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
+  // Configuração Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyBjetihGmlo_z01jx-GW9Ith0oDCS0jwYc",
+    authDomain: "sosplaca-73cf7.firebaseapp.com",
+    databaseURL: "https://sosplaca-73cf7-default-rtdb.firebaseio.com",
+    projectId: "sosplaca-73cf7",
+    storageBucket: "sosplaca-73cf7.appspot.com",
+    messagingSenderId: "658059385722",
+    appId: "1:658059385722:web:5ed0e8fd7f7a2931d894c3"
+  };
+
+  // Inicialização do Firebase
+  const app = initializeApp(firebaseConfig);
+  const database = getDatabase(app);
+  const firestore = getFirestore(app);
+
+  // Cache de elementos DOM
+  const elementos = {
+    screens: {
+      home: document.getElementById('home-screen'),
+      perdi: document.getElementById('perdi-screen'),
+      achei: document.getElementById('achei-screen')
+    },
+    inputs: {
+      placas: {
+        perdi: document.getElementById('perdi-placa'),
+        achei: document.getElementById('achei-placa')
+      },
+      uf: {
+        perdi: document.getElementById('perdi-uf'),
+        achei: document.getElementById('achei-uf')
+      },
+      municipio: {
+        perdi: document.getElementById('perdi-municipio'),
+        achei: document.getElementById('achei-municipio')
+      },
+      acheiNome: document.getElementById('achei-nome'),
+      acheiTelefone: document.getElementById('achei-telefone')
+    },
+    buttons: {
+      perdiBuscar: document.getElementById('perdi-buscar'),
+      acheiSalvar: document.getElementById('achei-salvar'),
+      acheiSalvarOutra: document.getElementById('achei-salvar-outra')
+    },
+    results: {
+      perdi: document.getElementById('perdi-result-text'),
+      achei: document.getElementById('achei-result-text'),
+      error: document.getElementById('error-message'),
+      success: document.getElementById('success-message')
+    }
+  };
+
+  // Estados da aplicação
+  const state = {
+    tipoPerdi: 'comum',
+    tipoAchei: 'comum',
+    loading: false,
+    cidadesPorEstado: {
+      'AC': ['Rio Branco', 'Cruzeiro do Sul', 'Sena Madureira'],
+      'AL': ['Maceió', 'Arapiraca', 'Palmeira dos Índios'],
+      // Adicione todos os estados...
+      'SP': ['São Paulo', 'Campinas', 'Santos']
+    }
+  };
+
+  // Inicialização quando o DOM estiver pronto
   document.addEventListener("DOMContentLoaded", () => {
-    const firebaseConfig = {
-      apiKey: "AIzaSyBjetihGmlo_z01jx-GW9Ith0oDCS0jwYc",
-      authDomain: "sosplaca-73cf7.firebaseapp.com",
-      databaseURL: "https://sosplaca-73cf7-default-rtdb.firebaseio.com",
-      projectId: "sosplaca-73cf7",
-      storageBucket: "sosplaca-73cf7.appspot.com",
-      messagingSenderId: "658059385722",
-      appId: "1:658059385722:web:5ed0e8fd7f7a2931d894c3"
-    };
+    initEventListeners();
+    checkConnectionStatus();
+    loadUFs();
+  });
 
-    const app = initializeApp(firebaseConfig);
-    const database = getDatabase(app);
-    const firestore = getFirestore(app);
+  function initEventListeners() {
+    // Navegação entre telas
+    document.getElementById('perdi-btn').onclick = () => switchScreen(elementos.screens.home, elementos.screens.perdi);
+    document.getElementById('achei-btn').onclick = () => switchScreen(elementos.screens.home, elementos.screens.achei);
+    document.getElementById('perdi-voltar').onclick = () => switchScreen(elementos.screens.perdi, elementos.screens.home);
+    document.getElementById('achei-voltar').onclick = () => switchScreen(elementos.screens.achei, elementos.screens.home);
 
-    // Navegação
-    const homeScreen = document.getElementById('home-screen');
-    const perdiScreen = document.getElementById('perdi-screen');
-    const acheiScreen = document.getElementById('achei-screen');
-    const avisoScreen = document.getElementById('aviso-screen');
+    // Alternância de tipo de placa
+    document.getElementById('btn-perdi-comum').onclick = () => setTipoPlaca('perdi', 'comum');
+    document.getElementById('btn-perdi-mercosul').onclick = () => setTipoPlaca('perdi', 'mercosul');
+    document.getElementById('btn-achei-comum').onclick = () => setTipoPlaca('achei', 'comum');
+    document.getElementById('btn-achei-mercosul').onclick = () => setTipoPlaca('achei', 'mercosul');
 
-    const switchScreen = (from, to) => {
-      from.classList.remove('active');
-      to.classList.add('active');
-    };
-
-    document.getElementById('perdi-btn').onclick = () => switchScreen(homeScreen, perdiScreen);
-    document.getElementById('achei-btn').onclick = () => switchScreen(homeScreen, acheiScreen);
-    document.getElementById('perdi-voltar').onclick = () => switchScreen(perdiScreen, homeScreen);
-    document.getElementById('achei-voltar').onclick = () => switchScreen(acheiScreen, homeScreen);
-    document.getElementById('aviso-voltar').onclick = () => switchScreen(avisoScreen, homeScreen);
-
-    // Alternância de tipo
-    let tipoPerdi = 'comum';
-    let tipoAchei = 'comum';
-
-    const alternarTipo = (grupo, tipo) => {
-      document.getElementById(`btn-${grupo}-comum`).classList.remove('ativo');
-      document.getElementById(`btn-${grupo}-mercosul`).classList.remove('ativo');
-      document.getElementById(`btn-${grupo}-${tipo}`).classList.add('ativo');
-
-      if (grupo === 'perdi') {
-        tipoPerdi = tipo;
-        document.getElementById('perdi-localizacao').style.display = tipo === 'comum' ? 'block' : 'none';
-      } else {
-        tipoAchei = tipo;
-        document.getElementById('achei-localizacao').style.display = tipo === 'comum' ? 'block' : 'none';
+    // Máscaras de input
+    elementos.inputs.placas.perdi.addEventListener('input', (e) => aplicarMascaraPlaca(e.target, state.tipoPerdi));
+    elementos.inputs.placas.achei.addEventListener('input', (e) => aplicarMascaraPlaca(e.target, state.tipoAchei));
+    
+    // Máscara de telefone corrigida
+    elementos.inputs.acheiTelefone.addEventListener('input', function(e) {
+      let value = e.target.value.replace(/\D/g, '');
+      
+      if (value.length > 11) {
+        value = value.substring(0, 11);
       }
+      
+      let formattedValue = '';
+      
+      if (value.length > 0) {
+        formattedValue = `(${value.substring(0, 2)}`;
+      }
+      if (value.length > 2) {
+        formattedValue += `) ${value.substring(2, 7)}`;
+      }
+      if (value.length > 7) {
+        formattedValue += `-${value.substring(7, 11)}`;
+      }
+      
+      e.target.value = formattedValue;
+    });
+
+    // Ações principais
+    elementos.buttons.perdiBuscar.onclick = buscarPlaca;
+    elementos.buttons.acheiSalvar.onclick = () => salvarPlaca(false);
+    elementos.buttons.acheiSalvarOutra.onclick = () => salvarPlaca(true);
+  }
+
+  function checkConnectionStatus() {
+    onValue(ref(database, '.info/connected'), (snap) => {
+      if (!snap.val()) showError('Você está offline. Algumas funcionalidades podem não estar disponíveis.');
+    });
+  }
+
+  function loadUFs() {
+    const ufs = Object.keys(state.cidadesPorEstado);
+    
+    ufs.forEach(uf => {
+      elementos.inputs.uf.perdi.appendChild(new Option(uf, uf));
+      elementos.inputs.uf.achei.appendChild(new Option(uf, uf));
+    });
+
+    elementos.inputs.uf.perdi.addEventListener('change', (e) => loadCidades('perdi', e.target.value));
+    elementos.inputs.uf.achei.addEventListener('change', (e) => loadCidades('achei', e.target.value));
+  }
+
+  function loadCidades(tela, uf) {
+    const selectMunicipio = tela === 'perdi' 
+        ? elementos.inputs.municipio.perdi 
+        : elementos.inputs.municipio.achei;
+    
+    selectMunicipio.innerHTML = '';
+    selectMunicipio.appendChild(new Option('Selecione o município', ''));
+    
+    if (uf && state.cidadesPorEstado[uf]) {
+      state.cidadesPorEstado[uf].forEach(cidade => {
+        selectMunicipio.appendChild(new Option(cidade, cidade));
+      });
+    }
+  }
+
+  function switchScreen(hide, show) {
+    hide.classList.remove('active');
+    show.classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  function setTipoPlaca(grupo, tipo) {
+    document.getElementById(`btn-${grupo}-comum`).classList.remove('ativo');
+    document.getElementById(`btn-${grupo}-comum`).setAttribute('aria-pressed', 'false');
+    document.getElementById(`btn-${grupo}-mercosul`).classList.remove('ativo');
+    document.getElementById(`btn-${grupo}-mercosul`).setAttribute('aria-pressed', 'false');
+    
+    const activeBtn = document.getElementById(`btn-${grupo}-${tipo}`);
+    activeBtn.classList.add('ativo');
+    activeBtn.setAttribute('aria-pressed', 'true');
+
+    if (grupo === 'perdi') {
+      state.tipoPerdi = tipo;
+      elementos.inputs.uf.perdi.required = tipo === 'comum';
+      elementos.inputs.municipio.perdi.required = tipo === 'comum';
+      document.getElementById('perdi-localizacao').style.display = tipo === 'comum' ? 'block' : 'none';
+    } else {
+      state.tipoAchei = tipo;
+      elementos.inputs.uf.achei.required = tipo === 'comum';
+      elementos.inputs.municipio.achei.required = tipo === 'comum';
+      document.getElementById('achei-localizacao').style.display = tipo === 'comum' ? 'block' : 'none';
+    }
+  }
+
+  function aplicarMascaraPlaca(input, tipo) {
+    let value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (tipo === 'comum') {
+      value = value.slice(0, 7);
+      if (value.length > 3) {
+        value = value.slice(0, 3) + '-' + value.slice(3);
+      }
+    } else {
+      value = value.slice(0, 7);
+    }
+    input.value = value;
+  }
+
+  function formatarPlaca(placa) {
+    return placa.replace('-', '').toUpperCase();
+  }
+
+  function validarPlaca(placa, tipo) {
+    const PLACA_REGEX = {
+      comum: /^[A-Z]{3}-?\d[0-9A-Z]\d{2}$/,
+      mercosul: /^[A-Z]{3}\d[A-Z0-9]\d{2}$/
     };
+    return PLACA_REGEX[tipo].test(placa);
+  }
 
-    document.getElementById('btn-perdi-comum').onclick = () => alternarTipo('perdi', 'comum');
-    document.getElementById('btn-perdi-mercosul').onclick = () => alternarTipo('perdi', 'mercosul');
-    document.getElementById('btn-achei-comum').onclick = () => alternarTipo('achei', 'comum');
-    document.getElementById('btn-achei-mercosul').onclick = () => alternarTipo('achei', 'mercosul');
+  function validarTelefone(telefone) {
+    const nums = telefone.replace(/\D/g, '');
+    return nums.length === 10 || nums.length === 11;
+  }
 
-    // Máscara de placa
-    function aplicarMascaraPlaca(input, tipo) {
-      let value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-      if (tipo === 'comum') {
-        value = value.slice(0, 7);
-        if (value.length > 3) value = value.slice(0, 3) + '-' + value.slice(3);
-      } else {
-        value = value.slice(0, 7);
-      }
-      input.value = value;
-    }
-
-    // Máscara de telefone
-    function aplicarMascaraTelefone(input) {
-      let value = input.value.replace(/\D/g, '').slice(0, 11);
-      if (value.length <= 10) {
-        value = value.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
-      } else {
-        value = value.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
-      }
-      input.value = value;
-    }
-
-    document.getElementById('achei-placa').addEventListener('input', e => aplicarMascaraPlaca(e.target, tipoAchei));
-    document.getElementById('perdi-placa').addEventListener('input', e => aplicarMascaraPlaca(e.target, tipoPerdi));
-    document.getElementById('achei-telefone').addEventListener('input', e => aplicarMascaraTelefone(e.target));
-
-    function gerarCaminho(tipo, placa, uf, municipio) {
-      return tipo === 'comum' ? `${placa}:${uf}:${municipio}` : `${placa}:null:null:true`;
-    }
-
-    function formatarPlaca(placa) {
-      return placa.replace('-', '').toUpperCase();
-    }
-
-    function validarPlaca(placa, tipo) {
-      if (tipo === 'comum') return /^[A-Z]{3}-\d{4}$/.test(placa);
-      else return /^[A-Z]{3}\d[A-Z]\d{2}$/.test(placa);
-    }
-
-    function validarTelefone(tel) {
-      const digitos = tel.replace(/\D/g, '');
-      return digitos.length >= 10 && digitos.length <= 11;
-    }
-
-    function validarLocalizacao(tipo, uf, municipio) {
-      return tipo === 'comum' ? (uf && municipio) : true;
-    }
-
-    // Buscar placa
-    document.getElementById('perdi-buscar').onclick = async () => {
-      const tipo = tipoPerdi;
-      const placaBruta = document.getElementById('perdi-placa').value.trim();
+  async function buscarPlaca() {
+    try {
+      toggleLoading(true, elementos.buttons.perdiBuscar);
+      
+      const { tipoPerdi: tipo } = state;
+      const placaBruta = elementos.inputs.placas.perdi.value.trim();
       const placa = formatarPlaca(placaBruta);
-      const uf = document.getElementById('perdi-uf').value;
-      const municipio = document.getElementById('perdi-municipio').value;
+      const uf = elementos.inputs.uf.perdi.value;
+      const municipio = elementos.inputs.municipio.perdi.value;
 
       if (!validarPlaca(placaBruta, tipo)) {
-        alert('Placa inválida!');
-        return;
-      }
-      if (!validarLocalizacao(tipo, uf, municipio)) {
-        alert('UF e Município obrigatórios para placa comum.');
+        showError('Placa inválida! Verifique o formato.');
         return;
       }
 
-      const path = gerarCaminho(tipo, placa, uf, municipio);
+      if (tipo === 'comum' && (!uf || !municipio)) {
+        showError('UF e Município são obrigatórios para placa comum.');
+        return;
+      }
+
+      const path = tipo === 'comum' 
+        ? `placas/${placa}:${uf}:${municipio}`
+        : `placas/${placa}:null:null:true`;
+
       const snapshot = await get(ref(database, path));
 
       if (snapshot.exists()) {
         const dados = snapshot.val();
-        alert(`Placa encontrada!\n\nContato: ${dados.nome} - ${dados.telefone}`);
+        elementos.results.perdi.textContent = `Placa encontrada! Contato: ${dados.nome} - ${dados.telefone}`;
+        elementos.results.perdi.parentElement.style.display = 'block';
       } else {
-        if (confirm('Placa não encontrada. Deseja ser avisado quando ela for cadastrada?')) {
-          document.getElementById('aviso-placa').value = placa;
-          switchScreen(perdiScreen, avisoScreen);
-        }
+        elementos.results.perdi.textContent = 'Placa não encontrada em nosso sistema.';
+        elementos.results.perdi.parentElement.style.display = 'block';
       }
-    };
+    } catch (error) {
+      console.error('Erro ao buscar placa:', error);
+      showError('Erro ao buscar placa. Tente novamente.');
+    } finally {
+      toggleLoading(false, elementos.buttons.perdiBuscar);
+    }
+  }
 
-    // Salvar placa
-    async function salvarPlaca(outra = false) {
-      const tipo = tipoAchei;
-      const placaBruta = document.getElementById('achei-placa').value.trim();
+  async function salvarPlaca(outra = false) {
+    try {
+      toggleLoading(true, outra ? elementos.buttons.acheiSalvarOutra : elementos.buttons.acheiSalvar);
+      
+      const { tipoAchei: tipo } = state;
+      const placaBruta = elementos.inputs.placas.achei.value.trim();
       const placa = formatarPlaca(placaBruta);
-      const nome = document.getElementById('achei-nome').value.trim();
-      const telefone = document.getElementById('achei-telefone').value.trim();
-      const uf = document.getElementById('achei-uf').value;
-      const municipio = document.getElementById('achei-municipio').value;
+      const nome = elementos.inputs.acheiNome.value.trim();
+      const telefone = elementos.inputs.acheiTelefone.value.trim();
+      const uf = elementos.inputs.uf.achei.value;
+      const municipio = elementos.inputs.municipio.achei.value;
 
-      if (!validarPlaca(placaBruta, tipo)) return alert('Placa inválida!');
-      if (!nome || nome.length < 3) return alert('Digite seu nome.');
-      if (!validarTelefone(telefone)) return alert('Telefone inválido.');
-      if (!validarLocalizacao(tipo, uf, municipio)) return alert('UF e Município obrigatórios para placa comum.');
+      if (!validarPlaca(placaBruta, tipo)) {
+        showError('Placa inválida! Verifique o formato.');
+        return;
+      }
 
-      const path = gerarCaminho(tipo, placa, uf, municipio);
-      const dadosRealtime = { nome, telefone };
+      if (!nome || nome.length < 3) {
+        showError('Digite seu nome completo (mínimo 3 caracteres).');
+        return;
+      }
 
-      // 1. Salva no Realtime Database
-      await set(ref(database, path), dadosRealtime);
+      if (!validarTelefone(telefone)) {
+        showError('Telefone inválido. Use (00) 00000-0000 ou (00) 0000-0000');
+        return;
+      }
 
-      // 2. Salva no Firestore (coleção foundPlates)
-      const dadosFirestore = {
-        founderName: nome,
-        founderPhone: telefone,
-        foundDate: new Date(),
-        location: {
-          city: tipo === 'comum' ? municipio : '',
-          uf: tipo === 'comum' ? uf : '',
-          plate: placa
-        }
+      if (tipo === 'comum' && (!uf || !municipio)) {
+        showError('UF e Município são obrigatórios para placa comum.');
+        return;
+      }
+
+      const dados = {
+        nome,
+        telefone,
+        tipo,
+        uf: tipo === 'comum' ? uf : null,
+        municipio: tipo === 'comum' ? municipio : null,
+        mercosul: tipo === 'mercosul',
+        timestamp: Date.now()
       };
-      await addDoc(collection(firestore, "foundPlates"), dadosFirestore);
 
-      alert(`✅ Placa ${placaBruta} cadastrada com sucesso!`);
+      const path = tipo === 'comum' 
+        ? `placas/${placa}:${uf}:${municipio}`
+        : `placas/${placa}:null:null:true`;
 
+      await set(ref(database, path), dados);
+
+      elementos.results.achei.textContent = "Obrigado! Agora, assim que o dono procurar pela placa, ele poderá entrar em contato pelo número informado!";
+      elementos.results.achei.parentElement.style.display = 'block';
+      
       if (outra) {
-        document.getElementById('achei-placa').value = '';
-        document.getElementById('achei-uf').value = '';
-        document.getElementById('achei-municipio').value = '';
+        elementos.inputs.placas.achei.value = '';
+        elementos.inputs.placas.achei.focus();
       } else {
-        switchScreen(acheiScreen, homeScreen);
+        switchScreen(elementos.screens.achei, elementos.screens.home);
+      }
+    } catch (error) {
+      console.error('Erro ao salvar placa:', error);
+      showError('Erro ao cadastrar placa. Tente novamente.');
+    } finally {
+      toggleLoading(false, outra ? elementos.buttons.acheiSalvarOutra : elementos.buttons.acheiSalvar);
+    }
+  }
+
+  function toggleLoading(loading, element = null) {
+    state.loading = loading;
+    if (element) {
+      element.disabled = loading;
+      if (loading) {
+        element.innerHTML = '<span class="spinner"></span> Processando...';
+      } else {
+        element.textContent = element === elementos.buttons.perdiBuscar ? 'Buscar Placa' : 
+                            (element === elementos.buttons.acheiSalvarOutra ? 'Salvar e Cadastrar Outra' : 'Salvar Placa');
       }
     }
+  }
 
-    document.getElementById('achei-salvar').onclick = () => salvarPlaca(false);
-    document.getElementById('achei-salvar-outra').onclick = () => salvarPlaca(true);
-  });
+  function showError(message) {
+    elementos.results.error.textContent = message;
+    elementos.results.error.style.display = 'block';
+    setTimeout(() => elementos.results.error.style.display = 'none', 5000);
+  }
+
+  function showSuccess(message) {
+    elementos.results.success.textContent = message;
+    elementos.results.success.style.display = 'block';
+    setTimeout(() => elementos.results.success.style.display = 'none', 5000);
+  }
 </script>
 </body>
 </html>
