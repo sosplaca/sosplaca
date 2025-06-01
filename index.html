@@ -32,6 +32,9 @@
       h1 { text-align: center; }
     }
   </style>
+
+	<script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+
 </head>
 <body>
 
@@ -185,6 +188,12 @@
       <label for="achei-telefone">Seu telefone:</label>
       <input type="tel" id="achei-telefone" placeholder="(00) 00000-0000" required>
     </div>
+	<!-- 🔥 OCR: Captura de imagem -->
+	<div class="form-group">
+  <label>Capturar imagem da placa:</label>
+  <input type="file" accept="image/*" capture="environment" id="ocr-input">
+  <button class="btn" id="ocr-btn">Ler Placa pela Câmera</button>
+	</div>
     <div>
       <button id="achei-salvar" class="btn btn-success">Salvar Placa</button>
       <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
@@ -313,6 +322,29 @@
     if (value.length > 10) value = `${value.substring(0, 10)}-${value.substring(10)}`;
     this.value = value;
   });
+
+// 🔍 Função OCR — Ler placa pela câmera
+document.getElementById('ocr-btn').addEventListener('click', () => {
+  const file = document.getElementById('ocr-input').files[0];
+
+  if (!file) {
+    alert('Por favor, tire uma foto ou selecione uma imagem da placa.');
+    return;
+  }
+
+  Tesseract.recognize(
+    file,
+    'eng', // idioma inglês (bom para letras e números)
+    {
+      logger: m => console.log(m) // opcional: mostra o progresso no console
+    }
+  ).then(({ data: { text } }) => {
+    const resultado = text.toUpperCase().replace(/[^A-Z0-9]/g, '').trim();
+    alert('Texto reconhecido: ' + resultado);
+    // Preenche automaticamente no campo da placa
+    document.getElementById('achei-placa').value = resultado;
+  });
+});
 
   // 📄 Máscara placas
   function aplicarMascaraPlaca(inputId, isComum) {
