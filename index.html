@@ -183,8 +183,7 @@
     <div class="form-group">
       <label>Capturar imagem da placa:</label>
       <input type="file" accept="image/*" capture="environment" id="ocr-input">
-      <button class="btn btn-secondary" id="ocr-btn">Ler Placa pela Câmera</button>
-    </div>
+      </div>
 
     <div class="form-group" id="achei-localizacao">
       <label for="achei-uf">UF:</label>
@@ -488,35 +487,6 @@
       result.textContent = 'Erro na verificação. Tente novamente.';
       result.style.display = 'block';
     }
-  });
-
-  // 🔍 OCR — Ler Placa pela Câmera
-  document.getElementById('ocr-btn').addEventListener('click', () => {
-    const file = document.getElementById('ocr-input').files[0];
-
-    if (!file) {
-      alert('Por favor, tire uma foto ou selecione uma imagem da placa.');
-      return;
-    }
-
-    Tesseract.recognize(
-      file,
-      'eng',
-      {
-        logger: m => console.log(m)
-      }
-    ).then(({ data: { text } }) => {
-      const resultado = text.toUpperCase().replace(/[^A-Z0-9]/g, '').trim();
-      if (resultado) {
-        document.getElementById('achei-placa').value = resultado;
-        alert('Texto reconhecido: ' + resultado);
-      } else {
-        alert('Não foi possível reconhecer a placa. Tente novamente com uma foto mais nítida e centralizada.');
-      }
-    }).catch(err => {
-      console.error('Erro no OCR:', err);
-      alert('Erro ao processar a imagem. Tente novamente.');
-    });
   });
 
   // 🚀 Inicialização
