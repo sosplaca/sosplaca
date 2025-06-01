@@ -334,17 +334,25 @@ document.getElementById('ocr-btn').addEventListener('click', () => {
 
   Tesseract.recognize(
     file,
-    'eng', // idioma inglês (bom para letras e números)
+    'eng',
     {
-      logger: m => console.log(m) // opcional: mostra o progresso no console
+      logger: m => console.log(m) // Acompanha o progresso no console
     }
   ).then(({ data: { text } }) => {
     const resultado = text.toUpperCase().replace(/[^A-Z0-9]/g, '').trim();
-    alert('Texto reconhecido: ' + resultado);
-    // Preenche automaticamente no campo da placa
-    document.getElementById('achei-placa').value = resultado;
+    console.log('Texto reconhecido:', resultado);
+    if (resultado) {
+      document.getElementById('achei-placa').value = resultado;
+      alert('Texto reconhecido: ' + resultado);
+    } else {
+      alert('Não foi possível reconhecer a placa. Tente novamente com uma foto mais nítida e centralizada.');
+    }
+  }).catch(err => {
+    console.error('Erro no OCR:', err);
+    alert('Erro ao processar a imagem. Tente novamente.');
   });
 });
+
 
   // 📄 Máscara placas
   function aplicarMascaraPlaca(inputId, isComum) {
