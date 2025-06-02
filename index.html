@@ -104,23 +104,23 @@ import {
   updateProfile
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 
-// 🔗 Firebase Config — MANTENHA SEU CONFIG ATUAL AQUI
+// 🔗 Firebase Config — ✅ Insira aqui o seu atual config funcionando
 const firebaseConfig = {
-  apiKey: "SUA_API_KEY",
-  authDomain: "SEU_AUTH_DOMAIN",
-  databaseURL: "SEU_DATABASE_URL",
-  projectId: "SEU_PROJECT_ID",
-  storageBucket: "SEU_STORAGE_BUCKET",
-  messagingSenderId: "SEU_MESSAGING_SENDER_ID",
-  appId: "SEU_APP_ID"
-};
+            apiKey: "AIzaSyBjetihGmlo_z01jx-GW9Ith0oDCS0jwYc",
+            authDomain: "sosplaca-73cf7.firebaseapp.com",
+            databaseURL: "https://sosplaca-73cf7-default-rtdb.firebaseio.com",
+            projectId: "sosplaca-73cf7",
+            storageBucket: "sosplaca-73cf7.appspot.com",
+            messagingSenderId: "658059385722",
+            appId: "1:658059385722:web:5ed0e8fd7f7a2931d894c3"
+        };
 
 const app = initializeApp(firebaseConfig);
 const firestore = getFirestore(app);
 const realtimeDb = getDatabase(app);
 const auth = getAuth(app);
 
-// 🔑 Login
+// 🔑 LOGIN
 document.getElementById('login-btn').addEventListener('click', async () => {
   const email = document.getElementById('login-email').value.trim();
   const senha = document.getElementById('login-senha').value.trim();
@@ -145,7 +145,7 @@ document.getElementById('login-btn').addEventListener('click', async () => {
   }
 });
 
-// 🆕 Registro
+// 🆕 REGISTRO
 document.getElementById('registro-btn').addEventListener('click', async () => {
   const nome = document.getElementById('registro-nome').value.trim();
   const email = document.getElementById('registro-email').value.trim();
@@ -188,13 +188,13 @@ document.getElementById('registro-btn').addEventListener('click', async () => {
   }
 });
 
-// 🔓 Logout
+// 🔓 LOGOUT
 document.getElementById('logout-btn').addEventListener('click', async () => {
   await signOut(auth);
   voltarMenu();
 });
 
-// 🔄 Atualizar menu quando logado/deslogado
+// 🔄 Atualizar menu quando logado ou deslogado
 onAuthStateChanged(auth, async (user) => {
   const btnMinhasPlacas = document.getElementById('btn-minhas-placas');
   const btnPerfil = document.getElementById('btn-perfil');
@@ -313,7 +313,7 @@ document.getElementById('btn-minhas-placas').addEventListener('click', async () 
   }
 });
 
-// 🔎 Mostrar detalhes da placa encontrada
+// 🔍 Mostrar detalhes da placa encontrada
 async function mostrarDetalhesPlaca(placa) {
   try {
     const q = query(collection(firestore, 'foundPlates'), where('plate', '==', placa));
@@ -341,12 +341,12 @@ function voltarMenu() {
 }
 window.voltarMenu = voltarMenu;
 
-// 🔗 Links entre Login e Registro
+// 🔗 Link Login ↔ Registro
 document.getElementById('link-registro').addEventListener('click', () => {
   mostrarTela('registro-screen');
 });
 
-// 🔥 Botões Perdi e Achei
+// 🎯 Botões Perdi e Achei
 document.getElementById('btn-achei').addEventListener('click', () => mostrarTela('achei-screen'));
 document.getElementById('btn-perdi').addEventListener('click', () => mostrarTela('perdi-screen'));
 
