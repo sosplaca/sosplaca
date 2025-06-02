@@ -476,59 +476,70 @@ document.getElementById("perdi-verificar").addEventListener("click", async () =>
     }
   });
 
-  // ✅ Verificar placa perdida
-  document.getElementById('perdi-verificar').addEventListener('click', async () => {
-    const isComum = document.getElementById('btn-perdi-comum').classList.contains('ativo');
-    const placa = document.getElementById('perdi-placa').value.toUpperCase().trim();
-    const uf = document.getElementById('perdi-uf').value;
-    const cidade = document.getElementById('perdi-municipio').value;
+  // ✅ Verificar placa perdida (com WhatsApp)
+document.getElementById('perdi-verificar').addEventListener('click', async () => {
+  const isComum = document.getElementById('btn-perdi-comum').classList.contains('ativo');
+  const placa = document.getElementById('perdi-placa').value.toUpperCase().trim();
+  const uf = document.getElementById('perdi-uf').value;
+  const cidade = document.getElementById('perdi-municipio').value;
 
-    const result = document.getElementById('perdi-result');
-    result.style.display = 'none';
+  const result = document.getElementById('perdi-result');
+  result.style.display = 'none';
 
-    if (!placa || (isComum && (!uf || !cidade))) {
-      result.textContent = 'Preencha todos os campos obrigatórios.';
-      result.style.display = 'block';
-      return;
-    }
+  if (!placa || (isComum && (!uf || !cidade))) {
+    result.textContent = 'Preencha todos os campos obrigatórios.';
+    result.style.display = 'block';
+    return;
+  }
 
-    const keyRealtime = isComum
-      ? `${placa}:${uf}:${cidade}`
-      : `${placa}:null:null`;
+  const keyRealtime = isComum
+    ? `${placa}:${uf}:${cidade}`
+    : `${placa}:null:null`;
 
-    try {
-      const snapshot = await get(child(ref(realtimeDb), keyRealtime));
+  try {
+    const snapshot = await get(child(ref(realtimeDb), keyRealtime));
 
-      if (snapshot.exists()) {
-        const q = query(collection(firestore, 'foundPlates'), where('plate', '==', placa));
-        const querySnapshot = await getDocs(q);
+    if (snapshot.exists()) {
+      const q = query(collection(firestore, 'foundPlates'), where('plate', '==', placa));
+      const querySnapshot = await getDocs(q);
 
-        if (!querySnapshot.empty) {
-          const data = querySnapshot.docs[0].data();
-          result.innerHTML = `
-            ✅ <strong>Placa encontrada!</strong><br>
-            <strong>Responsável:</strong> ${data.founderName}<br>
-            <strong>Telefone:</strong> ${data.founderPhone}
-          `;
-        } else {
-          result.innerHTML = '✅ Placa encontrada, mas dados do responsável não localizados.';
-        }
+      if (!querySnapshot.empty) {
+        const data = querySnapshot.docs[0].data();
+        const nome = data.founderName;
+        const telefone = data.founderPhone.replace(/\D/g, ''); // Limpa qualquer caractere que não seja número
+        const placaFormatada = placa;
+
+        const mensagem = `Olá ${nome}! Fui informado pelo SOS Placa que você localizou a placa ${placaFormatada} do meu veículo! Se ainda tiver aí, me avisa como posso buscar, por favor!`;
+        const url = `https://wa.me/55${telefone}?text=${encodeURIComponent(mensagem)}`;
+
+        result.innerHTML = `
+          ✅ <strong>Placa encontrada!</strong><br>
+          <strong>Responsável:</strong> ${nome}<br>
+          <strong>Telefone:</strong> ${telefone}<br><br>
+          <a href="${url}" target="_blank">
+            <img src="WhatsApp.png" alt="WhatsApp" style="width: 40px; height: 40px;">
+          </a>
+        `;
 
       } else {
-        result.innerHTML = `
-          ❌ <strong>Placa não localizada.</strong><br>
-          Tente novamente mais tarde ou baixe nosso App e cadastre-se para receber notificação assim que alguém a encontrar.
-        `;
+        result.innerHTML = '✅ Placa encontrada, mas dados do responsável não localizados.';
       }
 
-      result.style.display = 'block';
-
-    } catch (error) {
-      console.error('Erro na verificação:', error);
-      result.textContent = 'Erro na verificação. Tente novamente.';
-      result.style.display = 'block';
+    } else {
+      result.innerHTML = `
+        ❌ <strong>Placa não localizada.</strong><br>
+        Tente novamente mais tarde ou cadastre-se em nosso App para receber notificação assim que alguém a encontrar.
+      `;
     }
-  });
+
+    result.style.display = 'block';
+
+  } catch (error) {
+    console.error('Erro na verificação:', error);
+    result.textContent = 'Erro na verificação. Tente novamente.';
+    result.style.display = 'block';
+  }
+});
 
   // 🚀 Inicialização
   document.addEventListener('DOMContentLoaded', () => {
