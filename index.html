@@ -98,7 +98,7 @@ document.getElementById("perdi-verificar").addEventListener("click", async () =>
       const dados = doc.data();
       const nome = dados.founderName || "";
       const telefone = dados.founderPhone || "";
-      const soNumeros = telefone.replace(/\D/g, "");
+      const soNumeros = telefone.replace(/\\D/g, "");
       const ehCelular = soNumeros.length >= 10 && soNumeros.length <= 11 && soNumeros.slice(-9, -8) === '9';
 
       html += `<p><strong>Boa notícia!</strong> A placa <strong>${placaInput}</strong> foi encontrada por <strong>${nome}</strong>.</p>`;
