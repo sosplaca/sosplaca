@@ -11,6 +11,7 @@
     @font-face { font-family: 'JostBold'; src: url('jostbold.ttf'); }
     @font-face { font-family: 'JostRegular'; src: url('jostregular.ttf'); }
     @font-face { font-family: 'UrbanistRegular'; src: url('urbanistregular.ttf'); }
+
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'JostRegular', sans-serif; }
     body { background-color: #FAFAFA; color: #333; }
     .container { max-width: 900px; margin: auto; padding: 20px; }
@@ -167,6 +168,7 @@
       <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
     </div>
   </div>
+
   <!-- Tela Minhas Placas -->
   <div id="minhas-placas-screen" class="screen">
     <h2>Minhas Placas Cadastradas como Perdidas</h2>
@@ -174,6 +176,80 @@
     <div style="margin-top: 20px;">
       <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
     </div>
+  </div>
+  <!-- Tela Perdi uma Placa -->
+  <div id="perdi-screen" class="screen">
+    <h2>Perdi uma Placa</h2>
+    <div class="form-group">
+      <label>Tipo de placa:</label>
+      <div style="display: flex; gap: 0.625rem;">
+        <button id="btn-perdi-comum" class="btn ativo">Comum</button>
+        <button id="btn-perdi-mercosul" class="btn">Mercosul</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="perdi-placa">Número da placa:</label>
+      <input type="text" id="perdi-placa" placeholder="AAA-0000 ou AAA0A00">
+    </div>
+    <div class="form-group" id="perdi-localizacao">
+      <label for="perdi-uf">UF:</label>
+      <select id="perdi-uf">
+        <option value="" disabled selected>Selecione o estado</option>
+      </select>
+      <label for="perdi-municipio">Município:</label>
+      <select id="perdi-municipio">
+        <option value="" disabled selected>Selecione o município</option>
+      </select>
+    </div>
+    <div>
+      <button id="perdi-verificar" class="btn btn-success">Verificar Placa</button>
+      <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
+    </div>
+    <div id="perdi-result" class="result"></div>
+  </div>
+
+  <!-- Tela Achei uma Placa -->
+  <div id="achei-screen" class="screen">
+    <h2>Cadastrar placa encontrada</h2>
+    <div class="form-group">
+      <label>Tipo de placa:</label>
+      <div style="display: flex; gap: 0.625rem;">
+        <button id="btn-achei-comum" class="btn ativo">Comum</button>
+        <button id="btn-achei-mercosul" class="btn">Mercosul</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="achei-placa">Número da placa:</label>
+      <input type="text" id="achei-placa" placeholder="AAA-0000 ou AAA0A00">
+    </div>
+    <div class="form-group">
+      <label>Capturar imagem da placa:</label>
+      <input type="file" accept="image/*" capture="environment" id="ocr-input">
+      <button class="btn btn-secondary" id="ocr-btn">Ler Placa pela Câmera</button>
+    </div>
+    <div class="form-group" id="achei-localizacao">
+      <label for="achei-uf">UF:</label>
+      <select id="achei-uf">
+        <option value="" disabled selected>Selecione o estado</option>
+      </select>
+      <label for="achei-municipio">Município:</label>
+      <select id="achei-municipio">
+        <option value="" disabled selected>Selecione o município</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="achei-nome">Seu nome:</label>
+      <input type="text" id="achei-nome" placeholder="Digite seu nome completo">
+    </div>
+    <div class="form-group">
+      <label for="achei-telefone">Seu telefone:</label>
+      <input type="tel" id="achei-telefone" placeholder="(00) 00000-0000">
+    </div>
+    <div>
+      <button id="achei-salvar" class="btn btn-success">Salvar Placa</button>
+      <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
+    </div>
+    <div id="achei-result" class="result"></div>
   </div>
 
   <!-- Rodapé -->
@@ -184,7 +260,7 @@
 
 </div> <!-- Fecha container -->
 
-<!-- Firebase + Script -->
+<!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 import { getFirestore, collection, addDoc, serverTimestamp, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
@@ -212,7 +288,6 @@ const app = initializeApp(firebaseConfig);
 const firestore = getFirestore(app);
 const realtimeDb = getDatabase(app);
 const auth = getAuth(app);
-
 // 🔀 Navegação
 function mostrarTela(id) {
   document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
@@ -235,7 +310,8 @@ document.getElementById('btn-perdi').addEventListener('click', () => mostrarTela
 document.getElementById('btn-minhas-placas').addEventListener('click', () => mostrarTela('minhas-placas-screen'));
 document.getElementById('btn-perfil').addEventListener('click', () => mostrarTela('perfil-screen'));
 document.getElementById('btn-login').addEventListener('click', () => mostrarTela('login-screen'));
-// 🔥 Autenticação — Login, Registro e Logout
+
+// 🔑 Autenticação
 onAuthStateChanged(auth, async (user) => {
   const btnMinhasPlacas = document.getElementById('btn-minhas-placas');
   const btnPerfil = document.getElementById('btn-perfil');
@@ -264,182 +340,107 @@ onAuthStateChanged(auth, async (user) => {
     btnLogin.style.display = 'inline-block';
   }
 });
-
-// 🔗 Funções de Login
-document.getElementById('login-btn').addEventListener('click', async () => {
-  const email = document.getElementById('login-email').value.trim();
-  const senha = document.getElementById('login-senha').value.trim();
-  const result = document.getElementById('login-result');
-  result.style.display = 'none';
-
-  if (!email || !senha) {
-    result.textContent = 'Preencha todos os campos.';
-    result.style.display = 'block';
-    return;
-  }
-
-  try {
-    await signInWithEmailAndPassword(auth, email, senha);
-    result.textContent = 'Login realizado com sucesso!';
-    result.style.display = 'block';
-    setTimeout(() => voltarMenu(), 1000);
-  } catch (error) {
-    result.textContent = 'Erro no login. Verifique seus dados.';
-    result.style.display = 'block';
-  }
+// 🔥 Máscara de telefone
+document.getElementById('achei-telefone').addEventListener('input', function() {
+  let value = this.value.replace(/\D/g, '').slice(0, 11);
+  if (value.length > 2) value = `(${value.substring(0, 2)}) ${value.substring(2)}`;
+  if (value.length > 10) value = `${value.substring(0, 10)}-${value.substring(10)}`;
+  this.value = value;
 });
 
-// 🔐 Registro
-document.getElementById('registro-btn').addEventListener('click', async () => {
-  const nome = document.getElementById('registro-nome').value.trim();
-  const email = document.getElementById('registro-email').value.trim();
-  const telefone = document.getElementById('registro-telefone').value.trim();
-  const senha = document.getElementById('registro-senha').value.trim();
-  const confirmar = document.getElementById('registro-confirmar').value.trim();
-  const result = document.getElementById('registro-result');
-  result.style.display = 'none';
-
-  if (!nome || !email || !telefone || !senha || !confirmar) {
-    result.textContent = 'Preencha todos os campos.';
-    result.style.display = 'block';
-    return;
+// 🔥 Máscara de placas
+function aplicarMascaraPlaca(inputId, isComum) {
+  const input = document.getElementById(inputId);
+  let value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (isComum) {
+    value = value.slice(0, 7);
+    if (value.length > 3) value = `${value.slice(0, 3)}-${value.slice(3)}`;
+  } else {
+    value = value.slice(0, 7);
   }
-  if (senha !== confirmar) {
-    result.textContent = 'As senhas não conferem.';
-    result.style.display = 'block';
-    return;
-  }
+  input.value = value;
+}
 
-  try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
-    await updateProfile(userCredential.user, { displayName: nome });
+document.getElementById('achei-placa').addEventListener('input', function() {
+  const isComum = document.getElementById('btn-achei-comum').classList.contains('ativo');
+  aplicarMascaraPlaca('achei-placa', isComum);
+});
 
-    await addDoc(collection(firestore, "users"), {
-      uid: userCredential.user.uid,
-      nome: nome,
-      email: email,
-      telefone: telefone
+document.getElementById('perdi-placa').addEventListener('input', function() {
+  const isComum = document.getElementById('btn-perdi-comum').classList.contains('ativo');
+  aplicarMascaraPlaca('perdi-placa', isComum);
+});
+
+// 🔥 UF → Município dinâmico
+const cidadesPorEstado = {
+  SP: ["Ubatuba", "Caraguatatuba", "São Paulo", "Campinas"],
+  RJ: ["Rio de Janeiro", "Niterói", "Petrópolis"],
+  MG: ["Belo Horizonte", "Uberlândia", "Contagem"],
+};
+
+function atualizarMunicipios(ufId, municipioId) {
+  const uf = document.getElementById(ufId).value;
+  const municipioSelect = document.getElementById(municipioId);
+  municipioSelect.innerHTML = '<option value="" disabled selected>Selecione o município</option>';
+
+  if (cidadesPorEstado[uf]) {
+    cidadesPorEstado[uf].forEach(cidade => {
+      const option = document.createElement('option');
+      option.value = cidade;
+      option.textContent = cidade;
+      municipioSelect.appendChild(option);
     });
-
-    result.textContent = 'Conta criada com sucesso!';
-    result.style.display = 'block';
-    setTimeout(() => voltarMenu(), 1000);
-  } catch (error) {
-    result.textContent = 'Erro no registro. Verifique os dados.';
-    result.style.display = 'block';
-  }
-});
-
-// 🔓 Logout
-document.getElementById('logout-btn').addEventListener('click', async () => {
-  await signOut(auth);
-  voltarMenu();
-});
-
-// 🔍 Minhas Placas
-document.getElementById('btn-minhas-placas').addEventListener('click', async () => {
-  mostrarTela('minhas-placas-screen');
-  const user = auth.currentUser;
-  const container = document.getElementById('lista-minhas-placas');
-  container.innerHTML = 'Carregando...';
-
-  if (!user) {
-    container.innerHTML = 'Você precisa estar logado para ver suas placas.';
-    return;
-  }
-
-  try {
-    const q = query(collection(firestore, 'lostPlates'), where('userId', '==', user.uid));
-    const querySnapshot = await getDocs(q);
-
-    if (querySnapshot.empty) {
-      container.innerHTML = 'Você não possui placas cadastradas como perdidas.';
-      return;
-    }
-
-    let html = '';
-
-    for (const doc of querySnapshot.docs) {
-      const data = doc.data();
-      const placa = data.plate;
-      const isComum = data.isComum;
-      const uf = data.uf;
-      const cidade = data.city;
-
-      const keyRealtime = isComum
-        ? `${placa}:${uf}:${cidade}`
-        : `${placa}:null:null`;
-
-      const snapshot = await get(child(ref(realtimeDb), keyRealtime));
-
-      if (snapshot.exists()) {
-        html += `
-          <div style="
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 8px;">
-            <strong>Placa:</strong> ${placa}<br>
-            <button onclick="mostrarDetalhesPlaca('${placa}')" 
-              style="
-                background-color: #2ecc71;
-                color: white;
-                border: none;
-                padding: 8px 12px;
-                border-radius: 6px;
-                cursor: pointer;
-                font-weight: 600;">
-              ✔️ Encontrada — Toque para mais detalhes
-            </button>
-          </div>
-        `;
-      } else {
-        html += `
-          <div style="
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 8px;">
-            <strong>Placa:</strong> ${placa}<br>
-            <button disabled
-              style="
-                background-color: #e74c3c;
-                color: white;
-                border: none;
-                padding: 8px 12px;
-                border-radius: 6px;
-                font-weight: 600;">
-              ❌ Não encontrada
-            </button>
-          </div>
-        `;
-      }
-    }
-
-    container.innerHTML = html;
-
-  } catch (error) {
-    container.innerHTML = 'Erro ao carregar suas placas.';
-  }
-});
-
-// 🔍 Mostrar detalhes da placa encontrada
-async function mostrarDetalhesPlaca(placa) {
-  try {
-    const q = query(collection(firestore, 'foundPlates'), where('plate', '==', placa));
-    const querySnapshot = await getDocs(q);
-
-    if (!querySnapshot.empty) {
-      const data = querySnapshot.docs[0].data();
-      alert(`Placa ${placa} foi encontrada!\nResponsável: ${data.founderName}\nTelefone: ${data.founderPhone}`);
-    } else {
-      alert('Dados do responsável não encontrados.');
-    }
-  } catch (error) {
-    alert('Erro ao buscar detalhes.');
   }
 }
 
-</script>
-</body>
-</html>
+document.getElementById('achei-uf').addEventListener('change', () => {
+  atualizarMunicipios('achei-uf', 'achei-municipio');
+});
+document.getElementById('perdi-uf').addEventListener('change', () => {
+  atualizarMunicipios('perdi-uf', 'perdi-municipio');
+});
+
+// 🔥 Botões tipo de placa
+document.querySelectorAll('#btn-achei-comum, #btn-achei-mercosul').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('#achei-screen .btn').forEach(b => b.classList.remove('ativo'));
+    this.classList.add('ativo');
+    const isComum = this.id === 'btn-achei-comum';
+    document.getElementById('achei-placa').placeholder = isComum ? 'AAA-0000' : 'AAA0A00';
+    document.getElementById('achei-localizacao').style.display = isComum ? 'block' : 'none';
+  });
+});
+
+document.querySelectorAll('#btn-perdi-comum, #btn-perdi-mercosul').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('#perdi-screen .btn').forEach(b => b.classList.remove('ativo'));
+    this.classList.add('ativo');
+    const isComum = this.id === 'btn-perdi-comum';
+    document.getElementById('perdi-placa').placeholder = isComum ? 'AAA-0000' : 'AAA0A00';
+    document.getElementById('perdi-localizacao').style.display = isComum ? 'block' : 'none';
+  });
+});
+
+// 🔥 OCR — Ler placa pela câmera
+document.getElementById('ocr-btn').addEventListener('click', () => {
+  const file = document.getElementById('ocr-input').files[0];
+  if (!file) {
+    alert('Por favor, selecione ou tire uma foto da placa.');
+    return;
+  }
+  Tesseract.recognize(
+    file,
+    'eng',
+    { logger: m => console.log(m) }
+  ).then(({ data: { text } }) => {
+    const resultado = text.toUpperCase().replace(/[^A-Z0-9]/g, '').trim();
+    if (resultado) {
+      document.getElementById('achei-placa').value = resultado;
+      alert('Texto reconhecido: ' + resultado);
+    } else {
+      alert('Não foi possível reconhecer a placa. Tente novamente.');
+    }
+  }).catch(err => {
+    alert('Erro ao processar a imagem.');
+  });
+});
