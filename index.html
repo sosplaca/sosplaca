@@ -96,7 +96,7 @@ document.getElementById("perdi-verificar").addEventListener("click", async () =>
 
     if (ehCelular) {
       const mensagem = encodeURIComponent(`Olá ${nome}! Vi que vc cadastrou a placa ${placaInput} no SOS Placa – ela é do meu veículo! Se ainda tiver aí, me avisa como posso buscar, por favor!`);
-      html += `<a href="https://wa.me/55${soNumeros}?text=${mensagem}" target="_blank"><img src="whatsapp.png" alt="WhatsApp" style="height: 50px; margin-top: 10px;"></a>`;
+      html += `<a href="https://wa.me/55${soNumeros}?text=${mensagem}" target="_blank"><img src="WhatsApp.png" alt="WhatsApp" style="height: 50px; margin-top: 10px;"></a>`;
     }
 
     resultDiv.classList.add("success");
