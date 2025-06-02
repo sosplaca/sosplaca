@@ -72,7 +72,42 @@
     }
   </style>
 
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js">
+// Botão Verificar Placa (ajustado)
+document.getElementById("perdi-verificar").addEventListener("click", async () => {
+  const placaInput = document.getElementById("perdi-placa").value.trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+  if (!placaInput) return;
+
+  const placaRef = ref(realtimeDb, placaInput);
+  const snap = await get(placaRef);
+
+  const resultDiv = document.getElementById("perdi-result");
+  resultDiv.className = "result";
+  resultDiv.innerHTML = "";
+
+  if (snap.exists()) {
+    const dados = snap.val();
+    const nome = dados.nome || "";
+    const telefone = dados.telefone || "";
+    const soNumeros = telefone.replace(/\D/g, "");
+    const ehCelular = soNumeros.length >= 10 && soNumeros.length <= 11 && soNumeros.slice(-9, -8) === '9';
+
+    let html = `<p><strong>Boa notícia!</strong> A placa <strong>${placaInput}</strong> foi encontrada por <strong>${nome}</strong>.</p>`;
+
+    if (ehCelular) {
+      const mensagem = encodeURIComponent(`Olá ${nome}! Vi que vc cadastrou a placa ${placaInput} no SOS Placa – ela é do meu veículo! Se ainda tiver aí, me avisa como posso buscar, por favor!`);
+      html += `<a href="https://wa.me/55${soNumeros}?text=${mensagem}" target="_blank"><img src="whatsapp.png" alt="WhatsApp" style="height: 50px; margin-top: 10px;"></a>`;
+    }
+
+    resultDiv.classList.add("success");
+    resultDiv.innerHTML = html;
+  } else {
+    resultDiv.classList.add("error");
+    resultDiv.innerHTML = `<p>Infelizmente ainda não encontramos essa placa. Mas continue tentando, ela pode aparecer a qualquer momento!</p>`;
+  }
+});
+
+</script>
 </head>
 
 <body>
