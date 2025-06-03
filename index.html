@@ -182,18 +182,140 @@
     <div id="cadastro-result" class="result"></div>
   </div>
 
-  <!-- Tela Perdi uma Placa (existente) -->
+  <!-- Tela Perdi uma Placa -->
   <div id="perdi-screen" class="screen">
-    <!-- Conteúdo existente mantido igual -->
-    <!-- ... -->
-  </div>
+    <h2>Verificar placa perdida</h2>
+    <div class="form-group">
+      <label>Tipo de placa:</label>
+      <div style="display: flex; gap: 0.625rem;">
+        <button id="btn-perdi-comum" class="btn ativo">Comum</button>
+        <button id="btn-perdi-mercosul" class="btn">Mercosul</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="perdi-placa">Número da placa:</label>
+      <input type="text" id="perdi-placa" placeholder="AAA-0000 ou AAA0A00" required>
+    </div>
+    <div class="form-group" id="perdi-localizacao">
+      <label for="perdi-uf">UF:</label>
+      <select id="perdi-uf">
+        <option value="" disabled selected>Selecione o estado</option>
+        <option value="AC">AC</option>
+        <option value="AL">AL</option>
+        <option value="AM">AM</option>
+        <option value="AP">AP</option>
+        <option value="BA">BA</option>
+        <option value="CE">CE</option>
+        <option value="DF">DF</option>
+        <option value="ES">ES</option>
+        <option value="GO">GO</option>
+        <option value="MA">MA</option>
+        <option value="MG">MG</option>
+        <option value="MS">MS</option>
+        <option value="MT">MT</option>
+        <option value="PA">PA</option>
+        <option value="PB">PB</option>
+        <option value="PE">PE</option>
+        <option value="PI">PI</option>
+        <option value="PR">PR</option>
+        <option value="RJ">RJ</option>
+        <option value="RN">RN</option>
+        <option value="RO">RO</option>
+        <option value="RR">RR</option>
+        <option value="RS">RS</option>
+        <option value="SC">SC</option>
+        <option value="SE">SE</option>
+        <option value="SP">SP</option>
+        <option value="TO">TO</option>
+      </select>
+      <label for="perdi-municipio">Município:</label>
+      <select id="perdi-municipio">
+        <option value="" disabled selected>Selecione o município</option>
+      </select>
+    </div>
 
-  <!-- Tela Achei uma Placa (existente) -->
+    <!-- Caixa de Aviso -->
+    <div class="alert-box">
+      <strong>⚠️ Atenção:</strong><br>
+      Não cobramos e nem intermediamos qualquer valor pela devolução de placas.<br>
+      Oferecer uma gratificação é algo opcional, decidido entre quem perdeu e quem encontrou.<br>
+      Se achar necessário, entre em contato com as autoridades.
+    </div>
+
+    <div>
+      <button id="perdi-verificar" class="btn btn-success">Verificar Placa</button>
+      <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
+    </div>
+    <div id="perdi-result" class="result"></div>
+  </div>
+  <!-- Tela Achei uma Placa -->
   <div id="achei-screen" class="screen">
-    <!-- Conteúdo existente mantido igual -->
-    <!-- ... -->
+    <h2>Cadastrar placa encontrada</h2>
+    <div class="form-group">
+      <label>Tipo de placa:</label>
+      <div style="display: flex; gap: 0.625rem;">
+        <button id="btn-achei-comum" class="btn ativo">Comum</button>
+        <button id="btn-achei-mercosul" class="btn">Mercosul</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="achei-placa">Número da placa:</label>
+      <input type="text" id="achei-placa" placeholder="AAA-0000 ou AAA0A00" required>
+    </div>
+
+    <div class="form-group" id="achei-localizacao">
+      <label for="achei-uf">UF:</label>
+      <select id="achei-uf">
+        <option value="" disabled selected>Selecione o estado</option>
+        <option value="AC">AC</option>
+        <option value="AL">AL</option>
+        <option value="AM">AM</option>
+        <option value="AP">AP</option>
+        <option value="BA">BA</option>
+        <option value="CE">CE</option>
+        <option value="DF">DF</option>
+        <option value="ES">ES</option>
+        <option value="GO">GO</option>
+        <option value="MA">MA</option>
+        <option value="MG">MG</option>
+        <option value="MS">MS</option>
+        <option value="MT">MT</option>
+        <option value="PA">PA</option>
+        <option value="PB">PB</option>
+        <option value="PE">PE</option>
+        <option value="PI">PI</option>
+        <option value="PR">PR</option>
+        <option value="RJ">RJ</option>
+        <option value="RN">RN</option>
+        <option value="RO">RO</option>
+        <option value="RR">RR</option>
+        <option value="RS">RS</option>
+        <option value="SC">SC</option>
+        <option value="SE">SE</option>
+        <option value="SP">SP</option>
+        <option value="TO">TO</option>
+      </select>
+      <label for="achei-municipio">Município:</label>
+      <select id="achei-municipio">
+        <option value="" disabled selected>Selecione o município</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="achei-nome">Seu nome:</label>
+      <input type="text" id="achei-nome" placeholder="Digite seu nome completo" required>
+    </div>
+    <div class="form-group">
+      <label for="achei-telefone">Seu telefone:</label>
+      <input type="tel" id="achei-telefone" placeholder="(00) 00000-0000" required>
+    </div>
+    <div>
+      <button id="achei-salvar" class="btn btn-success">Salvar Placa</button>
+      <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
+    </div>
+    <div id="achei-result" class="result"></div>
   </div>
 </div>
+
 
 <footer>
   💙 Ajude a manter esse projeto!<br>
@@ -291,7 +413,7 @@
     content.innerHTML = '<p>Carregando suas placas...</p>';
     
     try {
-      const q = query(collection(firestore, 'userPlates'), where('userId', '==', userId));
+      const q = query(collection(firestore, 'foundPlates'), where('userId', '==', userId));
       const querySnapshot = await getDocs(q);
       
       if (querySnapshot.empty) {
@@ -324,7 +446,7 @@
     content.innerHTML = '<p>Carregando seu perfil...</p>';
     
     try {
-      const q = query(collection(firestore, 'users'), where('userId', '==', userId));
+      const q = query(collection(firestore, 'users'), where('uid', '==', uid));
       const querySnapshot = await getDocs(q);
       
       if (querySnapshot.empty) {
@@ -422,7 +544,7 @@
       
       // Salvar dados adicionais no Firestore
       await addDoc(collection(firestore, 'users'), {
-        userId: userId,
+        uid: uid,
         name: nome,
         email: email,
         phone: telefone,
@@ -719,6 +841,7 @@ document.getElementById('perdi-verificar').addEventListener('click', async () =>
     document.getElementById('btn-perdi-comum').click();
   });
 </script>
+
 <!-- Tela Perdi uma Placa -->
 <div id="perdi-screen" class="screen">
   <h2>Verificar placa perdida</h2>
