@@ -4,9 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SOS Placa</title>
-<link rel="icon" type="image/png" href="favicon.png">
-
-<!-- 🎨 CSS Completo -->
 <style>
 * {
   margin: 0;
@@ -16,6 +13,7 @@
 }
 body {
   background-color: #f5f5f5;
+  padding-bottom: 60px;
 }
 header {
   background-color: #0072bb;
@@ -54,18 +52,25 @@ header {
 }
 h2 {
   margin-bottom: 20px;
+  color: #004d80;
 }
 p {
   margin-bottom: 15px;
+  color: #333;
 }
 .btn {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   font-size: 16px;
   margin-bottom: 10px;
+  transition: all 0.3s;
+}
+.btn:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
 }
 .btn-primary {
   background-color: #004d80;
@@ -90,6 +95,7 @@ a {
 .result {
   color: red;
   margin-top: 10px;
+  font-size: 14px;
 }
 footer {
   background-color: #003b66;
@@ -105,9 +111,36 @@ footer a {
   color: white;
   text-decoration: underline;
 }
+.form-group {
+  margin-bottom: 15px;
+  text-align: left;
+}
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #004d80;
+}
+.form-group input, .form-group textarea, .form-group select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+}
+.placa-item {
+  background: #f0f8ff;
+  margin: 10px 0;
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 4px solid #004d80;
+}
+.placa-item h3 {
+  color: #004d80;
+  margin-bottom: 5px;
+}
 </style>
 </head>
-
 <body>
 
 <!-- 🏁 Cabeçalho -->
@@ -120,14 +153,13 @@ footer a {
     <img src="GooglePlay.png" alt="Google Play" class="play-img">
   </a>
 </header>
-
 <!-- 🔥 Menu Inicial -->
 <div id="menu-screen" class="screen active">
   <div class="card">
     <h2>O que você deseja fazer?</h2>
     <button class="btn btn-primary" onclick="mostrarTela('placas-screen')">Buscar / Cadastrar Placas</button>
-    <button class="btn btn-primary" onclick="mostrarTela('minhas-placas-screen')">Minhas Placas</button>
-    <button class="btn btn-primary" onclick="mostrarTela('perfil-screen')">Perfil</button>
+    <button class="btn btn-primary" onclick="verificarLogin('minhas-placas-screen')">Minhas Placas</button>
+    <button class="btn btn-primary" onclick="verificarLogin('perfil-screen')">Perfil</button>
   </div>
 </div>
 
@@ -135,26 +167,83 @@ footer a {
 <div id="placas-screen" class="screen">
   <div class="card">
     <h2>O que você deseja fazer?</h2>
-    <button class="btn btn-primary" onclick="mostrarTela('perdi-screen')">Perdi uma placa</button>
-    <button class="btn btn-primary" onclick="mostrarTela('achei-screen')">Achei uma placa</button>
-    <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
+    <button class="btn btn-primary" onclick="mostrarTela('perdi-placa-screen')">Perdi uma placa</button>
+    <button class="btn btn-primary" onclick="mostrarTela('achei-placa-screen')">Achei uma placa</button>
+    <button class="btn btn-secondary" onclick="voltarMenu()">Voltar ao Menu</button>
+  </div>
+</div>
+
+<!-- 🏷️ Tela Perdi Placa -->
+<div id="perdi-placa-screen" class="screen">
+  <div class="card">
+    <h2>Cadastrar placa perdida</h2>
+    <div class="form-group">
+      <label>Número da placa*</label>
+      <input type="text" id="placa-perdida" placeholder="ABC1D23" maxlength="7">
+    </div>
+    <div class="form-group">
+      <label>Local onde perdeu</label>
+      <input type="text" id="local-perda" placeholder="Ex: Rua Principal, 100 - Centro">
+    </div>
+    <div class="form-group">
+      <label>Data aproximada</label>
+      <input type="date" id="data-perda">
+    </div>
+    <div class="form-group">
+      <label>Descrição (opcional)</label>
+      <textarea id="descricao-perda" rows="3" placeholder="Detalhes adicionais"></textarea>
+    </div>
+    <button class="btn btn-primary" id="cadastrar-perda-btn">Cadastrar Placa Perdida</button>
+    <button class="btn btn-secondary" onclick="voltarPara('placas-screen')">Voltar</button>
+    <div id="perdi-placa-result" class="result"></div>
+  </div>
+</div>
+
+<!-- 🔍 Tela Achei Placa -->
+<div id="achei-placa-screen" class="screen">
+  <div class="card">
+    <h2>Informar placa encontrada</h2>
+    <div class="form-group">
+      <label>Número da placa encontrada*</label>
+      <input type="text" id="placa-achada" placeholder="ABC1D23" maxlength="7">
+    </div>
+    <div class="form-group">
+      <label>Local onde encontrou*</label>
+      <input type="text" id="local-achado" placeholder="Ex: Av. Central, 500">
+    </div>
+    <div class="form-group">
+      <label>Data*</label>
+      <input type="date" id="data-achado">
+    </div>
+    <div class="form-group">
+      <label>Como posso devolver?*</label>
+      <select id="contato-achado">
+        <option value="">Selecione uma opção</option>
+        <option value="whatsapp">WhatsApp</option>
+        <option value="email">E-mail</option>
+        <option value="telefone">Telefone</option>
+      </select>
+    </div>
+    <button class="btn btn-primary" id="cadastrar-achado-btn">Informar Placa Encontrada</button>
+    <button class="btn btn-secondary" onclick="voltarPara('placas-screen')">Voltar</button>
+    <div id="achei-placa-result" class="result"></div>
   </div>
 </div>
 <!-- 🔐 Tela Login -->
 <div id="login-screen" class="screen">
   <div class="card">
-    <h2>Entre com sua conta!</h2>
+    <h2>Entre com sua conta</h2>
     <div class="form-group">
       <label for="login-email">E-mail</label>
-      <input type="email" id="login-email" placeholder="email@email.com">
+      <input type="email" id="login-email" placeholder="email@exemplo.com">
     </div>
     <div class="form-group">
       <label for="login-senha">Senha</label>
-      <input type="password" id="login-senha" placeholder="Senha">
+      <input type="password" id="login-senha" placeholder="Sua senha">
     </div>
     <p>Não tem uma conta? <a href="#" onclick="mostrarTela('registro-screen')">Crie uma aqui!</a></p>
     <button class="btn btn-orange" id="login-btn">Entrar</button>
-    <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
+    <button class="btn btn-secondary" onclick="voltarMenu()">Voltar ao Menu</button>
     <div id="login-result" class="result"></div>
   </div>
 </div>
@@ -162,122 +251,130 @@ footer a {
 <!-- 🆕 Tela Registro -->
 <div id="registro-screen" class="screen">
   <div class="card">
-    <h2>Registro</h2>
+    <h2>Criar nova conta</h2>
     <div class="form-group">
-      <label>Nome*</label>
-      <input type="text" id="registro-nome" placeholder="Seu nome">
+      <label>Nome completo*</label>
+      <input type="text" id="registro-nome" placeholder="Seu nome completo">
     </div>
     <div class="form-group">
       <label>E-mail*</label>
-      <input type="email" id="registro-email" placeholder="email@email.com">
+      <input type="email" id="registro-email" placeholder="email@exemplo.com">
     </div>
     <div class="form-group">
       <label>Telefone*</label>
-      <input type="tel" id="registro-telefone" placeholder="(DD) 9 9999-9999">
+      <input type="tel" id="registro-telefone" placeholder="(99) 99999-9999">
     </div>
     <div class="form-group">
-      <label>Senha*</label>
-      <input type="password" id="registro-senha" placeholder="Senha">
+      <label>Senha* (mínimo 6 caracteres)</label>
+      <input type="password" id="registro-senha" placeholder="Crie uma senha">
     </div>
     <div class="form-group">
       <label>Confirme a senha*</label>
-      <input type="password" id="registro-confirmar" placeholder="Senha">
+      <input type="password" id="registro-confirmar" placeholder="Repita a senha">
     </div>
-    <button class="btn btn-orange" id="registro-btn">Registrar-se</button>
-    <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
+    <button class="btn btn-orange" id="registro-btn">Criar Conta</button>
+    <button class="btn btn-secondary" onclick="voltarMenu()">Voltar ao Menu</button>
     <div id="registro-result" class="result"></div>
-  </div>
-</div>
-
-<!-- 👤 Tela Perfil (não logado) -->
-<div id="perfil-nao-logado-screen" class="screen">
-  <div class="card">
-    <h2>Perfil</h2>
-    <p>Você precisa estar logado para ver suas informações.</p>
-    <button class="btn btn-orange" onclick="mostrarTela('login-screen')">Fazer Login</button>
-    <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
   </div>
 </div>
 
 <!-- 👤 Tela Perfil (logado) -->
 <div id="perfil-screen" class="screen">
   <div class="card">
-    <h2>Informações da conta</h2>
-    <p><strong>Nome de usuário:</strong> <span id="perfil-nome"></span></p>
-    <p><strong>E-mail cadastrado:</strong> <span id="perfil-email"></span></p>
-    <p><strong>Telefone:</strong> <span id="perfil-telefone"></span></p>
-    <button class="btn btn-red" id="logout-btn">Sair</button>
-    <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
-  </div>
-</div>
-<!-- 📋 Tela Minhas Placas — Quando NÃO está logado -->
-<div id="minhas-placas-nao-logado-screen" class="screen">
-  <div class="card">
-    <h2>Minhas Placas</h2>
-    <p>Você precisa estar logado para acessar essa página!</p>
-    <button class="btn btn-orange" onclick="mostrarTela('login-screen')">Fazer Login</button>
-    <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
+    <h2>Meu Perfil</h2>
+    <div class="placa-item">
+      <p><strong>Nome:</strong> <span id="perfil-nome"></span></p>
+      <p><strong>E-mail:</strong> <span id="perfil-email"></span></p>
+      <p><strong>Telefone:</strong> <span id="perfil-telefone"></span></p>
+    </div>
+    <button class="btn btn-red" id="logout-btn">Sair da Conta</button>
+    <button class="btn btn-secondary" onclick="voltarMenu()">Voltar ao Menu</button>
   </div>
 </div>
 
-<!-- 📋 Tela Minhas Placas — Quando ESTÁ logado -->
+<!-- 📋 Tela Minhas Placas (logado) -->
 <div id="minhas-placas-screen" class="screen">
   <div class="card">
-    <h2>Minhas Placas</h2>
+    <h2>Minhas Placas Perdidas</h2>
     <div id="lista-minhas-placas">
-      <!-- 🔥 As placas cadastradas aparecerão aqui dinamicamente -->
+      <p>Carregando suas placas...</p>
     </div>
-    <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
+    <button class="btn btn-secondary" onclick="voltarMenu()">Voltar ao Menu</button>
   </div>
 </div>
+<footer>
+  <p>SOS Placa &copy; 2023 - <a href="#" onclick="mostrarTela('sobre-screen')">Sobre o projeto</a></p>
+</footer>
+
 <!-- 🚀 Scripts -->
 <script type="module">
-
-// 🏁 Firebase Config — Insira seus dados abaixo
+// Configuração do Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
+import { getFirestore, collection, addDoc, getDocs, query, where, updateDoc, doc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+import { 
+  getAuth, 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  signOut, 
   onAuthStateChanged,
   updateProfile
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 
 const firebaseConfig = {
-            apiKey: "AIzaSyBjetihGmlo_z01jx-GW9Ith0oDCS0jwYc",
-            authDomain: "sosplaca-73cf7.firebaseapp.com",
-            databaseURL: "https://sosplaca-73cf7-default-rtdb.firebaseio.com",
-            projectId: "sosplaca-73cf7",
-            storageBucket: "sosplaca-73cf7.appspot.com",
-            messagingSenderId: "658059385722",
-            appId: "1:658059385722:web:5ed0e8fd7f7a2931d894c3"
-        };
+  apiKey: "AIzaSyBjetihGmlo_z01jx-GW9Ith0oDCS0jwYc",
+  authDomain: "sosplaca-73cf7.firebaseapp.com",
+  databaseURL: "https://sosplaca-73cf7-default-rtdb.firebaseio.com",
+  projectId: "sosplaca-73cf7",
+  storageBucket: "sosplaca-73cf7.appspot.com",
+  messagingSenderId: "658059385722",
+  appId: "1:658059385722:web:5ed0e8fd7f7a2931d894c3"
+};
 
 const app = initializeApp(firebaseConfig);
 const firestore = getFirestore(app);
-const realtimeDb = getDatabase(app);
 const auth = getAuth(app);
 
-// 🔀 Navegação
+// Funções de navegação
 function mostrarTela(id) {
-  document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(screen => {
+    screen.classList.remove('active');
+  });
   document.getElementById(id).classList.add('active');
 }
+
 function voltarMenu() {
   mostrarTela('menu-screen');
 }
-window.voltarMenu = voltarMenu;
 
-// 🔐 Login
+function voltarPara(id) {
+  mostrarTela(id);
+}
+
+function verificarLogin(telaDestino) {
+  if (auth.currentUser) {
+    mostrarTela(telaDestino);
+  } else {
+    mostrarTela('login-screen');
+    document.getElementById('login-screen').setAttribute('data-redirect', telaDestino);
+  }
+}
+
+window.mostrarTela = mostrarTela;
+window.voltarMenu = voltarMenu;
+window.voltarPara = voltarPara;
+window.verificarLogin = verificarLogin;
+
+// [Continua...]
+</script>
+<script type="module">
+// [Continuação do script...]
+
+// Login
 document.getElementById('login-btn').addEventListener('click', async () => {
   const email = document.getElementById('login-email').value.trim();
   const senha = document.getElementById('login-senha').value.trim();
   const result = document.getElementById('login-result');
-  result.textContent = '';
-
+  
   if (!email || !senha) {
     result.textContent = 'Preencha todos os campos.';
     return;
@@ -286,13 +383,15 @@ document.getElementById('login-btn').addEventListener('click', async () => {
   try {
     await signInWithEmailAndPassword(auth, email, senha);
     result.textContent = 'Login realizado com sucesso!';
-    setTimeout(() => voltarMenu(), 1000);
+    
+    const redirect = document.getElementById('login-screen').getAttribute('data-redirect');
+    setTimeout(() => mostrarTela(redirect || 'menu-screen'), 1000);
   } catch (error) {
-    result.textContent = 'Erro no login. Verifique seus dados.';
+    result.textContent = 'E-mail ou senha incorretos. Tente novamente.';
   }
 });
 
-// 🆕 Registro
+// Registro
 document.getElementById('registro-btn').addEventListener('click', async () => {
   const nome = document.getElementById('registro-nome').value.trim();
   const email = document.getElementById('registro-email').value.trim();
@@ -300,22 +399,25 @@ document.getElementById('registro-btn').addEventListener('click', async () => {
   const senha = document.getElementById('registro-senha').value.trim();
   const confirmar = document.getElementById('registro-confirmar').value.trim();
   const result = document.getElementById('registro-result');
-  result.textContent = '';
-
+  
+  // Validações
   if (!nome || !email || !telefone || !senha || !confirmar) {
-    result.textContent = 'Preencha todos os campos.';
+    result.textContent = 'Preencha todos os campos obrigatórios.';
     return;
   }
-
+  if (senha.length < 6) {
+    result.textContent = 'A senha deve ter no mínimo 6 caracteres.';
+    return;
+  }
   if (senha !== confirmar) {
-    result.textContent = 'As senhas não conferem.';
+    result.textContent = 'As senhas não coincidem.';
     return;
   }
 
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
     await updateProfile(userCredential.user, { displayName: nome });
-
+    
     await addDoc(collection(firestore, "users"), {
       uid: userCredential.user.uid,
       nome: nome,
@@ -324,90 +426,156 @@ document.getElementById('registro-btn').addEventListener('click', async () => {
     });
 
     result.textContent = 'Conta criada com sucesso!';
-    setTimeout(() => voltarMenu(), 1000);
+    setTimeout(() => mostrarTela('menu-screen'), 1500);
   } catch (error) {
-    result.textContent = 'Erro no registro. Verifique os dados.';
+    result.textContent = 'Erro ao criar conta. Este e-mail já está em uso.';
   }
 });
 
-// 🔓 Logout
+// Logout
 document.getElementById('logout-btn').addEventListener('click', async () => {
   await signOut(auth);
   voltarMenu();
 });
 
-// 🎯 Máscara de telefone
-document.getElementById('registro-telefone').addEventListener('input', function() {
-  let v = this.value.replace(/\D/g, '').slice(0, 11);
-  if (v.length > 2) v = `(${v.substring(0, 2)}) ${v.substring(2)}`;
-  if (v.length > 10) v = `${v.substring(0, 10)}-${v.substring(10)}`;
-  this.value = v;
+// Máscara de telefone
+document.getElementById('registro-telefone').addEventListener('input', function(e) {
+  let x = e.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,5})(\d{0,4})/);
+  e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
 });
 
-// 🔄 Atualização de telas e Perfil
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    document.getElementById('perfil-screen').style.display = 'block';
-    document.getElementById('perfil-nao-logado-screen').style.display = 'none';
-    document.getElementById('minhas-placas-nao-logado-screen').style.display = 'none';
-    document.getElementById('minhas-placas-screen').style.display = 'block';
-
-    const q = query(collection(firestore, "users"), where("uid", "==", user.uid));
-    const querySnapshot = await getDocs(q);
-    if (!querySnapshot.empty) {
-      const data = querySnapshot.docs[0].data();
-      document.getElementById('perfil-nome').textContent = data.nome;
-      document.getElementById('perfil-email').textContent = data.email;
-      document.getElementById('perfil-telefone').textContent = data.telefone;
-    } else {
-      document.getElementById('perfil-nome').textContent = user.displayName;
-      document.getElementById('perfil-email').textContent = user.email;
-      document.getElementById('perfil-telefone').textContent = '(não informado)';
-    }
-
-    carregarMinhasPlacas(user.uid);
-  } else {
-    document.getElementById('perfil-screen').style.display = 'none';
-    document.getElementById('perfil-nao-logado-screen').style.display = 'block';
-    document.getElementById('minhas-placas-nao-logado-screen').style.display = 'block';
-    document.getElementById('minhas-placas-screen').style.display = 'none';
-    document.getElementById('lista-minhas-placas').innerHTML = '';
-  }
-});
-
-// 📄 Carregar Minhas Placas
-async function carregarMinhasPlacas(uid) {
-  const lista = document.getElementById('lista-minhas-placas');
-  lista.innerHTML = '';
-
-  const q = query(collection(firestore, "lostPlates"), where("ownerId", "==", uid));
-  const querySnapshot = await getDocs(q);
-
-  if (querySnapshot.empty) {
-    lista.innerHTML = "<p>Nenhuma placa cadastrada como perdida.</p>";
+// Cadastrar placa perdida (não requer login)
+document.getElementById('cadastrar-perda-btn').addEventListener('click', async () => {
+  const placa = document.getElementById('placa-perdida').value.trim().toUpperCase();
+  const local = document.getElementById('local-perda').value.trim();
+  const data = document.getElementById('data-perda').value;
+  const descricao = document.getElementById('descricao-perda').value.trim();
+  const result = document.getElementById('perdi-placa-result');
+  
+  if (!placa || placa.length < 6) {
+    result.textContent = 'Informe uma placa válida (mínimo 6 caracteres).';
     return;
   }
 
-  querySnapshot.forEach(doc => {
-    const data = doc.data();
-    const statusEncontrada = data.status === 'encontrada';
+  try {
+    const placaData = {
+      plate: placa,
+      location: local,
+      date: data,
+      description: descricao,
+      status: 'perdida',
+      createdAt: new Date()
+    };
 
-    const placaItem = document.createElement('div');
-    placaItem.style.background = '#eee';
-    placaItem.style.margin = '10px 0';
-    placaItem.style.padding = '10px';
-    placaItem.style.borderRadius = '8px';
+    // Se o usuário estiver logado, associamos a ele
+    if (auth.currentUser) {
+      placaData.ownerId = auth.currentUser.uid;
+      placaData.ownerEmail = auth.currentUser.email;
+    }
 
-    placaItem.innerHTML = `
-      <h3>${data.plate}</h3>
-      <button class="btn ${statusEncontrada ? 'btn-primary' : 'btn-red'}">
-        ${statusEncontrada ? 'ENCONTRADA — Ver mais detalhes' : 'NÃO ENCONTRADA — Aguardando'}
-      </button>
-    `;
-    lista.appendChild(placaItem);
-  });
-}
+    await addDoc(collection(firestore, "lostPlates"), placaData);
+    
+    result.textContent = 'Placa cadastrada com sucesso!';
+    setTimeout(() => voltarPara('placas-screen'), 1500);
+  } catch (error) {
+    result.textContent = 'Erro ao cadastrar placa. Tente novamente.';
+  }
+});
 
+// [Continua...]
+</script>
+<script type="module">
+// [Continuação do script...]
+
+// Cadastrar placa achada (não requer login)
+document.getElementById('cadastrar-achado-btn').addEventListener('click', async () => {
+  const placa = document.getElementById('placa-achada').value.trim().toUpperCase();
+  const local = document.getElementById('local-achado').value.trim();
+  const data = document.getElementById('data-achado').value;
+  const contato = document.getElementById('contato-achado').value;
+  const result = document.getElementById('achei-placa-result');
+  
+  if (!placa || !local || !data || !contato) {
+    result.textContent = 'Preencha todos os campos obrigatórios.';
+    return;
+  }
+
+  try {
+    // Verifica se a placa está cadastrada como perdida
+    const q = query(collection(firestore, "lostPlates"), where("plate", "==", placa));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      result.textContent = 'Esta placa não está cadastrada como perdida.';
+      return;
+    }
+
+    // Atualiza o status para encontrada
+    const docRef = querySnapshot.docs[0].ref;
+    const updateData = {
+      status: 'encontrada',
+      foundLocation: local,
+      foundDate: data,
+      contactMethod: contato,
+      updatedAt: new Date()
+    };
+
+    // Se o usuário estiver logado, registramos quem encontrou
+    if (auth.currentUser) {
+      updateData.foundBy = auth.currentUser.uid;
+    }
+
+    await updateDoc(docRef, updateData);
+    
+    result.textContent = 'Placa informada como encontrada com sucesso!';
+    setTimeout(() => voltarPara('placas-screen'), 1500);
+  } catch (error) {
+    result.textContent = 'Erro ao informar placa encontrada. Tente novamente.';
+  }
+});
+
+// Monitorar estado de autenticação
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    // Atualiza perfil
+    const userQuery = query(collection(firestore, "users"), where("uid", "==", user.uid));
+    const userSnapshot = await getDocs(userQuery);
+    
+    if (!userSnapshot.empty) {
+      const userData = userSnapshot.docs[0].data();
+      document.getElementById('perfil-nome').textContent = userData.nome;
+      document.getElementById('perfil-email').textContent = userData.email;
+      document.getElementById('perfil-telefone').textContent = userData.telefone;
+    }
+
+    // Carrega placas do usuário
+    const placasQuery = query(collection(firestore, "lostPlates"), where("ownerId", "==", user.uid));
+    const placasSnapshot = await getDocs(placasQuery);
+    const listaPlacas = document.getElementById('lista-minhas-placas');
+    
+    listaPlacas.innerHTML = '';
+    
+    if (placasSnapshot.empty) {
+      listaPlacas.innerHTML = '<p>Você não possui placas cadastradas.</p>';
+      return;
+    }
+
+    placasSnapshot.forEach(doc => {
+      const data = doc.data();
+      const placaItem = document.createElement('div');
+      placaItem.className = 'placa-item';
+      
+      placaItem.innerHTML = `
+        <h3>Placa: ${data.plate}</h3>
+        <p><strong>Status:</strong> ${data.status === 'encontrada' ? 'ENCONTRADA 🎉' : 'NÃO ENCONTRADA'}</p>
+        <p><strong>Local:</strong> ${data.location || 'Não informado'}</p>
+        ${data.status === 'encontrada' ? `<p><strong>Encontrada em:</strong> ${data.foundLocation}</p>` : ''}
+      `;
+      
+      listaPlacas.appendChild(placaItem);
+    });
+  }
+});
 </script>
 </body>
 </html>
