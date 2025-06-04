@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SOS PLACA</title>
-  <link rel="icon" type="image/png" href="logo.png"/>
+  <link rel="icon" type="image/png" href="logo.png">
 
   <!-- Fontes personalizadas -->
   <style>
@@ -53,7 +53,7 @@
       align-items: center;
       justify-content: space-between;
       border-radius: 0 0 10px 10px;
-      cursor: pointer; /* Para indicar que é clicável */
+      cursor: pointer;
     }
     .logo-container {
       display: flex;
@@ -111,8 +111,7 @@
       margin-bottom: 0.5rem;
       font-weight: 500;
     }
-    input,
-    select {
+    input, select {
       width: 100%;
       padding: 0.75rem;
       border: 1px solid #ddd;
@@ -125,7 +124,7 @@
       border-radius: 6px;
       background-color: #f8f9fa;
       display: none;
-      white-space: pre-line; /* Para respeitar quebras de linha */
+      white-space: pre-line;
     }
     .result.success {
       display: block;
@@ -167,7 +166,7 @@
       margin-top: 20px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
-    @media (max-width: 600px) {
+    @media (max-width:600px) {
       header {
         flex-direction: column;
         gap: 10px;
@@ -214,7 +213,8 @@
     <div id="minhas-placas-screen" class="screen">
       <h2>Minhas Placas Perdidas</h2>
       <div id="minhas-placas-content">
-        <!-- Se não estiver logado, aparecerá mensagem + botão “Entrar” -->
+        <!-- Conteúdo dinâmico: se não logado, mostra botão “Entrar”,
+             caso contrário, lista as placas do usuário. -->
       </div>
       <button id="btn-voltar-minhas" class="btn btn-secondary">Voltar</button>
     </div>
@@ -223,7 +223,7 @@
     <div id="perfil-screen" class="screen">
       <h2>Meu Perfil</h2>
       <div id="perfil-content">
-        <!-- Se não estiver logado, aparecerá mensagem + botão “Entrar” -->
+        <!-- Conteúdo dinâmico: se não logado, mostra botão “Entrar” -->
       </div>
       <button id="btn-voltar-perfil" class="btn btn-secondary">Voltar</button>
     </div>
@@ -233,11 +233,11 @@
       <h2>Login</h2>
       <div class="form-group">
         <label for="login-email">E-mail:</label>
-        <input type="email" id="login-email" placeholder="Digite seu e-mail" />
+        <input type="email" id="login-email" placeholder="Digite seu e-mail" required>
       </div>
       <div class="form-group">
         <label for="login-senha">Senha:</label>
-        <input type="password" id="login-senha" placeholder="Digite sua senha" />
+        <input type="password" id="login-senha" placeholder="Digite sua senha" required>
       </div>
       <button id="btn-login" class="btn btn-success">Entrar</button>
       <button id="btn-ir-cadastro" class="btn">Não tem conta? Cadastre-se</button>
@@ -250,23 +250,23 @@
       <h2>Cadastro</h2>
       <div class="form-group">
         <label for="cadastro-nome">Nome Completo:</label>
-        <input type="text" id="cadastro-nome" placeholder="Digite seu nome completo" />
+        <input type="text" id="cadastro-nome" placeholder="Digite seu nome completo" required>
       </div>
       <div class="form-group">
         <label for="cadastro-email">E-mail:</label>
-        <input type="email" id="cadastro-email" placeholder="Digite seu e-mail" />
+        <input type="email" id="cadastro-email" placeholder="Digite seu e-mail" required>
       </div>
       <div class="form-group">
         <label for="cadastro-telefone">Telefone:</label>
-        <input type="tel" id="cadastro-telefone" placeholder="(00) 00000-0000" />
+        <input type="tel" id="cadastro-telefone" placeholder="(00) 00000-0000" required>
       </div>
       <div class="form-group">
         <label for="cadastro-senha">Senha:</label>
-        <input type="password" id="cadastro-senha" placeholder="Digite sua senha" />
+        <input type="password" id="cadastro-senha" placeholder="Digite sua senha" required>
       </div>
       <div class="form-group">
         <label for="cadastro-confirmar-senha">Confirmar Senha:</label>
-        <input type="password" id="cadastro-confirmar-senha" placeholder="Confirme sua senha" />
+        <input type="password" id="cadastro-confirmar-senha" placeholder="Confirme sua senha" required>
       </div>
       <button id="btn-cadastrar" class="btn btn-success">Cadastrar</button>
       <button id="btn-voltar-cadastro" class="btn btn-secondary">Voltar</button>
@@ -275,20 +275,20 @@
 
     <!-- Tela Perdi uma Placa -->
     <div id="perdi-screen" class="screen">
-      <h2>Perdi uma Placa</h2>
+      <h2>Verificar placa perdida</h2>
       <div class="form-group">
-        <label for="perdi-tipo">Tipo de Placa:</label>
-        <select id="perdi-tipo">
-          <option value="comum">Comum</option>
-          <option value="mercosul">Mercosul</option>
-        </select>
+        <label>Tipo de placa:</label>
+        <div style="display: flex; gap: 0.625rem;">
+          <button id="btn-perdi-comum" class="btn ativo">Comum</button>
+          <button id="btn-perdi-mercosul" class="btn">Mercosul</button>
+        </div>
       </div>
       <div class="form-group">
-        <label for="perdi-placa">Número da Placa:</label>
-        <input type="text" id="perdi-placa" placeholder="Ex: ABC1234 ou ABC1D23" />
+        <label for="perdi-placa">Número da placa:</label>
+        <input type="text" id="perdi-placa" placeholder="AAA-0000 ou AAA0A00" required>
       </div>
-      <div class="form-group" id="perdi-localizacao-group">
-        <label for="perdi-uf">Estado (UF):</label>
+      <div class="form-group" id="perdi-localizacao">
+        <label for="perdi-uf">UF:</label>
         <select id="perdi-uf">
           <option value="" disabled selected>Selecione o estado</option>
           <option value="AC">AC</option>
@@ -324,28 +324,37 @@
           <option value="" disabled selected>Selecione o município</option>
         </select>
       </div>
-      <button id="perdi-verificar" class="btn btn-success">Verificar Placa</button>
-      <button id="perdi-salvar" class="btn btn-success">Salvar Placa Perdida</button>
-      <button id="btn-voltar-perdi" class="btn btn-secondary">Voltar</button>
+
+      <div class="alert-box">
+        <strong>⚠️ Atenção:</strong><br>
+        Não cobramos e nem intermediamos qualquer valor pela devolução de placas.<br>
+        Oferecer uma gratificação é algo opcional, decidido entre quem perdeu e quem encontrou.<br>
+        Se achar necessário, entre em contato com as autoridades.
+      </div>
+
+      <div>
+        <button id="perdi-verificar" class="btn btn-success">Verificar Placa</button>
+        <button id="btn-voltar-perdi" class="btn btn-secondary">Voltar</button>
+      </div>
       <div id="perdi-result" class="result"></div>
     </div>
 
     <!-- Tela Achei uma Placa -->
     <div id="achei-screen" class="screen">
-      <h2>Achei uma Placa</h2>
+      <h2>Cadastrar placa encontrada</h2>
       <div class="form-group">
-        <label for="achei-tipo">Tipo de Placa:</label>
-        <select id="achei-tipo">
-          <option value="comum">Comum</option>
-          <option value="mercosul">Mercosul</option>
-        </select>
+        <label>Tipo de placa:</label>
+        <div style="display: flex; gap: 0.625rem;">
+          <button id="btn-achei-comum" class="btn ativo">Comum</button>
+          <button id="btn-achei-mercosul" class="btn">Mercosul</button>
+        </div>
       </div>
       <div class="form-group">
-        <label for="achei-placa">Número da Placa:</label>
-        <input type="text" id="achei-placa" placeholder="Ex: ABC1234 ou ABC1D23" />
+        <label for="achei-placa">Número da placa:</label>
+        <input type="text" id="achei-placa" placeholder="AAA-0000 ou AAA0A00" required>
       </div>
-      <div class="form-group" id="achei-localizacao-group">
-        <label for="achei-uf">Estado (UF):</label>
+      <div class="form-group" id="achei-localizacao">
+        <label for="achei-uf">UF:</label>
         <select id="achei-uf">
           <option value="" disabled selected>Selecione o estado</option>
           <option value="AC">AC</option>
@@ -383,14 +392,16 @@
       </div>
       <div class="form-group">
         <label for="achei-nome">Seu nome:</label>
-        <input type="text" id="achei-nome" placeholder="Digite seu nome" />
+        <input type="text" id="achei-nome" placeholder="Digite seu nome completo" required>
       </div>
       <div class="form-group">
-        <label for="achei-telefone">Telefone para contato:</label>
-        <input type="tel" id="achei-telefone" placeholder="(00) 00000-0000" />
+        <label for="achei-telefone">Seu telefone:</label>
+        <input type="tel" id="achei-telefone" placeholder="(00) 00000-0000" required>
       </div>
-      <button id="achei-salvar" class="btn btn-success">Salvar Placa</button>
-      <button id="btn-voltar-achei" class="btn btn-secondary">Voltar</button>
+      <div>
+        <button id="achei-salvar" class="btn btn-success">Salvar Placa</button>
+        <button id="btn-voltar-achei" class="btn btn-secondary">Voltar</button>
+      </div>
       <div id="achei-result" class="result"></div>
     </div>
   </div>
@@ -399,524 +410,567 @@
     💙 Ajude a manter esse projeto!<br>
     <strong>PIX:</strong> sosplaca.app@gmail.com
   </footer>
-  <!-- Parte 2: Scripts JavaScript para comunicação com Firebase e lógica da página -->
   <script type="module">
-    // ================================ IMPORTS FIREBASE (v9 modular) ================================
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+    // ─────────── IMPORTS FIREBASE ───────────
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
     import {
       getAuth,
-      signInWithEmailAndPassword,
       createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
       signOut,
-      onAuthStateChanged,
-      updateProfile
-    } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
     import {
       getFirestore,
       collection,
       addDoc,
+      serverTimestamp,
       getDocs,
       query,
       where
-    } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+    } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+    import {
+      getDatabase,
+      ref,
+      set,
+      get,
+      child
+    } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
 
-    // ================================ CONFIGURAÇÃO DO FIREBASE ================================
+    // ─────────── CONFIGURAÇÃO FIREBASE ───────────
     const firebaseConfig = {
-      apiKey: 'AIzaSyBn6cCXLnU6LUH7kOjVtvpuceQ2lVzzczg',
-      authDomain: 'sosplaca-73cf7.firebaseapp.com',
-      projectId: 'sosplaca-73cf7',
-      storageBucket: 'sosplaca-73cf7.appspot.com',
-      messagingSenderId: '658059385722',
-      appId: '1:658059385722:web:202e84abf6dcc6fbd894c3',
-      databaseURL: 'https://sosplaca-73cf7-default-rtdb.firebaseio.com'
+      apiKey: "AIzaSyBjetihGmlo_z01jx-GW9Ith0oDCS0jwYc",
+      authDomain: "sosplaca-73cf7.firebaseapp.com",
+      databaseURL: "https://sosplaca-73cf7-default-rtdb.firebaseio.com",
+      projectId: "sosplaca-73cf7",
+      storageBucket: "sosplaca-73cf7.appspot.com",
+      messagingSenderId: "658059385722",
+      appId: "1:658059385722:web:5ed0e8fd7f7a2931d894c3"
     };
 
-    // Inicializa Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const db = getFirestore(app);
+    const firestore = getFirestore(app);
+    const realtimeDb = getDatabase(app);
 
-    // ================================ ELEMENTOS (TELAS e BOTÕES) ================================
-    // Telas
-    const menuScreen = document.getElementById("menu-screen");
-    const placasScreen = document.getElementById("placas-screen");
-    const minhasPlacasScreen = document.getElementById("minhas-placas-screen");
-    const perfilScreen = document.getElementById("perfil-screen");
-    const loginScreen = document.getElementById("login-screen");
-    const cadastroScreen = document.getElementById("cadastro-screen");
-    const perdiScreen = document.getElementById("perdi-screen");
-    const acheiScreen = document.getElementById("achei-screen");
-
-    // Botões do menu
-    const btnPlacas = document.getElementById("btn-placas");
-    const btnMinhasPlacas = document.getElementById("btn-minhas-placas");
-    const btnPerfil = document.getElementById("btn-perfil");
-
-    // Botões "Perdi" e "Achei"
-    const btnPerdi = document.getElementById("btn-perdi");
-    const btnAchei = document.getElementById("btn-achei");
-
-    // Botões "Voltar" (cada tela)
-    const btnVoltarPlacas = document.getElementById("btn-voltar-placas");
-    const btnVoltarMinhas = document.getElementById("btn-voltar-minhas");
-    const btnVoltarPerfil = document.getElementById("btn-voltar-perfil");
-    const btnVoltarLogin = document.getElementById("btn-voltar-login");
-    const btnVoltarCadastro = document.getElementById("btn-voltar-cadastro");
-    const btnVoltarPerdi = document.getElementById("btn-voltar-perdi");
-    const btnVoltarAchei = document.getElementById("btn-voltar-achei");
-
-    // Login/Cadastro
-    const btnLogin = document.getElementById("btn-login");
-    const btnIrCadastro = document.getElementById("btn-ir-cadastro");
-    const btnCadastrar = document.getElementById("btn-cadastrar");
-
-    // Elementos Tela Perdi
-    const perdiTipo = document.getElementById("perdi-tipo");
-    const perdiPlaca = document.getElementById("perdi-placa");
-    const perdiUf = document.getElementById("perdi-uf");
-    const perdiMunicipio = document.getElementById("perdi-municipio");
-    const perdiVerificar = document.getElementById("perdi-verificar");
-    const perdiSalvar = document.getElementById("perdi-salvar");
-    const perdiResult = document.getElementById("perdi-result");
-    const perdiLocalGroup = document.getElementById("perdi-localizacao-group");
-
-    // Elementos Tela Achei
-    const acheiTipo = document.getElementById("achei-tipo");
-    const acheiPlaca = document.getElementById("achei-placa");
-    const acheiUf = document.getElementById("achei-uf");
-    const acheiMunicipio = document.getElementById("achei-municipio");
-    const acheiNome = document.getElementById("achei-nome");
-    const acheiTelefone = document.getElementById("achei-telefone");
-    const acheiSalvar = document.getElementById("achei-salvar");
-    const acheiResult = document.getElementById("achei-result");
-    const acheiLocalGroup = document.getElementById("achei-localizacao-group");
-
-    // Elementos Tela Minhas Placas
-    const minhasPlacasContent = document.getElementById("minhas-placas-content");
-
-    // Elementos Tela Perfil
-    const perfilContent = document.getElementById("perfil-content");
-
-    // Elementos Tela Login/Cadastro
-    const loginEmail = document.getElementById("login-email");
-    const loginSenha = document.getElementById("login-senha");
-    const loginResult = document.getElementById("login-result");
-
-    const cadastroNome = document.getElementById("cadastro-nome");
-    const cadastroEmail = document.getElementById("cadastro-email");
-    const cadastroTelefone = document.getElementById("cadastro-telefone");
-    const cadastroSenha = document.getElementById("cadastro-senha");
-    const cadastroConfirmar = document.getElementById("cadastro-confirmar-senha");
-    const cadastroResult = document.getElementById("cadastro-result");
-
-    // ================================ FUNÇÕES DE NAVEGAÇÃO DE TELAS ================================
-    function showScreen(screen) {
-      // Esconde todas as telas
-      [
-        menuScreen,
-        placasScreen,
-        minhasPlacasScreen,
-        perfilScreen,
-        loginScreen,
-        cadastroScreen,
-        perdiScreen,
-        acheiScreen
-      ].forEach((s) => s.classList.remove("active"));
-
-      // Mostra apenas a tela informada
-      screen.classList.add("active");
+    // ─────────── FUNÇÕES DE NAVEGAÇÃO ───────────
+    function mostrarTela(id) {
+      document.querySelectorAll('.screen').forEach(screen =>
+        screen.classList.remove('active')
+      );
+      document.getElementById(id).classList.add('active');
     }
 
-    // Torna acessível globalmente (para que event listeners inline, se existirem, funcionem)
-    window.voltarMenu = () => showScreen(menuScreen);
+    function voltarMenu() {
+      mostrarTela('menu-screen');
+    }
+    window.voltarMenu = voltarMenu;
 
-    // ================================ ASSOCIAÇÃO DE EVENTOS ================================
-    // Ao carregar a página, exibe sempre o menu principal
-    window.addEventListener("load", () => {
-      showScreen(menuScreen);
+    // ─────────── ELEMENTOS E EVENTOS DE NAVEGAÇÃO ───────────
+    document.getElementById('header-home').addEventListener('click', () =>
+      mostrarTela('menu-screen')
+    );
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Ao carregar, exibe sempre o menu
+      mostrarTela('menu-screen');
+      // Inicializa seleção de “Comum” em “Achei” e “Perdi”
+      document.getElementById('btn-achei-comum').click();
+      document.getElementById('btn-perdi-comum').click();
     });
 
-    // Cabeçalho “SOS PLACA” volta ao menu
-    document
-      .getElementById("header-home")
-      .addEventListener("click", () => showScreen(menuScreen));
+    document.getElementById('btn-placas').addEventListener('click', () =>
+      mostrarTela('placas-screen')
+    );
 
-    // “Menu → Buscar/Cadastrar Placas”
-    btnPlacas.addEventListener("click", () => showScreen(placasScreen));
-    // “Menu → Minhas Placas”
-    btnMinhasPlacas.addEventListener("click", () => {
-      showMinhasPlacas();
-      showScreen(minhasPlacasScreen);
-    });
-    // “Menu → Meu Perfil”
-    btnPerfil.addEventListener("click", () => {
-      mostrarPerfil();
-      showScreen(perfilScreen);
-    });
+    document.getElementById('btn-minhas-placas').addEventListener('click', () =>
+      verificarLoginParaMinhasPlacas()
+    );
 
-    // “Buscar/Cadastrar → Perdi uma placa”
-    btnPerdi.addEventListener("click", () => showScreen(perdiScreen));
-    // “Buscar/Cadastrar → Achei uma placa”
-    btnAchei.addEventListener("click", () => showScreen(acheiScreen));
+    document.getElementById('btn-perfil').addEventListener('click', () =>
+      verificarLoginParaPerfil()
+    );
 
-    // “Voltar” de cada tela (agora sem inline, via JS)
-    btnVoltarPlacas.addEventListener("click", () => showScreen(menuScreen));
-    btnVoltarMinhas.addEventListener("click", () => showScreen(menuScreen));
-    btnVoltarPerfil.addEventListener("click", () => showScreen(menuScreen));
-    btnVoltarLogin.addEventListener("click", () => showScreen(menuScreen));
-    btnVoltarCadastro.addEventListener("click", () => showScreen(menuScreen));
-    btnVoltarPerdi.addEventListener("click", () => showScreen(placasScreen));
-    btnVoltarAchei.addEventListener("click", () => showScreen(placasScreen));
+    document.getElementById('btn-perdi').addEventListener('click', () =>
+      mostrarTela('perdi-screen')
+    );
 
-    // “Login”
-    btnLogin.addEventListener("click", async () => {
-      const email = loginEmail.value.trim();
-      const senha = loginSenha.value.trim();
-      loginResult.className = "result";
-      loginResult.textContent = "";
+    document.getElementById('btn-achei').addEventListener('click', () =>
+      mostrarTela('achei-screen')
+    );
+
+    document.getElementById('btn-ir-cadastro').addEventListener('click', () =>
+      mostrarTela('cadastro-screen')
+    );
+
+    document.getElementById('btn-voltar-placas').addEventListener('click', () =>
+      mostrarTela('menu-screen')
+    );
+    document.getElementById('btn-voltar-minhas').addEventListener('click', () =>
+      mostrarTela('menu-screen')
+    );
+    document.getElementById('btn-voltar-perfil').addEventListener('click', () =>
+      mostrarTela('menu-screen')
+    );
+    document.getElementById('btn-voltar-login').addEventListener('click', () =>
+      mostrarTela('menu-screen')
+    );
+    document.getElementById('btn-voltar-cadastro').addEventListener('click', () =>
+      mostrarTela('menu-screen')
+    );
+    document.getElementById('btn-voltar-perdi').addEventListener('click', () =>
+      mostrarTela('placas-screen')
+    );
+    document.getElementById('btn-voltar-achei').addEventListener('click', () =>
+      mostrarTela('placas-screen')
+    );
+
+    // ─────────── FUNÇÕES DE LOGIN/CADASTRO ───────────
+    document.getElementById('btn-login').addEventListener('click', async () => {
+      const email = document.getElementById('login-email').value.trim();
+      const senha = document.getElementById('login-senha').value.trim();
+      const result = document.getElementById('login-result');
+      result.className = 'result';
+      result.style.display = 'none';
 
       if (!email || !senha) {
-        loginResult.classList.add("error");
-        loginResult.textContent = "Preencha todos os campos.";
+        result.textContent = 'Preencha todos os campos.';
+        result.classList.add('error');
+        result.style.display = 'block';
         return;
       }
 
       try {
         await signInWithEmailAndPassword(auth, email, senha);
-        loginResult.classList.add("success");
-        loginResult.textContent = "Login efetuado com sucesso!";
-        // Depois de um breve delay, volta ao menu
-        setTimeout(() => showScreen(menuScreen), 800);
+        result.textContent = 'Login realizado com sucesso!';
+        result.classList.add('success');
+        result.style.display = 'block';
+        setTimeout(() => mostrarTela('menu-screen'), 800);
       } catch (error) {
-        loginResult.classList.add("error");
-        loginResult.textContent = "Erro no login: " + error.message;
+        result.textContent = 'E-mail ou senha incorretos.';
+        result.classList.add('error');
+        result.style.display = 'block';
       }
     });
 
-    // “Não tem conta? Cadastre-se”
-    btnIrCadastro.addEventListener("click", () => showScreen(cadastroScreen));
+    document.getElementById('btn-cadastrar').addEventListener('click', async () => {
+      const nome = document.getElementById('cadastro-nome').value.trim();
+      const email = document.getElementById('cadastro-email').value.trim();
+      const telefone = document.getElementById('cadastro-telefone').value.trim();
+      const senha = document.getElementById('cadastro-senha').value.trim();
+      const confirmarSenha = document.getElementById('cadastro-confirmar-senha').value.trim();
+      const result = document.getElementById('cadastro-result');
+      result.className = 'result';
+      result.style.display = 'none';
 
-    // “Cadastrar”
-    btnCadastrar.addEventListener("click", async () => {
-      const nome = cadastroNome.value.trim();
-      const email = cadastroEmail.value.trim();
-      const telefone = cadastroTelefone.value.trim();
-      const senha = cadastroSenha.value.trim();
-      const confirmar = cadastroConfirmar.value.trim();
-      cadastroResult.className = "result";
-      cadastroResult.textContent = "";
-
-      if (!nome || !email || !telefone || !senha || !confirmar) {
-        cadastroResult.classList.add("error");
-        cadastroResult.textContent = "Preencha todos os campos.";
+      if (!nome || !email || !telefone || !senha || !confirmarSenha) {
+        result.textContent = 'Preencha todos os campos.';
+        result.classList.add('error');
+        result.style.display = 'block';
         return;
       }
-      if (senha !== confirmar) {
-        cadastroResult.classList.add("error");
-        cadastroResult.textContent = "As senhas não coincidem.";
+      if (senha.length < 6) {
+        result.textContent = 'A senha deve ter pelo menos 6 caracteres.';
+        result.classList.add('error');
+        result.style.display = 'block';
         return;
       }
+      if (senha !== confirmarSenha) {
+        result.textContent = 'As senhas não coincidem.';
+        result.classList.add('error');
+        result.style.display = 'block';
+        return;
+      }
+
       try {
-        const userCredential = await createUserWithEmailAndPassword(
-          auth,
-          email,
-          senha
-        );
-        // Armazena o displayName
-        await updateProfile(userCredential.user, { displayName: nome });
-        cadastroResult.classList.add("success");
-        cadastroResult.textContent = "Usuário criado com sucesso!";
-        setTimeout(() => showScreen(menuScreen), 800);
+        const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
+        const userId = userCredential.user.uid;
+        // Salvar dados adicionais no Firestore, coleção "users"
+        await addDoc(collection(firestore, 'users'), {
+          uid: userId,
+          name: nome,
+          phoneNumber: telefone,
+          createdAt: serverTimestamp()
+        });
+        result.textContent = 'Cadastro realizado com sucesso!';
+        result.classList.add('success');
+        result.style.display = 'block';
+        setTimeout(() => mostrarTela('menu-screen'), 800);
       } catch (error) {
-        cadastroResult.classList.add("error");
-        cadastroResult.textContent = "Erro no cadastro: " + error.message;
-      }
-    });
-
-    // ================================ “Perdi uma Placa” ================================
-    // Mostra/oculta UF+Município de acordo com tipo de placa
-    perdiTipo.addEventListener("change", () => {
-      if (perdiTipo.value === "comum") {
-        perdiLocalGroup.style.display = "block";
-      } else {
-        perdiLocalGroup.style.display = "none";
-      }
-    });
-    // Estado inicial: se for “mercosul”, já oculta
-    if (perdiTipo.value === "mercosul") {
-      perdiLocalGroup.style.display = "none";
-    }
-
-    // Verificar Placa (perdida): consulta “foundPlates”
-    perdiVerificar.addEventListener("click", async () => {
-      const tipo = perdiTipo.value;
-      const placa = perdiPlaca.value.trim().toUpperCase();
-      const uf = perdiUf.value;
-      const municipio = perdiMunicipio.value;
-      perdiResult.className = "result";
-      perdiResult.textContent = "";
-
-      if (!placa) {
-        perdiResult.classList.add("error");
-        perdiResult.textContent = "Informe o número da placa.";
-        return;
-      }
-      try {
-        const foundCollection = collection(db, "foundPlates");
-        const q = query(
-          foundCollection,
-          where("placa", "==", placa),
-          where("tipo", "==", tipo)
-        );
-        const querySnapshot = await getDocs(q);
-        if (!querySnapshot.empty) {
-          const docFound = querySnapshot.docs[0].data();
-          let mensagem = `Alguém encontrou sua placa!\n`;
-          mensagem += `Nome: ${docFound.nome}\n`;
-          mensagem += `Telefone: ${docFound.telefone}\n`;
-          if (tipo === "comum") {
-            mensagem += `Local encontrado: ${docFound.uf} / ${docFound.municipio}`;
-          }
-          perdiResult.classList.add("success");
-          perdiResult.innerText = mensagem;
+        console.error('Erro no cadastro:', error);
+        if (error.code === 'auth/email-already-in-use') {
+          result.textContent = 'Este e-mail já está cadastrado.';
         } else {
-          perdiResult.classList.add("error");
-          perdiResult.textContent = "Nenhuma informação de placa encontrada.";
+          result.textContent = 'Erro ao cadastrar. Tente novamente.';
         }
-      } catch (error) {
-        perdiResult.classList.add("error");
-        perdiResult.textContent = "Erro ao verificar: " + error.message;
+        result.classList.add('error');
+        result.style.display = 'block';
       }
     });
 
-    // Salvar Placa Perdida (em “lostPlates”)
-    perdiSalvar.addEventListener("click", async () => {
-      const user = auth.currentUser;
-      if (!user) {
-        perdiResult.className = "result error";
-        perdiResult.textContent = "Você precisa estar logado para salvar.";
-        return;
-      }
-      const tipo = perdiTipo.value;
-      const placa = perdiPlaca.value.trim().toUpperCase();
-      const uf = perdiUf.value;
-      const municipio = perdiMunicipio.value;
-      perdiResult.className = "result";
-      perdiResult.textContent = "";
-
-      if (!placa) {
-        perdiResult.classList.add("error");
-        perdiResult.textContent = "Informe o número da placa.";
-        return;
-      }
-      if (tipo === "comum" && (!uf || !municipio)) {
-        perdiResult.classList.add("error");
-        perdiResult.textContent = "Selecione UF e município.";
-        return;
-      }
-      try {
-        await addDoc(collection(db, "lostPlates"), {
-          ownerId: user.uid,
-          placa: placa,
-          tipo: tipo,
-          uf: tipo === "comum" ? uf : "",
-          municipio: tipo === "comum" ? municipio : "",
-          timestamp: Date.now(),
-        });
-        perdiResult.classList.add("success");
-        perdiResult.textContent = "Placa perdida cadastrada com sucesso!";
-        // Limpa campos
-        perdiPlaca.value = "";
-        if (tipo === "comum") {
-          perdiUf.value = "";
-          perdiMunicipio.innerHTML =
-            '<option value="" disabled selected>Selecione o município</option>';
-        }
-      } catch (error) {
-        perdiResult.classList.add("error");
-        perdiResult.textContent = "Erro ao salvar: " + error.message;
-      }
-    });
-
-    // ================================ “Achei uma Placa” ================================
-    acheiTipo.addEventListener("change", () => {
-      if (acheiTipo.value === "comum") {
-        acheiLocalGroup.style.display = "block";
+    // ─────────── OBSERVAR ESTADO DE AUTENTICAÇÃO ───────────
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log('Usuário logado:', user.email);
       } else {
-        acheiLocalGroup.style.display = "none";
+        console.log('Usuário não logado');
       }
     });
-    if (acheiTipo.value === "mercosul") {
-      acheiLocalGroup.style.display = "none";
+
+    // ─────────── “Minhas Placas Perdidas” ───────────
+    async function verificarLoginParaMinhasPlacas() {
+      const user = auth.currentUser;
+      if (user) {
+        mostrarTela('minhas-placas-screen');
+        carregarMinhasPlacas(user.uid);
+      } else {
+        mostrarTela('login-screen');
+      }
     }
 
-    acheiSalvar.addEventListener("click", async () => {
-      const tipo = acheiTipo.value;
-      const placa = acheiPlaca.value.trim().toUpperCase();
-      const uf = acheiUf.value;
-      const municipio = acheiMunicipio.value;
-      const nome = acheiNome.value.trim();
-      const telefone = acheiTelefone.value.trim();
-      acheiResult.className = "result";
-      acheiResult.textContent = "";
-
-      if (!placa || !nome || !telefone) {
-        acheiResult.classList.add("error");
-        acheiResult.textContent = "Preencha todos os campos obrigatórios.";
-        return;
-      }
-      if (tipo === "comum" && (!uf || !municipio)) {
-        acheiResult.classList.add("error");
-        acheiResult.textContent = "Selecione UF e município.";
-        return;
-      }
+    async function carregarMinhasPlacas(uid) {
+      const minhasPlacasContent = document.getElementById('minhas-placas-content');
+      minhasPlacasContent.innerHTML = '';
       try {
-        await addDoc(collection(db, "foundPlates"), {
-          placa: placa,
-          tipo: tipo,
-          uf: tipo === "comum" ? uf : "",
-          municipio: tipo === "comum" ? municipio : "",
-          nome: nome,
-          telefone: telefone,
-          timestamp: Date.now(),
-        });
-        acheiResult.classList.add("success");
-        acheiResult.textContent = "Informação de placa encontrada salva com sucesso!";
-        // Limpa campos
-        acheiPlaca.value = "";
-        acheiNome.value = "";
-        acheiTelefone.value = "";
-        if (tipo === "comum") {
-          acheiUf.value = "";
-          acheiMunicipio.innerHTML =
-            '<option value="" disabled selected>Selecione o município</option>';
-        }
-      } catch (error) {
-        acheiResult.classList.add("error");
-        acheiResult.textContent = "Erro ao salvar: " + error.message;
-      }
-    });
-
-    // ================================ “Minhas Placas Perdidas” ================================
-    async function showMinhasPlacas() {
-      const user = auth.currentUser;
-      minhasPlacasContent.innerHTML = ""; // Limpa o conteúdo antes
-      if (!user) {
-        // Se não está logado, exibe mensagem + botão “Entrar”
-        minhasPlacasContent.innerHTML = `
-          <p>Você precisa estar logado para ver suas placas.</p>
-          <button id="btn-login-minhas" class="btn btn-success">Entrar</button>
-        `;
-        // Associa o clique desse botão para mostrar a tela de login
-        document
-          .getElementById("btn-login-minhas")
-          .addEventListener("click", () => showScreen(loginScreen));
-        return;
-      }
-      try {
-        const lostCollection = collection(db, "lostPlates");
-        const q = query(lostCollection, where("ownerId", "==", user.uid));
+        const lostCollection = collection(firestore, 'lostPlates');
+        const q = query(lostCollection, where('ownerId', '==', uid));
         const querySnapshot = await getDocs(q);
         if (querySnapshot.empty) {
-          minhasPlacasContent.innerHTML =
-            "<p>Você não possui placas perdidas cadastradas.</p>";
+          minhasPlacasContent.innerHTML = '<p>Você não possui placas perdidas cadastradas.</p>';
           return;
         }
-        // Para cada placa perdida, cria um card com “Verificar Status”
-        querySnapshot.forEach((docSnap) => {
+        querySnapshot.forEach(docSnap => {
           const data = docSnap.data();
-          const divCard = document.createElement("div");
-          divCard.classList.add("plate-card");
+          const divCard = document.createElement('div');
+          divCard.classList.add('plate-card');
           divCard.innerHTML = `
-            <p><strong>Placa:</strong> ${data.placa} (${
-            data.tipo === "comum"
-              ? data.uf + " / " + data.municipio
-              : "Mercosul"
-          })</p>
-            <button class="btn btn-success btn-verificar-status" data-placa="${
-              data.placa
-            }" data-tipo="${data.tipo}">
+            <p><strong>Placa:</strong> ${data.placa} (${data.tipo === 'comum' ? data.uf + ' / ' + data.municipio : 'Mercosul'})</p>
+            <button class="btn btn-success btn-verificar-status" data-placa="${data.placa}" data-tipo="${data.tipo}">
               Verificar Status
             </button>
             <div class="result status-result" style="margin-top:10px; display:none;"></div>
           `;
           minhasPlacasContent.appendChild(divCard);
         });
-        // Associa evento a todos os botões “Verificar Status”
-        document.querySelectorAll(".btn-verificar-status").forEach((btn) => {
-          btn.addEventListener("click", async (e) => {
-            const placa = e.currentTarget.getAttribute("data-placa");
-            const tipo = e.currentTarget.getAttribute("data-tipo");
+        document.querySelectorAll('.btn-verificar-status').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const placa = e.currentTarget.getAttribute('data-placa');
+            const tipo = e.currentTarget.getAttribute('data-tipo');
             const resultadoDiv = e.currentTarget.nextElementSibling;
-            resultadoDiv.className = "result status-result";
-            resultadoDiv.textContent = "";
+            resultadoDiv.className = 'result status-result';
+            resultadoDiv.textContent = '';
             try {
-              const foundCollection = collection(db, "foundPlates");
-              const q2 = query(
-                foundCollection,
-                where("placa", "==", placa),
-                where("tipo", "==", tipo)
-              );
+              // Monta chave Realtime para verificar se existe
+              const keyRealtime = tipo === 'comum'
+                ? `${placa}:${data.uf}:${data.municipio}`
+                : `${placa}:null:null`;
+              const snapshot = await get(child(ref(realtimeDb), keyRealtime));
+              if (!snapshot.exists()) {
+                resultadoDiv.classList.add('error');
+                resultadoDiv.textContent = 'Ainda não encontramos sua placa.';
+                resultadoDiv.style.display = 'block';
+                return;
+              }
+              // Se existe no Realtime, faz query no Firestore
+              const foundCollection = collection(firestore, 'foundPlates');
+              const q2 = query(foundCollection, where('plate', '==', placa));
               const snap2 = await getDocs(q2);
               if (!snap2.empty) {
                 const foundData = snap2.docs[0].data();
                 let msg = `Sua placa foi encontrada!\n`;
-                msg += `Nome: ${foundData.nome}\n`;
-                msg += `Telefone: ${foundData.telefone}\n`;
-                if (tipo === "comum") {
-                  msg += `Local: ${foundData.uf} / ${foundData.municipio}`;
+                msg += `Nome: ${foundData.founderName}\n`;
+                msg += `Telefone: ${foundData.founderPhone}\n`;
+                if (tipo === 'comum') {
+                  msg += `Local: ${foundData.location.uf} / ${foundData.location.city}`;
                 }
-                resultadoDiv.classList.add("success");
+                resultadoDiv.classList.add('success');
                 resultadoDiv.innerText = msg;
               } else {
-                resultadoDiv.classList.add("error");
-                resultadoDiv.textContent = "Ainda não encontramos sua placa.";
+                resultadoDiv.classList.add('error');
+                resultadoDiv.textContent = 'Ainda não encontramos sua placa.';
               }
             } catch (error) {
-              resultadoDiv.classList.add("error");
-              resultadoDiv.textContent =
-                "Erro ao verificar status: " + error.message;
+              resultadoDiv.classList.add('error');
+              resultadoDiv.textContent = 'Erro ao verificar status: ' + error.message;
             }
-            resultadoDiv.style.display = "block";
+            resultadoDiv.style.display = 'block';
           });
         });
       } catch (error) {
-        minhasPlacasContent.innerHTML = `<p class="error">Erro ao buscar suas placas: ${error.message}</p>`;
+        document.getElementById('minhas-placas-content').innerHTML =
+          `<p class="error">Erro ao buscar suas placas: ${error.message}</p>`;
       }
     }
 
-    // ================================ “Meu Perfil” ================================
-    async function mostrarPerfil() {
+    // ─────────── “Meu Perfil” ───────────
+    async function verificarLoginParaPerfil() {
       const user = auth.currentUser;
-      perfilContent.innerHTML = "";
-      if (!user) {
-        // Se não está logado, exibe mensagem + botão “Entrar”
-        perfilContent.innerHTML = `
-          <p>Você precisa estar logado para ver o perfil.</p>
-          <button id="btn-login-perfil" class="btn btn-success">Entrar</button>
-        `;
-        document
-          .getElementById("btn-login-perfil")
-          .addEventListener("click", () => showScreen(loginScreen));
+      if (user) {
+        mostrarTela('perfil-screen');
+        carregarPerfil(user.uid);
+      } else {
+        mostrarTela('login-screen');
+      }
+    }
+
+    async function carregarPerfil(uid) {
+      const perfilContent = document.getElementById('perfil-content');
+      perfilContent.innerHTML = '';
+      try {
+        const colUsers = collection(firestore, 'users');
+        const q = query(colUsers, where('uid', '==', uid));
+        const snap = await getDocs(q);
+        if (snap.empty) {
+          perfilContent.innerHTML = `
+            <p>Dados do usuário não encontrados.</p>
+            <button id="btn-logout" class="btn btn-danger" style="margin-top:20px;">Sair</button>
+          `;
+        } else {
+          const userData = snap.docs[0].data();
+          perfilContent.innerHTML = `
+            <div class="profile-info">
+              <p><strong>Nome:</strong> ${userData.name || '(sem nome)'}</p>
+              <p><strong>Telefone:</strong> ${userData.phoneNumber || '-'}</p>
+              <p><strong>E-mail:</strong> ${auth.currentUser.email}</p>
+              <button id="btn-logout" class="btn btn-danger" style="margin-top:20px;">Sair</button>
+            </div>
+          `;
+        }
+        document.getElementById('btn-logout').addEventListener('click', fazerLogout);
+      } catch (error) {
+        perfilContent.innerHTML =
+          `<p class="error">Erro ao carregar seu perfil: ${error.message}</p>`;
+      }
+    }
+
+    function fazerLogout() {
+      signOut(auth)
+        .then(() => mostrarTela('menu-screen'))
+        .catch(error => console.error('Erro ao fazer logout:', error));
+    }
+
+    // ─────────── “Perdi uma Placa” ───────────
+    document.getElementById('btn-perdi-comum').addEventListener('click', function() {
+      this.classList.add('ativo');
+      document.getElementById('btn-perdi-mercosul').classList.remove('ativo');
+      document.getElementById('perdi-localizacao').style.display = 'block';
+    });
+    document.getElementById('btn-perdi-mercosul').addEventListener('click', function() {
+      this.classList.add('ativo');
+      document.getElementById('btn-perdi-comum').classList.remove('ativo');
+      document.getElementById('perdi-localizacao').style.display = 'none';
+    });
+    // Inicial: oculta localização se for Mercosul
+    document.getElementById('btn-perdi-comum').click();
+
+    document.getElementById('perdi-verificar').addEventListener('click', async () => {
+      const isComum = document.getElementById('btn-perdi-comum').classList.contains('ativo');
+      const placaInput = document.getElementById('perdi-placa').value.trim()
+        .toUpperCase()
+        .replace(/[^A-Z0-9]/g, "");
+      const uf = document.getElementById('perdi-uf').value;
+      const cidade = document.getElementById('perdi-municipio').value;
+      const resultDiv = document.getElementById('perdi-result');
+      resultDiv.className = 'result';
+      resultDiv.innerHTML = '';
+      resultDiv.style.display = 'none';
+
+      if (!placaInput || (isComum && (!uf || !cidade))) {
+        resultDiv.textContent = 'Preencha todos os campos obrigatórios.';
+        resultDiv.classList.add('error');
+        resultDiv.style.display = 'block';
         return;
       }
-      const nome = user.displayName || "(sem nome)";
-      const email = user.email || "(sem e-mail)";
-      perfilContent.innerHTML = `
-        <div class="profile-info">
-          <p><strong>Nome:</strong> ${nome}</p>
-          <p><strong>E-mail:</strong> ${email}</p>
-          <p><strong>Telefone:</strong> ${user.phoneNumber || "-"}</p>
-          <button id="btn-logout" class="btn btn-danger" style="margin-top:15px;">Sair</button>
-        </div>
-      `;
-      document
-        .getElementById("btn-logout")
-        .addEventListener("click", async () => {
-          await signOut(auth);
-          showScreen(menuScreen);
+
+      try {
+        // Primeiro, consulta no Realtime Database
+        const keyRealtime = isComum
+          ? `${placaInput}:${uf}:${cidade}`
+          : `${placaInput}:null:null`;
+
+        const snapshot = await get(child(ref(realtimeDb), keyRealtime));
+        if (!snapshot.exists()) {
+          resultDiv.classList.add('error');
+          resultDiv.innerHTML = `
+            <p>Infelizmente ainda não encontramos essa placa.</p>
+            <div class="alert-box">
+              <strong>⚠️ Atenção:</strong><br>
+              Não cobramos e nem intermediamos qualquer valor pela devolução de placas.<br>
+              Oferecer uma gratificação é algo opcional, decidido entre quem perdeu e quem encontrou.<br>
+              Se achar necessário, entre em contato com as autoridades.
+            </div>
+          `;
+          resultDiv.style.display = 'block';
+          return;
+        }
+
+        // Se existe no Realtime, consulta os detalhes no Firestore
+        const colRef = collection(firestore, 'foundPlates');
+        const q = query(colRef, where('plate', '==', placaInput));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+          resultDiv.classList.add('error');
+          resultDiv.textContent = 'Erro ao consultar dados da placa.';
+          resultDiv.style.display = 'block';
+          return;
+        }
+
+        let html = '';
+        querySnapshot.forEach(doc => {
+          const dados = doc.data();
+          const nome = dados.founderName || 'Não informado';
+          const telefone = dados.founderPhone || '';
+          const soNumeros = telefone.replace(/\D/g, '');
+          const ehCelular = soNumeros.length >= 10 && soNumeros.length <= 11 && soNumeros.slice(-9, -8) === '9';
+
+          html += `<p><strong>Boa notícia!</strong> A placa <strong>${placaInput}</strong> foi encontrada por <strong>${nome}</strong>.</p>`;
+          html += `<div class="alert-box">
+            <strong>⚠️ Atenção:</strong><br>
+            Não cobramos e nem intermediamos qualquer valor pela devolução de placas.<br>
+            Oferecer uma gratificação é algo opcional, decidido entre quem perdeu e quem encontrou.<br>
+            Se achar necessário, entre em contato com as autoridades.
+          </div>`;
+
+          if (ehCelular && nome !== 'Não informado') {
+            const mensagem = encodeURIComponent(`Olá ${nome}! Vi que vc cadastrou a placa ${placaInput} no SOS Placa – ela é do meu veículo! Se ainda tiver aí, me avisa como posso buscar, por favor!`);
+            html += `
+              <a href="https://wa.me/55${soNumeros}?text=${mensagem}" target="_blank" style="
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                background-color: #25D366;
+                color: white;
+                padding: 10px 16px;
+                border-radius: 6px;
+                text-decoration: none;
+                font-weight: 600;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+                margin-top: 15px;
+              ">
+                <img src="WhatsApp.png" alt="WhatsApp" style="width: 24px; height: 24px;">
+                Falar no WhatsApp
+              </a>
+            `;
+          } else if (telefone) {
+            html += `<p><strong>Telefone:</strong> ${telefone}</p>`;
+          }
         });
+
+        resultDiv.classList.add('success');
+        resultDiv.innerHTML = html;
+        resultDiv.style.display = 'block';
+      } catch (error) {
+        console.error('Erro ao buscar placa:', error);
+        resultDiv.classList.add('error');
+        resultDiv.innerHTML = `<p>Houve um erro ao verificar a placa. Tente novamente em instantes.</p>`;
+        resultDiv.style.display = 'block';
+      }
+    });
+
+    // ─────────── “Achei uma Placa” ───────────
+    document.getElementById('btn-achei-comum').addEventListener('click', function() {
+      this.classList.add('ativo');
+      document.getElementById('btn-achei-mercosul').classList.remove('ativo');
+      document.getElementById('achei-localizacao').style.display = 'block';
+      document.getElementById('achei-placa').placeholder = 'AAA-0000';
+    });
+    document.getElementById('btn-achei-mercosul').addEventListener('click', function() {
+      this.classList.add('ativo');
+      document.getElementById('btn-achei-comum').classList.remove('ativo');
+      document.getElementById('achei-localizacao').style.display = 'none';
+      document.getElementById('achei-placa').placeholder = 'AAA0A00';
+    });
+    // Inicial: mostra campos de localização (“comum”)
+    document.getElementById('btn-achei-comum').click();
+
+    document.getElementById('achei-salvar').addEventListener('click', async () => {
+      const isComum = document.getElementById('btn-achei-comum').classList.contains('ativo');
+      const placa = document.getElementById('achei-placa').value.trim().toUpperCase();
+      const nome = document.getElementById('achei-nome').value.trim();
+      const telefone = document.getElementById('achei-telefone').value.trim();
+      const uf = document.getElementById('achei-uf').value;
+      const cidade = document.getElementById('achei-municipio').value;
+      const result = document.getElementById('achei-result');
+      result.className = 'result';
+      result.style.display = 'none';
+
+      if (!placa || !nome || !telefone || (isComum && (!uf || !cidade))) {
+        result.textContent = 'Preencha todos os campos obrigatórios.';
+        result.classList.add('error');
+        result.style.display = 'block';
+        return;
+      }
+
+      const firestoreData = {
+        plate: placa,
+        founderName: nome,
+        founderPhone: telefone,
+        foundDate: serverTimestamp(),
+        location: {
+          uf: isComum ? uf : 'null',
+          city: isComum ? cidade : 'null'
+        }
+      };
+
+      const keyRealtime = isComum
+        ? `${placa}:${uf}:${cidade}`
+        : `${placa}:null:null`;
+
+      try {
+        // Grava no Firestore (coleção "foundPlates")
+        await addDoc(collection(firestore, 'foundPlates'), firestoreData);
+        // Grava no Realtime Database
+        await set(ref(realtimeDb, keyRealtime), true);
+
+        result.textContent = 'Placa cadastrada com sucesso!';
+        result.classList.add('success');
+        result.style.display = 'block';
+
+        // Limpa campos após cadastro
+        document.getElementById('achei-placa').value = '';
+        document.getElementById('achei-nome').value = '';
+        document.getElementById('achei-telefone').value = '';
+        document.getElementById('achei-uf').value = '';
+        document.getElementById('achei-municipio').innerHTML =
+          '<option value="" disabled selected>Selecione o município</option>';
+      } catch (error) {
+        console.error('Erro ao salvar:', error);
+        result.textContent = 'Erro ao cadastrar. Tente novamente.';
+        result.classList.add('error');
+        result.style.display = 'block';
+      }
+    });
+
+    // ─────────── ATUALIZAÇÃO DE MUNICÍPIOS ───────────
+    const cidadesPorEstado = {
+      AC: ['Rio Branco', 'Cruzeiro do Sul', 'Sena Madureira'],
+      AL: ['Maceió', 'Arapiraca', 'Palmeira dos Índios'],
+      // ... adicione demais estados e municípios conforme necessário ...
+    };
+
+    function atualizarMunicipios(ufId, municipioId) {
+      const uf = document.getElementById(ufId).value;
+      const municipioSelect = document.getElementById(municipioId);
+      municipioSelect.innerHTML =
+        '<option value="" disabled selected>Selecione o município</option>';
+
+      if (cidadesPorEstado[uf]) {
+        cidadesPorEstado[uf].forEach(cidade => {
+          const option = document.createElement('option');
+          option.value = cidade;
+          option.textContent = cidade;
+          municipioSelect.appendChild(option);
+        });
+      }
     }
+
+    document.getElementById('achei-uf').addEventListener('change', () =>
+      atualizarMunicipios('achei-uf', 'achei-municipio')
+    );
+    document.getElementById('perdi-uf').addEventListener('change', () =>
+      atualizarMunicipios('perdi-uf', 'perdi-municipio')
+    );
   </script>
 </body>
 </html>
