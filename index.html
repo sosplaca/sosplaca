@@ -36,6 +36,7 @@
     .logo-img { width: 50px; height: 50px; }
     .logo-text { font-size: 2rem; font-family: 'JostBold'; }
     h1 { font-size: 1.2rem; }
+
     .screen {
       background-color: #fff;
       padding: 24px;
@@ -45,6 +46,7 @@
       display: none;
     }
     .screen.active { display: block; }
+
     .btn {
       display: inline-block;
       background-color: #023E8A;
@@ -68,6 +70,7 @@
       background-color: #023E8A;
       color: #fff;
     }
+
     .form-group { margin-bottom: 1.25rem; }
     label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
     input, select {
@@ -77,6 +80,7 @@
       border-radius: 6px;
       font-size: 1rem;
     }
+
     .result {
       margin-top: 1rem;
       padding: 0.9375rem;
@@ -86,13 +90,15 @@
     }
     .result.success { display: block; border-left: 6px solid #27ae60; }
     .result.error { display: block; border-left: 6px solid #e74c3c; }
+
     .alert-box {
       background-color: #fff8e1;
       border-left: 6px solid #f1c40f;
       padding: 15px;
-      margin-bottom: 20px;
+      margin-top: 15px;
       border-radius: 6px;
     }
+
     footer {
       background-color: #023E8A;
       color: white;
@@ -101,6 +107,7 @@
       border-radius: 10px 10px 0 0;
       margin-top: 30px;
     }
+
     @media (max-width:600px) {
       header { flex-direction: column; gap: 10px; }
       h1 { text-align: center; }
@@ -125,17 +132,8 @@
 <!-- 🔹 Menu Inicial -->
 <div id="menu-screen" class="screen active">
   <h2>O que você deseja fazer?</h2>
-  <button id="btn-placas" class="btn">Buscar/Cadastrar Placas</button>
-  <button id="btn-minhas-placas" class="btn">Minhas Placas</button>
-  <button id="btn-perfil" class="btn">Meu Perfil</button>
-</div>
-
-<!-- 🔹 Tela Buscar/Cadastrar Placas -->
-<div id="placas-screen" class="screen">
-  <h2>Buscar/Cadastrar Placas</h2>
-  <button id="btn-perdi" class="btn">Perdi uma placa</button>
-  <button id="btn-achei" class="btn">Achei uma placa</button>
-  <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
+  <button onclick="abrirTela('perdi-screen')" class="btn">Perdi uma placa</button>
+  <button onclick="abrirTela('achei-screen')" class="btn">Achei uma placa</button>
 </div>
 <!-- 🔹 Tela Perdi uma Placa -->
 <div id="perdi-screen" class="screen">
@@ -144,8 +142,8 @@
   <!-- Botões de Tipo -->
   <div class="form-group">
     <label>Tipo de Placa:</label>
-    <button id="btn-perdi-comum" class="btn btn-toggle active">Comum</button>
-    <button id="btn-perdi-mercosul" class="btn btn-toggle">Mercosul</button>
+    <button id="btn-perdi-comum" class="btn btn-toggle active" onclick="alternarTipo('perdi','comum')">Comum</button>
+    <button id="btn-perdi-mercosul" class="btn btn-toggle" onclick="alternarTipo('perdi','mercosul')">Mercosul</button>
   </div>
 
   <!-- Número da Placa -->
@@ -182,8 +180,8 @@
   <!-- Botões de Tipo -->
   <div class="form-group">
     <label>Tipo de Placa:</label>
-    <button id="btn-achei-comum" class="btn btn-toggle active">Comum</button>
-    <button id="btn-achei-mercosul" class="btn btn-toggle">Mercosul</button>
+    <button id="btn-achei-comum" class="btn btn-toggle active" onclick="alternarTipo('achei','comum')">Comum</button>
+    <button id="btn-achei-mercosul" class="btn btn-toggle" onclick="alternarTipo('achei','mercosul')">Mercosul</button>
   </div>
 
   <!-- Número da Placa -->
@@ -223,28 +221,78 @@
   <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
   <div id="achei-result" class="result"></div>
 </div>
+<script type="module">
+  // 🔥 Firebase Config
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+  import { getFirestore, collection, query, where, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+  import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
 
-<!-- 🔔 Alerta de Intermediação -->
-<div class="alert-box">
-  <strong>⚠️ Atenção:</strong><br>
-  Não cobramos e nem intermediamos qualquer valor pela devolução de placas.<br>
-  Oferecer uma gratificação é algo opcional, decidido entre quem perdeu e quem encontrou.<br>
-  Se achar necessário, entre em contato com as autoridades.
-</div>
-<script>
-  // 🔗 Estados e Municípios (amostra para teste)
-  const cidadesPorEstado = {
-    SP: ["Ubatuba", "São Paulo"],
-    RJ: ["Rio de Janeiro", "Niterói"]
+  const firebaseConfig = {
+    apiKey: "AIzaSyBjetihGmlo_z01jx-GW9Ith0oDCS0jwYc",
+    authDomain: "sosplaca-73cf7.firebaseapp.com",
+    databaseURL: "https://sosplaca-73cf7-default-rtdb.firebaseio.com",
+    projectId: "sosplaca-73cf7",
+    storageBucket: "sosplaca-73cf7.appspot.com",
+    messagingSenderId: "658059385722",
+    appId: "1:658059385722:web:5ed0e8fd7f7a2931d894c3"
   };
 
-  // 🏙️ Atualizar Municípios
+  const app = initializeApp(firebaseConfig);
+  const firestore = getFirestore(app);
+  const realtimeDb = getDatabase(app);
+
+  // 🔗 Alternância de Telas
+  function abrirTela(telaId) {
+    document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+    document.getElementById(telaId).classList.add('active');
+  }
+
+  function voltarMenu() {
+    abrirTela('menu-screen');
+  }
+
+  // 🔄 Alternância de tipo (Comum/Mercosul)
+  function alternarTipo(contexto, tipo) {
+    const btnComum = document.getElementById(`btn-${contexto}-comum`);
+    const btnMercosul = document.getElementById(`btn-${contexto}-mercosul`);
+    const localizacao = document.getElementById(`${contexto}-localizacao`);
+
+    if (tipo === 'comum') {
+      btnComum.classList.add('active');
+      btnMercosul.classList.remove('active');
+      localizacao.style.display = 'block';
+    } else {
+      btnMercosul.classList.add('active');
+      btnComum.classList.remove('active');
+      localizacao.style.display = 'none';
+    }
+  }
+
+  // 🌎 Estados e Municípios
+  const cidadesPorEstado = {
+    SP: ["Ubatuba", "São Paulo"],
+    RJ: ["Rio de Janeiro", "Niterói"],
+    MG: ["Belo Horizonte", "Uberlândia"],
+    PR: ["Curitiba", "Londrina"]
+  };
+
+  function preencherUF(selectId) {
+    const select = document.getElementById(selectId);
+    select.innerHTML = '<option value="" disabled selected>Selecione o estado</option>';
+    Object.keys(cidadesPorEstado).forEach(uf => {
+      const option = document.createElement('option');
+      option.value = uf;
+      option.textContent = uf;
+      select.appendChild(option);
+    });
+  }
+
   function atualizarMunicipios(ufSelectId, municipioSelectId) {
     const uf = document.getElementById(ufSelectId).value;
     const municipioSelect = document.getElementById(municipioSelectId);
     municipioSelect.innerHTML = '<option value="" disabled selected>Selecione o município</option>';
 
-    if (uf && cidadesPorEstado[uf]) {
+    if (cidadesPorEstado[uf]) {
       cidadesPorEstado[uf].forEach(cidade => {
         const option = document.createElement('option');
         option.value = cidade;
@@ -254,164 +302,99 @@
     }
   }
 
-  // 🌐 Preencher UFs
-  function preencherUF(selectId) {
-    const select = document.getElementById(selectId);
-    select.innerHTML = '<option value="" disabled selected>Selecione o estado</option>';
-    for (const uf in cidadesPorEstado) {
-      const option = document.createElement('option');
-      option.value = uf;
-      option.textContent = uf;
-      select.appendChild(option);
-    }
-  }
+  document.getElementById('perdi-uf').addEventListener('change', () => atualizarMunicipios('perdi-uf', 'perdi-municipio'));
+  document.getElementById('achei-uf').addEventListener('change', () => atualizarMunicipios('achei-uf', 'achei-municipio'));
 
-  // 🚦 Alternância de Tipo de Placa (Perdi)
-  const btnPerdiComum = document.getElementById('btn-perdi-comum');
-  const btnPerdiMercosul = document.getElementById('btn-perdi-mercosul');
-  const perdeuLocalizacao = document.getElementById('perdi-localizacao');
-
-  btnPerdiComum.addEventListener('click', () => {
-    btnPerdiComum.classList.add('active');
-    btnPerdiMercosul.classList.remove('active');
-    perdeuLocalizacao.style.display = 'block';
-  });
-
-  btnPerdiMercosul.addEventListener('click', () => {
-    btnPerdiMercosul.classList.add('active');
-    btnPerdiComum.classList.remove('active');
-    perdeuLocalizacao.style.display = 'none';
-  });
-
-  // 🚦 Alternância de Tipo de Placa (Achei)
-  const btnAcheiComum = document.getElementById('btn-achei-comum');
-  const btnAcheiMercosul = document.getElementById('btn-achei-mercosul');
-  const acheiLocalizacao = document.getElementById('achei-localizacao');
-
-  btnAcheiComum.addEventListener('click', () => {
-    btnAcheiComum.classList.add('active');
-    btnAcheiMercosul.classList.remove('active');
-    acheiLocalizacao.style.display = 'block';
-  });
-
-  btnAcheiMercosul.addEventListener('click', () => {
-    btnAcheiMercosul.classList.add('active');
-    btnAcheiComum.classList.remove('active');
-    acheiLocalizacao.style.display = 'none';
-  });
-
-  // 🔄 Preencher UFs no carregamento
   document.addEventListener('DOMContentLoaded', () => {
     preencherUF('perdi-uf');
     preencherUF('achei-uf');
   });
 
-  // 🔄 Evento de mudança no UF para atualizar município
-  document.getElementById('perdi-uf').addEventListener('change', () => {
-    atualizarMunicipios('perdi-uf', 'perdi-municipio');
-  });
-  document.getElementById('achei-uf').addEventListener('change', () => {
-    atualizarMunicipios('achei-uf', 'achei-municipio');
-  });
-</script>
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-  import { 
-    getFirestore, collection, query, where, getDocs, addDoc, serverTimestamp 
-  } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-  import { 
-    getDatabase, ref, set 
-  } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
-
-  // 🔥 Config Firebase
-const firebaseConfig = {
-            apiKey: "AIzaSyBjetihGmlo_z01jx-GW9Ith0oDCS0jwYc",
-            authDomain: "sosplaca-73cf7.firebaseapp.com",
-            databaseURL: "https://sosplaca-73cf7-default-rtdb.firebaseio.com",
-            projectId: "sosplaca-73cf7",
-            storageBucket: "sosplaca-73cf7.appspot.com",
-            messagingSenderId: "658059385722",
-            appId: "1:658059385722:web:5ed0e8fd7f7a2931d894c3"
-        };
-  
-  const app = initializeApp(firebaseConfig);
-  const firestore = getFirestore(app);
-  const realtimeDb = getDatabase(app);
-
-  // 🔍 Verificar Placa Perdida
-  document.getElementById('perdi-verificar').addEventListener('click', async () => {
-    const placa = document.getElementById('perdi-placa').value.trim().toUpperCase();
-    const tipo = btnPerdiComum.classList.contains('active') ? 'comum' : 'mercosul';
+  // 🔍 Verificar Placa
+  document.getElementById("perdi-verificar").addEventListener("click", async () => {
+    const placaInput = document.getElementById("perdi-placa").value.trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+    const tipo = document.getElementById('btn-perdi-comum').classList.contains('active') ? 'comum' : 'mercosul';
     const uf = document.getElementById('perdi-uf').value;
     const municipio = document.getElementById('perdi-municipio').value;
-    const result = document.getElementById('perdi-result');
+    const resultDiv = document.getElementById("perdi-result");
 
-    result.className = 'result';
-    result.style.display = 'none';
-    result.innerHTML = '';
+    resultDiv.className = "result";
+    resultDiv.innerHTML = "";
+    resultDiv.style.display = "none";
 
-    if (!placa) {
-      result.textContent = "Informe a placa.";
-      result.classList.add('error');
-      result.style.display = 'block';
+    if (!placaInput) {
+      resultDiv.classList.add("error");
+      resultDiv.innerHTML = `<p>Informe a placa.</p>`;
+      resultDiv.style.display = "block";
       return;
     }
 
     try {
-      const path = tipo === 'comum' ? `${placa}:${uf}:${municipio}` : `${placa}:null:null`;
-      const q = query(collection(firestore, "foundPlates"), where("path", "==", path));
+      const path = tipo === 'comum' ? `${placaInput}:${uf}:${municipio}` : `${placaInput}:null:null`;
+      const colRef = collection(firestore, "foundPlates");
+      const q = query(colRef, where("path", "==", path));
       const snapshot = await getDocs(q);
 
       if (snapshot.empty) {
-        result.innerHTML = "❌ Infelizmente ainda não encontramos essa placa.<br>Continue tentando!";
-        result.classList.add('error');
+        resultDiv.classList.add("error");
+        resultDiv.innerHTML = `<p>❌ Infelizmente ainda não encontramos essa placa.<br>Continue tentando!</p>`;
       } else {
-        let html = '';
+        let html = "";
         snapshot.forEach(doc => {
-          const data = doc.data();
-          const nome = data.name || 'Pessoa não identificada';
-          const telefone = data.phone || '';
-          const soNumeros = telefone.replace(/\D/g, '');
-          const mensagem = encodeURIComponent(`Olá ${nome}! Vi que você cadastrou a placa ${placa} no SOS Placa. Ela é do meu veículo! Podemos combinar a devolução?`);
+          const dados = doc.data();
+          const nome = dados.name || "Pessoa não identificada";
+          const telefone = dados.phone || "";
+          const soNumeros = telefone.replace(/\D/g, "");
 
-          html += `<p><strong>✅ Placa encontrada!</strong><br>Responsável: <strong>${nome}</strong></p>`;
+          html += `<p><strong>Boa notícia!</strong> A placa <strong>${placaInput}</strong> foi encontrada por <strong>${nome}</strong>.</p>`;
+
           if (soNumeros.length >= 10) {
+            const mensagem = encodeURIComponent(`Olá ${nome}! Vi que você cadastrou a placa ${placaInput} no SOS Placa – ela é do meu veículo! Se ainda tiver aí, me avisa como posso buscar, por favor!`);
             html += `<a href="https://wa.me/55${soNumeros}?text=${mensagem}" target="_blank">
-                      <img src="WhatsApp.png" alt="WhatsApp" style="height:50px;margin-top:10px;">
+                      <img src="WhatsApp.png" alt="WhatsApp" style="height: 50px; margin-top: 10px;">
                      </a>`;
           }
+
+          html += `<div class="alert-box">
+                     <strong>⚠️ Atenção:</strong><br>
+                     Não cobramos e nem intermediamos qualquer valor pela devolução de placas.<br>
+                     Oferecer uma gratificação é algo opcional, decidido entre quem perdeu e quem encontrou.<br>
+                     Se achar necessário, entre em contato com as autoridades.
+                   </div>`;
         });
-        result.innerHTML = html;
-        result.classList.add('success');
+
+        resultDiv.classList.add("success");
+        resultDiv.innerHTML = html;
       }
 
-      result.style.display = 'block';
+      resultDiv.style.display = "block";
+
     } catch (error) {
-      console.error('Erro na verificação:', error);
-      result.textContent = "Erro ao consultar a placa.";
-      result.classList.add('error');
-      result.style.display = 'block';
+      console.error("Erro ao buscar placa:", error);
+      resultDiv.classList.add("error");
+      resultDiv.innerHTML = `<p>Houve um erro ao verificar a placa. Tente novamente em instantes.</p>`;
+      resultDiv.style.display = "block";
     }
   });
 
   // ✅ Cadastrar Placa Encontrada
-  document.getElementById('achei-salvar').addEventListener('click', async () => {
-    const placa = document.getElementById('achei-placa').value.trim().toUpperCase();
-    const tipo = btnAcheiComum.classList.contains('active') ? 'comum' : 'mercosul';
+  document.getElementById("achei-salvar").addEventListener("click", async () => {
+    const placa = document.getElementById("achei-placa").value.trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+    const tipo = document.getElementById('btn-achei-comum').classList.contains('active') ? 'comum' : 'mercosul';
     const uf = document.getElementById('achei-uf').value;
     const municipio = document.getElementById('achei-municipio').value;
     const nome = document.getElementById('achei-nome').value.trim();
     const telefone = document.getElementById('achei-telefone').value.trim();
-    const result = document.getElementById('achei-result');
+    const resultDiv = document.getElementById("achei-result");
 
-    result.className = 'result';
-    result.style.display = 'none';
-    result.innerHTML = '';
+    resultDiv.className = "result";
+    resultDiv.innerHTML = "";
+    resultDiv.style.display = "none";
 
     if (!placa || !nome || !telefone || (tipo === 'comum' && (!uf || !municipio))) {
-      result.textContent = "Preencha todos os campos obrigatórios.";
-      result.classList.add('error');
-      result.style.display = 'block';
+      resultDiv.classList.add("error");
+      resultDiv.innerHTML = `<p>Preencha todos os campos obrigatórios.</p>`;
+      resultDiv.style.display = "block";
       return;
     }
 
@@ -431,14 +414,15 @@ const firebaseConfig = {
 
       await set(ref(realtimeDb, `${path}:true`), true);
 
-      result.textContent = "✅ Placa cadastrada com sucesso!";
-      result.classList.add('success');
-      result.style.display = 'block';
+      resultDiv.classList.add("success");
+      resultDiv.innerHTML = `<p>✅ Placa cadastrada com sucesso!</p>`;
+      resultDiv.style.display = "block";
+
     } catch (error) {
-      console.error('Erro ao salvar:', error);
-      result.textContent = "Erro ao salvar a placa.";
-      result.classList.add('error');
-      result.style.display = 'block';
+      console.error("Erro ao salvar:", error);
+      resultDiv.classList.add("error");
+      resultDiv.innerHTML = `<p>Houve um erro ao salvar a placa. Tente novamente.</p>`;
+      resultDiv.style.display = "block";
     }
   });
 </script>
@@ -448,6 +432,5 @@ const firebaseConfig = {
 </footer>
 
 </div> <!-- Fecha .container -->
-
 </body>
 </html>
