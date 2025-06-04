@@ -816,11 +816,11 @@
             <strong>⚠️ Atenção:</strong><br>
             Não cobramos e nem intermediamos qualquer valor pela devolução de placas.<br>
             Oferecer uma gratificação é algo opcional, decidido entre quem perdeu e quem encontrou.<br>
-            Se achar necessário, entre em contato com as autoridades.
+            Se achar necessário, entre em contato com as autoridades da sua cidade.
           </div>`;
 
           if (telefoneValido) {
-  const mensagem = encodeURIComponent(`Olá ${nome}! Fui informado pelo SOS Placa que você localizou a placa ${placaInput} do meu veículo! Se ainda tiver aí, me avisa como posso buscar, por favor!`);
+  const mensagem = encodeURIComponent(`Olá ${nome}! Fui informado pelo SOS Placa que você localizou a placa ${placaInput} do meu veículo! Como faço para retirar com você?`);
   html += `
     <a href="https://wa.me/55${soNumeros}?text=${mensagem}" target="_blank" style="
       display: inline-flex;
@@ -836,7 +836,7 @@
       margin-top: 15px;
     ">
       <img src="WhatsApp.png" alt="WhatsApp" style="width: 24px; height: 24px;">
-      Falar no WhatsApp
+      Chamar no WhatsApp
     </a>
   `;
 } else {
