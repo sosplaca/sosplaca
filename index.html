@@ -325,13 +325,6 @@
         </select>
       </div>
 
-      <div class="alert-box">
-        <strong>⚠️ Atenção:</strong><br>
-        Não cobramos e nem intermediamos qualquer valor pela devolução de placas.<br>
-        Oferecer uma gratificação é algo opcional, decidido entre quem perdeu e quem encontrou.<br>
-        Se achar necessário, entre em contato com as autoridades.
-      </div>
-
       <div>
         <button id="perdi-verificar" class="btn btn-success">Verificar Placa</button>
         <button id="btn-voltar-perdi" class="btn btn-secondary">Voltar</button>
@@ -790,19 +783,11 @@
 
         const snapshot = await get(child(ref(realtimeDb), keyRealtime));
         if (!snapshot.exists()) {
-          resultDiv.classList.add('error');
-          resultDiv.innerHTML = `
-            <p>Infelizmente ainda não encontramos essa placa.</p>
-            <div class="alert-box">
-              <strong>⚠️ Atenção:</strong><br>
-              Não cobramos e nem intermediamos qualquer valor pela devolução de placas.<br>
-              Oferecer uma gratificação é algo opcional, decidido entre quem perdeu e quem encontrou.<br>
-              Se achar necessário, entre em contato com as autoridades.
-            </div>
-          `;
-          resultDiv.style.display = 'block';
-          return;
-        }
+  resultDiv.classList.add('error');
+  resultDiv.innerHTML = `<p>Infelizmente ainda não encontramos essa placa.</p>`;
+  resultDiv.style.display = 'block';
+  return;
+}
 
         // Se existe no Realtime, consulta os detalhes no Firestore
         const colRef = collection(firestore, 'foundPlates');
@@ -824,7 +809,9 @@
           const soNumeros = telefone.replace(/\D/g, '');
           const ehCelular = soNumeros.length >= 10 && soNumeros.length <= 11 && soNumeros.slice(-9, -8) === '9';
 
-          html += `<p><strong>Boa notícia!</strong> A placa <strong>${placaInput}</strong> foi encontrada por <strong>${nome}</strong>.</p>`;
+          html += `<p>Boa notícia! A placa <strong>${placaInput}</strong> foi encontrada por:</p>`;
+          html += `<p><strong>Nome:</strong> ${nome} </p>`;
+          html += `<p><strong>Telefone: </strong> ${telefone}</p>`;
           html += `<div class="alert-box">
             <strong>⚠️ Atenção:</strong><br>
             Não cobramos e nem intermediamos qualquer valor pela devolução de placas.<br>
