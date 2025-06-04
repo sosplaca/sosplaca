@@ -784,7 +784,7 @@
         const snapshot = await get(child(ref(realtimeDb), keyRealtime));
         if (!snapshot.exists()) {
   resultDiv.classList.add('error');
-  resultDiv.innerHTML = `<p>Infelizmente ainda não encontramos essa placa.</p>`;
+  resultDiv.innerHTML = `<p>Infelizmente essa placa ainda não foi cadastrada. Tente novamente mais tarde ou se cadastre para receber uma notificação assim que ela for encontrada.</p>`;
   resultDiv.style.display = 'block';
   return;
 }
