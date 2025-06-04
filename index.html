@@ -366,48 +366,46 @@
 // Carregar Minhas Placas (compatível com a estrutura lostPlates)
 async function carregarMinhasPlacas(userId) {
   const content = document.getElementById('minhas-placas-content');
-  content.innerHTML = '<p>Carregando suas placas...</p>';
-
+  content.innerHTML = '<p>Carregando suas placas perdidas...</p>';
+  
   try {
-    // CONSULTA IGUAL AO APP
-    const q = query(
-      collection(firestore, 'lostPlates'),
-      where('ownerId', '==', userId),
-      orderBy('createdAt', 'desc') // Ordena por data (mais recente primeiro)
-    );
-
+    // Consulta as placas perdidas do usuário
+    const q = query(collection(firestore, 'lostPlates'), where('ownerId', '==', userId));
     const querySnapshot = await getDocs(q);
-
+    
     if (querySnapshot.empty) {
       content.innerHTML = `
-        <p>Nenhuma placa cadastrada.</p>
-        <button onclick="mostrarTela('perdi-screen')" class="btn btn-success">
+        <p>Você ainda não cadastrou nenhuma placa perdida.</p>
+        <button onclick="mostrarTela('perdi-screen')" class="btn btn-success" style="margin-top: 10px;">
           Cadastrar Placa Perdida
         </button>
       `;
       return;
     }
-
-    // Exibe as placas
-    let html = '';
+    
+    let html = '<div class="user-plates">';
     querySnapshot.forEach(doc => {
       const data = doc.data();
+      const localizacao = data.location.uf !== 'null' 
+        ? `${data.location.city}/${data.location.uf}`
+        : 'Placa Mercosul';
+      
       html += `
         <div class="plate-card">
           <p><strong>Placa:</strong> ${data.plate}</p>
-          <p><strong>Local:</strong> ${data.location.uf ? data.location.city + '/' + data.location.uf : 'Placa Mercosul'}</p>
-          <button onclick="verificarPlaca('${data.plate}')" class="btn">
+          <p><strong>Local:</strong> ${localizacao}</p>
+          <button onclick="verificarPlaca('${data.plate}', '${data.location.uf}', '${data.location.city}')" 
+            class="btn" style="margin-top: 10px;">
             Verificar Status
           </button>
         </div>
       `;
     });
-
+    html += '</div>';
     content.innerHTML = html;
-
   } catch (error) {
-    console.error("Erro ao carregar placas:", error);
-    content.innerHTML = '<p class="error">Erro ao carregar. Tente novamente.</p>';
+    console.error('Erro ao carregar placas:', error);
+    content.innerHTML = '<p class="error">Erro ao carregar suas placas. Tente novamente.</p>';
   }
 }
 
