@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SOS PLACA</title>
-  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="icon" type="image/png" href="logo.png"/>
 
   <!-- Fontes personalizadas -->
   <style>
@@ -29,9 +29,22 @@
       src: url('urbanistregular.ttf') format('truetype');
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'JostRegular', sans-serif; }
-    body { background-color: #FAFAFA; color: #333; line-height: 1.6; }
-    .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'JostRegular', sans-serif;
+    }
+    body {
+      background-color: #FAFAFA;
+      color: #333;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
     header {
       background-color: #0077B6;
       color: #fff;
@@ -40,24 +53,88 @@
       align-items: center;
       justify-content: space-between;
       border-radius: 0 0 10px 10px;
-      cursor: pointer;
+      cursor: pointer; /* Para indicar que é clicável */
     }
-    .logo-container { display: flex; align-items: center; gap: 10px; }
-    .logo-img { width: 50px; height: 50px; }
-    .logo-text { font-size: 2rem; font-family: 'JostBold'; }
-    h1 { font-size: 1.2rem; color: #fff; }
-    .screen { background-color: #fff; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 1.25rem; display: none; }
-    .screen.active { display: block; }
-    .btn { display: inline-block; background-color: #023E8A; color: #fff; padding: 0.75rem 1.5rem; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; margin: 0.625rem 0.3125rem; }
-    .btn-success { background-color: #F8961E; }
-    .btn-secondary { background-color: #ADB5BD; }
-    .btn-danger { background-color: #e74c3c; }
-    .form-group { margin-bottom: 1.25rem; }
-    label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
-    input, select { width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; }
-    .result { margin-top: 1.25rem; padding: 0.9375rem; border-radius: 6px; background-color: #f8f9fa; display: none; white-space: pre-line; }
-    .result.success { display: block; border-left: 6px solid #27ae60; }
-    .result.error { display: block; border-left: 6px solid #e74c3c; }
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo-img {
+      width: 50px;
+      height: 50px;
+    }
+    .logo-text {
+      font-size: 2rem;
+      font-family: 'JostBold';
+    }
+    h1 {
+      font-size: 1.2rem;
+      color: #fff;
+    }
+    .screen {
+      background-color: #fff;
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-bottom: 1.25rem;
+      display: none;
+    }
+    .screen.active {
+      display: block;
+    }
+    .btn {
+      display: inline-block;
+      background-color: #023E8A;
+      color: #fff;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin: 0.625rem 0.3125rem;
+    }
+    .btn-success {
+      background-color: #F8961E;
+    }
+    .btn-secondary {
+      background-color: #ADB5BD;
+    }
+    .btn-danger {
+      background-color: #e74c3c;
+    }
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+    input,
+    select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    .result {
+      margin-top: 1.25rem;
+      padding: 0.9375rem;
+      border-radius: 6px;
+      background-color: #f8f9fa;
+      display: none;
+      white-space: pre-line; /* Para respeitar quebras de linha */
+    }
+    .result.success {
+      display: block;
+      border-left: 6px solid #27ae60;
+    }
+    .result.error {
+      display: block;
+      border-left: 6px solid #e74c3c;
+    }
     .alert-box {
       background-color: #fff8e1;
       border-left: 6px solid #f1c40f;
@@ -90,16 +167,21 @@
       margin-top: 20px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
-    @media (max-width:600px) {
-      header { flex-direction: column; gap: 10px; }
-      h1 { text-align: center; }
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        gap: 10px;
+      }
+      h1 {
+        text-align: center;
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <!-- Cabeçalho clicável (clica nele para voltar ao menu principal) -->
+  <!-- Cabeçalho clicável (volta ao menu ao clicar) -->
   <header id="header-home">
     <div class="logo-container">
       <img src="logo.png" alt="Logo SOS Placa" class="logo-img">
@@ -110,7 +192,7 @@
       <img src="GooglePlay.png" alt="Baixar na Google Play" style="height: 90px;">
     </a>
   </header>
-  
+
   <div class="container">
     <!-- Menu Inicial -->
     <div id="menu-screen" class="screen active">
@@ -125,41 +207,41 @@
       <h2>Buscar/Cadastrar Placas</h2>
       <button id="btn-perdi" class="btn">Perdi uma placa</button>
       <button id="btn-achei" class="btn">Achei uma placa</button>
-      <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
+      <button id="btn-voltar-placas" class="btn btn-secondary">Voltar</button>
     </div>
 
     <!-- Tela Minhas Placas -->
     <div id="minhas-placas-screen" class="screen">
       <h2>Minhas Placas Perdidas</h2>
       <div id="minhas-placas-content">
-        <!-- Conteúdo será preenchido dinamicamente -->
+        <!-- Se não estiver logado, aparecerá mensagem + botão “Entrar” -->
       </div>
-      <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
+      <button id="btn-voltar-minhas" class="btn btn-secondary">Voltar</button>
     </div>
 
     <!-- Tela Perfil -->
     <div id="perfil-screen" class="screen">
       <h2>Meu Perfil</h2>
       <div id="perfil-content">
-        <!-- Conteúdo será preenchido dinamicamente -->
+        <!-- Se não estiver logado, aparecerá mensagem + botão “Entrar” -->
       </div>
-      <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
+      <button id="btn-voltar-perfil" class="btn btn-secondary">Voltar</button>
     </div>
 
-    <!-- Tela Login (aparece apenas se o usuário tentar acessar páginas restritas sem estar logado) -->
+    <!-- Tela Login -->
     <div id="login-screen" class="screen">
       <h2>Login</h2>
       <div class="form-group">
         <label for="login-email">E-mail:</label>
-        <input type="email" id="login-email" placeholder="Digite seu e-mail">
+        <input type="email" id="login-email" placeholder="Digite seu e-mail" />
       </div>
       <div class="form-group">
         <label for="login-senha">Senha:</label>
-        <input type="password" id="login-senha" placeholder="Digite sua senha">
+        <input type="password" id="login-senha" placeholder="Digite sua senha" />
       </div>
       <button id="btn-login" class="btn btn-success">Entrar</button>
       <button id="btn-ir-cadastro" class="btn">Não tem conta? Cadastre-se</button>
-      <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
+      <button id="btn-voltar-login" class="btn btn-secondary">Voltar</button>
       <div id="login-result" class="result"></div>
     </div>
 
@@ -168,26 +250,26 @@
       <h2>Cadastro</h2>
       <div class="form-group">
         <label for="cadastro-nome">Nome Completo:</label>
-        <input type="text" id="cadastro-nome" placeholder="Digite seu nome completo">
+        <input type="text" id="cadastro-nome" placeholder="Digite seu nome completo" />
       </div>
       <div class="form-group">
         <label for="cadastro-email">E-mail:</label>
-        <input type="email" id="cadastro-email" placeholder="Digite seu e-mail">
+        <input type="email" id="cadastro-email" placeholder="Digite seu e-mail" />
       </div>
       <div class="form-group">
         <label for="cadastro-telefone">Telefone:</label>
-        <input type="tel" id="cadastro-telefone" placeholder="(00) 00000-0000">
+        <input type="tel" id="cadastro-telefone" placeholder="(00) 00000-0000" />
       </div>
       <div class="form-group">
         <label for="cadastro-senha">Senha:</label>
-        <input type="password" id="cadastro-senha" placeholder="Digite sua senha">
+        <input type="password" id="cadastro-senha" placeholder="Digite sua senha" />
       </div>
       <div class="form-group">
         <label for="cadastro-confirmar-senha">Confirmar Senha:</label>
-        <input type="password" id="cadastro-confirmar-senha" placeholder="Confirme sua senha">
+        <input type="password" id="cadastro-confirmar-senha" placeholder="Confirme sua senha" />
       </div>
       <button id="btn-cadastrar" class="btn btn-success">Cadastrar</button>
-      <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
+      <button id="btn-voltar-cadastro" class="btn btn-secondary">Voltar</button>
       <div id="cadastro-result" class="result"></div>
     </div>
 
@@ -203,7 +285,7 @@
       </div>
       <div class="form-group">
         <label for="perdi-placa">Número da Placa:</label>
-        <input type="text" id="perdi-placa" placeholder="Ex: ABC1234 ou ABC1D23">
+        <input type="text" id="perdi-placa" placeholder="Ex: ABC1234 ou ABC1D23" />
       </div>
       <div class="form-group" id="perdi-localizacao-group">
         <label for="perdi-uf">Estado (UF):</label>
@@ -244,7 +326,7 @@
       </div>
       <button id="perdi-verificar" class="btn btn-success">Verificar Placa</button>
       <button id="perdi-salvar" class="btn btn-success">Salvar Placa Perdida</button>
-      <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
+      <button id="btn-voltar-perdi" class="btn btn-secondary">Voltar</button>
       <div id="perdi-result" class="result"></div>
     </div>
 
@@ -260,7 +342,7 @@
       </div>
       <div class="form-group">
         <label for="achei-placa">Número da Placa:</label>
-        <input type="text" id="achei-placa" placeholder="Ex: ABC1234 ou ABC1D23">
+        <input type="text" id="achei-placa" placeholder="Ex: ABC1234 ou ABC1D23" />
       </div>
       <div class="form-group" id="achei-localizacao-group">
         <label for="achei-uf">Estado (UF):</label>
@@ -301,14 +383,14 @@
       </div>
       <div class="form-group">
         <label for="achei-nome">Seu nome:</label>
-        <input type="text" id="achei-nome" placeholder="Digite seu nome">
+        <input type="text" id="achei-nome" placeholder="Digite seu nome" />
       </div>
       <div class="form-group">
         <label for="achei-telefone">Telefone para contato:</label>
-        <input type="tel" id="achei-telefone" placeholder="(00) 00000-0000">
+        <input type="tel" id="achei-telefone" placeholder="(00) 00000-0000" />
       </div>
       <button id="achei-salvar" class="btn btn-success">Salvar Placa</button>
-      <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
+      <button id="btn-voltar-achei" class="btn btn-secondary">Voltar</button>
       <div id="achei-result" class="result"></div>
     </div>
   </div>
@@ -318,11 +400,8 @@
     <strong>PIX:</strong> sosplaca.app@gmail.com
   </footer>
   <!-- Parte 2: Scripts JavaScript para comunicação com Firebase e lógica da página -->
-  <!-- Inclua estas linhas logo antes do fechamento das tags </body></html> -->
-
-  <!-- SDKs Firebase (v9 modular) -->
   <script type="module">
-    // Importações principais do Firebase (v9 modular)
+    // ================================ IMPORTS FIREBASE (v9 modular) ================================
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
     import {
       getAuth,
@@ -341,7 +420,7 @@
       where
     } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
-    // ---------------------------- Configuração Firebase ----------------------------
+    // ================================ CONFIGURAÇÃO DO FIREBASE ================================
     const firebaseConfig = {
       apiKey: 'AIzaSyBn6cCXLnU6LUH7kOjVtvpuceQ2lVzzczg',
       authDomain: 'sosplaca-73cf7.firebaseapp.com',
@@ -357,7 +436,7 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // ---------------------------- Variáveis de referência a elementos ----------------------------
+    // ================================ ELEMENTOS (TELAS e BOTÕES) ================================
     // Telas
     const menuScreen = document.getElementById("menu-screen");
     const placasScreen = document.getElementById("placas-screen");
@@ -368,13 +447,23 @@
     const perdiScreen = document.getElementById("perdi-screen");
     const acheiScreen = document.getElementById("achei-screen");
 
-    // Botões de navegação
+    // Botões do menu
     const btnPlacas = document.getElementById("btn-placas");
     const btnMinhasPlacas = document.getElementById("btn-minhas-placas");
     const btnPerfil = document.getElementById("btn-perfil");
 
+    // Botões "Perdi" e "Achei"
     const btnPerdi = document.getElementById("btn-perdi");
     const btnAchei = document.getElementById("btn-achei");
+
+    // Botões "Voltar" (cada tela)
+    const btnVoltarPlacas = document.getElementById("btn-voltar-placas");
+    const btnVoltarMinhas = document.getElementById("btn-voltar-minhas");
+    const btnVoltarPerfil = document.getElementById("btn-voltar-perfil");
+    const btnVoltarLogin = document.getElementById("btn-voltar-login");
+    const btnVoltarCadastro = document.getElementById("btn-voltar-cadastro");
+    const btnVoltarPerdi = document.getElementById("btn-voltar-perdi");
+    const btnVoltarAchei = document.getElementById("btn-voltar-achei");
 
     // Login/Cadastro
     const btnLogin = document.getElementById("btn-login");
@@ -420,36 +509,66 @@
     const cadastroConfirmar = document.getElementById("cadastro-confirmar-senha");
     const cadastroResult = document.getElementById("cadastro-result");
 
-    // ---------------------------- Funções de Navegação de Telas ----------------------------
+    // ================================ FUNÇÕES DE NAVEGAÇÃO DE TELAS ================================
     function showScreen(screen) {
       // Esconde todas as telas
-      [menuScreen, placasScreen, minhasPlacasScreen, perfilScreen, loginScreen, cadastroScreen, perdiScreen, acheiScreen]
-        .forEach(s => s.classList.remove("active"));
-      // Mostra apenas a tela solicitada
+      [
+        menuScreen,
+        placasScreen,
+        minhasPlacasScreen,
+        perfilScreen,
+        loginScreen,
+        cadastroScreen,
+        perdiScreen,
+        acheiScreen
+      ].forEach((s) => s.classList.remove("active"));
+
+      // Mostra apenas a tela informada
       screen.classList.add("active");
     }
 
-    function voltarMenu() {
-      showScreen(menuScreen);
-    }
+    // Torna acessível globalmente (para que event listeners inline, se existirem, funcionem)
+    window.voltarMenu = () => showScreen(menuScreen);
 
-    // Associando botões do menu
+    // ================================ ASSOCIAÇÃO DE EVENTOS ================================
+    // Ao carregar a página, exibe sempre o menu principal
+    window.addEventListener("load", () => {
+      showScreen(menuScreen);
+    });
+
+    // Cabeçalho “SOS PLACA” volta ao menu
+    document
+      .getElementById("header-home")
+      .addEventListener("click", () => showScreen(menuScreen));
+
+    // “Menu → Buscar/Cadastrar Placas”
     btnPlacas.addEventListener("click", () => showScreen(placasScreen));
+    // “Menu → Minhas Placas”
     btnMinhasPlacas.addEventListener("click", () => {
       showMinhasPlacas();
       showScreen(minhasPlacasScreen);
     });
+    // “Menu → Meu Perfil”
     btnPerfil.addEventListener("click", () => {
       mostrarPerfil();
       showScreen(perfilScreen);
     });
 
+    // “Buscar/Cadastrar → Perdi uma placa”
     btnPerdi.addEventListener("click", () => showScreen(perdiScreen));
+    // “Buscar/Cadastrar → Achei uma placa”
     btnAchei.addEventListener("click", () => showScreen(acheiScreen));
-    btnIrCadastro.addEventListener("click", () => showScreen(cadastroScreen));
-    // Botões "Voltar" já chamam voltarMenu() via onclick inline
 
-    // ---------------------------- Login e Cadastro (sem obrigatoriedade na inicial) ----------------------------
+    // “Voltar” de cada tela (agora sem inline, via JS)
+    btnVoltarPlacas.addEventListener("click", () => showScreen(menuScreen));
+    btnVoltarMinhas.addEventListener("click", () => showScreen(menuScreen));
+    btnVoltarPerfil.addEventListener("click", () => showScreen(menuScreen));
+    btnVoltarLogin.addEventListener("click", () => showScreen(menuScreen));
+    btnVoltarCadastro.addEventListener("click", () => showScreen(menuScreen));
+    btnVoltarPerdi.addEventListener("click", () => showScreen(placasScreen));
+    btnVoltarAchei.addEventListener("click", () => showScreen(placasScreen));
+
+    // “Login”
     btnLogin.addEventListener("click", async () => {
       const email = loginEmail.value.trim();
       const senha = loginSenha.value.trim();
@@ -466,7 +585,7 @@
         await signInWithEmailAndPassword(auth, email, senha);
         loginResult.classList.add("success");
         loginResult.textContent = "Login efetuado com sucesso!";
-        // Depois de logar, volta ao menu principal
+        // Depois de um breve delay, volta ao menu
         setTimeout(() => showScreen(menuScreen), 800);
       } catch (error) {
         loginResult.classList.add("error");
@@ -474,6 +593,10 @@
       }
     });
 
+    // “Não tem conta? Cadastre-se”
+    btnIrCadastro.addEventListener("click", () => showScreen(cadastroScreen));
+
+    // “Cadastrar”
     btnCadastrar.addEventListener("click", async () => {
       const nome = cadastroNome.value.trim();
       const email = cadastroEmail.value.trim();
@@ -494,7 +617,12 @@
         return;
       }
       try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          senha
+        );
+        // Armazena o displayName
         await updateProfile(userCredential.user, { displayName: nome });
         cadastroResult.classList.add("success");
         cadastroResult.textContent = "Usuário criado com sucesso!";
@@ -505,8 +633,8 @@
       }
     });
 
-    // ---------------------------- Funções “Perdi uma Placa” ----------------------------
-    // Ajusta visibilidade de UF/Município se “comum” ou “mercosul”
+    // ================================ “Perdi uma Placa” ================================
+    // Mostra/oculta UF+Município de acordo com tipo de placa
     perdiTipo.addEventListener("change", () => {
       if (perdiTipo.value === "comum") {
         perdiLocalGroup.style.display = "block";
@@ -514,12 +642,12 @@
         perdiLocalGroup.style.display = "none";
       }
     });
-    // Inicialmente, se mercosul, esconde
+    // Estado inicial: se for “mercosul”, já oculta
     if (perdiTipo.value === "mercosul") {
       perdiLocalGroup.style.display = "none";
     }
 
-    // Verificar Placa (perdida) — consulta coleç∫õe foundPlates
+    // Verificar Placa (perdida): consulta “foundPlates”
     perdiVerificar.addEventListener("click", async () => {
       const tipo = perdiTipo.value;
       const placa = perdiPlaca.value.trim().toUpperCase();
@@ -535,7 +663,11 @@
       }
       try {
         const foundCollection = collection(db, "foundPlates");
-        const q = query(foundCollection, where("placa", "==", placa), where("tipo", "==", tipo));
+        const q = query(
+          foundCollection,
+          where("placa", "==", placa),
+          where("tipo", "==", tipo)
+        );
         const querySnapshot = await getDocs(q);
         if (!querySnapshot.empty) {
           const docFound = querySnapshot.docs[0].data();
@@ -557,7 +689,7 @@
       }
     });
 
-    // Salvar Placa Perdida — grava em lostPlates
+    // Salvar Placa Perdida (em “lostPlates”)
     perdiSalvar.addEventListener("click", async () => {
       const user = auth.currentUser;
       if (!user) {
@@ -589,7 +721,7 @@
           tipo: tipo,
           uf: tipo === "comum" ? uf : "",
           municipio: tipo === "comum" ? municipio : "",
-          timestamp: Date.now()
+          timestamp: Date.now(),
         });
         perdiResult.classList.add("success");
         perdiResult.textContent = "Placa perdida cadastrada com sucesso!";
@@ -597,7 +729,8 @@
         perdiPlaca.value = "";
         if (tipo === "comum") {
           perdiUf.value = "";
-          perdiMunicipio.innerHTML = '<option value="" disabled selected>Selecione o município</option>';
+          perdiMunicipio.innerHTML =
+            '<option value="" disabled selected>Selecione o município</option>';
         }
       } catch (error) {
         perdiResult.classList.add("error");
@@ -605,7 +738,7 @@
       }
     });
 
-    // ---------------------------- Funções “Achei uma Placa” ----------------------------
+    // ================================ “Achei uma Placa” ================================
     acheiTipo.addEventListener("change", () => {
       if (acheiTipo.value === "comum") {
         acheiLocalGroup.style.display = "block";
@@ -645,7 +778,7 @@
           municipio: tipo === "comum" ? municipio : "",
           nome: nome,
           telefone: telefone,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         });
         acheiResult.classList.add("success");
         acheiResult.textContent = "Informação de placa encontrada salva com sucesso!";
@@ -655,7 +788,8 @@
         acheiTelefone.value = "";
         if (tipo === "comum") {
           acheiUf.value = "";
-          acheiMunicipio.innerHTML = '<option value="" disabled selected>Selecione o município</option>';
+          acheiMunicipio.innerHTML =
+            '<option value="" disabled selected>Selecione o município</option>';
         }
       } catch (error) {
         acheiResult.classList.add("error");
@@ -663,12 +797,20 @@
       }
     });
 
-    // ---------------------------- Funções “Minhas Placas Perdidas” ----------------------------
+    // ================================ “Minhas Placas Perdidas” ================================
     async function showMinhasPlacas() {
       const user = auth.currentUser;
-      minhasPlacasContent.innerHTML = ""; // limpa antes de preencher
+      minhasPlacasContent.innerHTML = ""; // Limpa o conteúdo antes
       if (!user) {
-        minhasPlacasContent.innerHTML = "<p>Você precisa estar logado para ver suas placas.</p>";
+        // Se não está logado, exibe mensagem + botão “Entrar”
+        minhasPlacasContent.innerHTML = `
+          <p>Você precisa estar logado para ver suas placas.</p>
+          <button id="btn-login-minhas" class="btn btn-success">Entrar</button>
+        `;
+        // Associa o clique desse botão para mostrar a tela de login
+        document
+          .getElementById("btn-login-minhas")
+          .addEventListener("click", () => showScreen(loginScreen));
         return;
       }
       try {
@@ -676,23 +818,32 @@
         const q = query(lostCollection, where("ownerId", "==", user.uid));
         const querySnapshot = await getDocs(q);
         if (querySnapshot.empty) {
-          minhasPlacasContent.innerHTML = "<p>Você não possui placas perdidas cadastradas.</p>";
+          minhasPlacasContent.innerHTML =
+            "<p>Você não possui placas perdidas cadastradas.</p>";
           return;
         }
-        querySnapshot.forEach(docSnap => {
+        // Para cada placa perdida, cria um card com “Verificar Status”
+        querySnapshot.forEach((docSnap) => {
           const data = docSnap.data();
           const divCard = document.createElement("div");
           divCard.classList.add("plate-card");
           divCard.innerHTML = `
-            <p><strong>Placa:</strong> ${data.placa} (${data.tipo === "comum" ? data.uf + " / " + data.municipio : "Mercosul"})</p>
-            <button class="btn btn-success btn-verificar-status" data-placa="${data.placa}" data-tipo="${data.tipo}">
+            <p><strong>Placa:</strong> ${data.placa} (${
+            data.tipo === "comum"
+              ? data.uf + " / " + data.municipio
+              : "Mercosul"
+          })</p>
+            <button class="btn btn-success btn-verificar-status" data-placa="${
+              data.placa
+            }" data-tipo="${data.tipo}">
               Verificar Status
             </button>
             <div class="result status-result" style="margin-top:10px; display:none;"></div>
           `;
           minhasPlacasContent.appendChild(divCard);
         });
-        document.querySelectorAll(".btn-verificar-status").forEach(btn => {
+        // Associa evento a todos os botões “Verificar Status”
+        document.querySelectorAll(".btn-verificar-status").forEach((btn) => {
           btn.addEventListener("click", async (e) => {
             const placa = e.currentTarget.getAttribute("data-placa");
             const tipo = e.currentTarget.getAttribute("data-tipo");
@@ -701,7 +852,11 @@
             resultadoDiv.textContent = "";
             try {
               const foundCollection = collection(db, "foundPlates");
-              const q2 = query(foundCollection, where("placa", "==", placa), where("tipo", "==", tipo));
+              const q2 = query(
+                foundCollection,
+                where("placa", "==", placa),
+                where("tipo", "==", tipo)
+              );
               const snap2 = await getDocs(q2);
               if (!snap2.empty) {
                 const foundData = snap2.docs[0].data();
@@ -719,7 +874,8 @@
               }
             } catch (error) {
               resultadoDiv.classList.add("error");
-              resultadoDiv.textContent = "Erro ao verificar status: " + error.message;
+              resultadoDiv.textContent =
+                "Erro ao verificar status: " + error.message;
             }
             resultadoDiv.style.display = "block";
           });
@@ -729,12 +885,19 @@
       }
     }
 
-    // ---------------------------- Funções “Meu Perfil” ----------------------------
+    // ================================ “Meu Perfil” ================================
     async function mostrarPerfil() {
       const user = auth.currentUser;
       perfilContent.innerHTML = "";
       if (!user) {
-        perfilContent.innerHTML = "<p>Você precisa estar logado para ver o perfil.</p>";
+        // Se não está logado, exibe mensagem + botão “Entrar”
+        perfilContent.innerHTML = `
+          <p>Você precisa estar logado para ver o perfil.</p>
+          <button id="btn-login-perfil" class="btn btn-success">Entrar</button>
+        `;
+        document
+          .getElementById("btn-login-perfil")
+          .addEventListener("click", () => showScreen(loginScreen));
         return;
       }
       const nome = user.displayName || "(sem nome)";
@@ -747,23 +910,13 @@
           <button id="btn-logout" class="btn btn-danger" style="margin-top:15px;">Sair</button>
         </div>
       `;
-      document.getElementById("btn-logout").addEventListener("click", async () => {
-        await signOut(auth);
-        showScreen(menuScreen);
-      });
+      document
+        .getElementById("btn-logout")
+        .addEventListener("click", async () => {
+          await signOut(auth);
+          showScreen(menuScreen);
+        });
     }
-
-    // ---------------------------- Clique no Header volta ao Menu ----------------------------
-    document.getElementById("header-home").addEventListener("click", () => {
-      showScreen(menuScreen);
-    });
-
-    // ---------------------------- Carregamento Inicial ----------------------------
-    // Ao carregar a página, mostra o menu principal.
-    window.addEventListener("load", () => {
-      showScreen(menuScreen);
-    });
-
   </script>
 </body>
 </html>
