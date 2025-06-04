@@ -810,8 +810,10 @@
           const soNumeros = telefone.replace(/\D/g, '');
           const ehCelular = soNumeros.length >= 10 && soNumeros.length <= 11 && soNumeros.slice(-9, -8) === '9';
 
-          html += `<p><strong>Boa notícia!</strong> A placa <strong>${placaInput}</strong> foi encontrada por <strong>${nome}</strong>.</p>`;
-          html += `<div class="alert-box">
+          html += `<p><strong>Boa notícia!</strong> A placa <strong>${placaInput}</strong> foi encontrada por </p>`;
+          html += `<strong>${nome}</strong>.</p>`;
+          html += `<p><strong>Telefone:</strong> ${telefone}</p>`;
+  	  html += `<div class="alert-box">
             <strong>⚠️ Atenção:</strong><br>
             Não cobramos e nem intermediamos qualquer valor pela devolução de placas.<br>
             Oferecer uma gratificação é algo opcional, decidido entre quem perdeu e quem encontrou.<br>
@@ -835,7 +837,7 @@
                 margin-top: 15px;
               ">
                 <img src="WhatsApp.png" alt="WhatsApp" style="width: 24px; height: 24px;">
-                Falar no WhatsApp
+                Chamar no WhatsApp
               </a>
             `;
           } else if (telefone) {
