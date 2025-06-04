@@ -32,11 +32,20 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'JostRegular', sans-serif; }
     body { background-color: #FAFAFA; color: #333; line-height: 1.6; }
     .container { max-width: 900px; margin: 0 auto; padding: 20px; }
-    header { background-color: #0077B6; color: #fff; padding: 1.25rem; display: flex; align-items: center; justify-content: space-between; border-radius: 0 0 10px 10px; }
+    header {
+      background-color: #0077B6;
+      color: #fff;
+      padding: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-radius: 0 0 10px 10px;
+      cursor: pointer;
+    }
     .logo-container { display: flex; align-items: center; gap: 10px; }
     .logo-img { width: 50px; height: 50px; }
     .logo-text { font-size: 2rem; font-family: 'JostBold'; }
-    h1 { font-size: 1.2rem; }
+    h1 { font-size: 1.2rem; color: #fff; }
     .screen { background-color: #fff; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 1.25rem; display: none; }
     .screen.active { display: block; }
     .btn { display: inline-block; background-color: #023E8A; color: #fff; padding: 0.75rem 1.5rem; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; margin: 0.625rem 0.3125rem; }
@@ -46,7 +55,7 @@
     .form-group { margin-bottom: 1.25rem; }
     label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
     input, select { width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; }
-    .result { margin-top: 1.25rem; padding: 0.9375rem; border-radius: 6px; background-color: #f8f9fa; display: none; }
+    .result { margin-top: 1.25rem; padding: 0.9375rem; border-radius: 6px; background-color: #f8f9fa; display: none; white-space: pre-line; }
     .result.success { display: block; border-left: 6px solid #27ae60; }
     .result.error { display: block; border-left: 6px solid #e74c3c; }
     .alert-box {
@@ -90,225 +99,224 @@
 
 <body>
 
-<header>
-  <div class="logo-container">
-    <img src="logo.png" alt="Logo SOS Placa" class="logo-img">
-    <div class="logo-text">SOS PLACA</div>
-  </div>
-  <h1>Se achou, avise! Se perdeu, procure aqui!</h1>
+  <!-- Cabeçalho clicável (clica nele para voltar ao menu principal) -->
+  <header id="header-home">
+    <div class="logo-container">
+      <img src="logo.png" alt="Logo SOS Placa" class="logo-img">
+      <div class="logo-text">SOS PLACA</div>
+    </div>
+    <h1>Se achou, avise! Se perdeu, procure aqui!</h1>
+    <a href="https://play.google.com/store/apps/details?id=fabricioramosdasilva.sos_placa" target="_blank">
+      <img src="GooglePlay.png" alt="Baixar na Google Play" style="height: 90px;">
+    </a>
+  </header>
   
-  <a href="https://play.google.com/store/apps/details?id=fabricioramosdasilva.sos_placa" target="_blank">
-    <img src="GooglePlay.png" alt="Baixar na Google Play" style="height: 90px;">
-  </a>
-</header>
-  
-<div class="container">
-  <!-- Menu Inicial -->
-  <div id="menu-screen" class="screen active">
-    <h2>O que você deseja fazer?</h2>
-    <button id="btn-placas" class="btn">Buscar/Cadastrar Placas</button>
-    <button id="btn-minhas-placas" class="btn">Minhas Placas</button>
-    <button id="btn-perfil" class="btn">Meu Perfil</button>
+  <div class="container">
+    <!-- Menu Inicial -->
+    <div id="menu-screen" class="screen active">
+      <h2>O que você deseja fazer?</h2>
+      <button id="btn-placas" class="btn">Buscar/Cadastrar Placas</button>
+      <button id="btn-minhas-placas" class="btn">Minhas Placas</button>
+      <button id="btn-perfil" class="btn">Meu Perfil</button>
+    </div>
+
+    <!-- Tela Buscar/Cadastrar Placas -->
+    <div id="placas-screen" class="screen">
+      <h2>Buscar/Cadastrar Placas</h2>
+      <button id="btn-perdi" class="btn">Perdi uma placa</button>
+      <button id="btn-achei" class="btn">Achei uma placa</button>
+      <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
+    </div>
+
+    <!-- Tela Minhas Placas -->
+    <div id="minhas-placas-screen" class="screen">
+      <h2>Minhas Placas Perdidas</h2>
+      <div id="minhas-placas-content">
+        <!-- Conteúdo será preenchido dinamicamente -->
+      </div>
+      <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
+    </div>
+
+    <!-- Tela Perfil -->
+    <div id="perfil-screen" class="screen">
+      <h2>Meu Perfil</h2>
+      <div id="perfil-content">
+        <!-- Conteúdo será preenchido dinamicamente -->
+      </div>
+      <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
+    </div>
+
+    <!-- Tela Login (aparece apenas se o usuário tentar acessar páginas restritas sem estar logado) -->
+    <div id="login-screen" class="screen">
+      <h2>Login</h2>
+      <div class="form-group">
+        <label for="login-email">E-mail:</label>
+        <input type="email" id="login-email" placeholder="Digite seu e-mail">
+      </div>
+      <div class="form-group">
+        <label for="login-senha">Senha:</label>
+        <input type="password" id="login-senha" placeholder="Digite sua senha">
+      </div>
+      <button id="btn-login" class="btn btn-success">Entrar</button>
+      <button id="btn-ir-cadastro" class="btn">Não tem conta? Cadastre-se</button>
+      <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
+      <div id="login-result" class="result"></div>
+    </div>
+
+    <!-- Tela Cadastro -->
+    <div id="cadastro-screen" class="screen">
+      <h2>Cadastro</h2>
+      <div class="form-group">
+        <label for="cadastro-nome">Nome Completo:</label>
+        <input type="text" id="cadastro-nome" placeholder="Digite seu nome completo">
+      </div>
+      <div class="form-group">
+        <label for="cadastro-email">E-mail:</label>
+        <input type="email" id="cadastro-email" placeholder="Digite seu e-mail">
+      </div>
+      <div class="form-group">
+        <label for="cadastro-telefone">Telefone:</label>
+        <input type="tel" id="cadastro-telefone" placeholder="(00) 00000-0000">
+      </div>
+      <div class="form-group">
+        <label for="cadastro-senha">Senha:</label>
+        <input type="password" id="cadastro-senha" placeholder="Digite sua senha">
+      </div>
+      <div class="form-group">
+        <label for="cadastro-confirmar-senha">Confirmar Senha:</label>
+        <input type="password" id="cadastro-confirmar-senha" placeholder="Confirme sua senha">
+      </div>
+      <button id="btn-cadastrar" class="btn btn-success">Cadastrar</button>
+      <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
+      <div id="cadastro-result" class="result"></div>
+    </div>
+
+    <!-- Tela Perdi uma Placa -->
+    <div id="perdi-screen" class="screen">
+      <h2>Perdi uma Placa</h2>
+      <div class="form-group">
+        <label for="perdi-tipo">Tipo de Placa:</label>
+        <select id="perdi-tipo">
+          <option value="comum">Comum</option>
+          <option value="mercosul">Mercosul</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="perdi-placa">Número da Placa:</label>
+        <input type="text" id="perdi-placa" placeholder="Ex: ABC1234 ou ABC1D23">
+      </div>
+      <div class="form-group" id="perdi-localizacao-group">
+        <label for="perdi-uf">Estado (UF):</label>
+        <select id="perdi-uf">
+          <option value="" disabled selected>Selecione o estado</option>
+          <option value="AC">AC</option>
+          <option value="AL">AL</option>
+          <option value="AM">AM</option>
+          <option value="AP">AP</option>
+          <option value="BA">BA</option>
+          <option value="CE">CE</option>
+          <option value="DF">DF</option>
+          <option value="ES">ES</option>
+          <option value="GO">GO</option>
+          <option value="MA">MA</option>
+          <option value="MG">MG</option>
+          <option value="MS">MS</option>
+          <option value="MT">MT</option>
+          <option value="PA">PA</option>
+          <option value="PB">PB</option>
+          <option value="PE">PE</option>
+          <option value="PI">PI</option>
+          <option value="PR">PR</option>
+          <option value="RJ">RJ</option>
+          <option value="RN">RN</option>
+          <option value="RO">RO</option>
+          <option value="RR">RR</option>
+          <option value="RS">RS</option>
+          <option value="SC">SC</option>
+          <option value="SE">SE</option>
+          <option value="SP">SP</option>
+          <option value="TO">TO</option>
+        </select>
+        <label for="perdi-municipio">Município:</label>
+        <select id="perdi-municipio">
+          <option value="" disabled selected>Selecione o município</option>
+        </select>
+      </div>
+      <button id="perdi-verificar" class="btn btn-success">Verificar Placa</button>
+      <button id="perdi-salvar" class="btn btn-success">Salvar Placa Perdida</button>
+      <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
+      <div id="perdi-result" class="result"></div>
+    </div>
+
+    <!-- Tela Achei uma Placa -->
+    <div id="achei-screen" class="screen">
+      <h2>Achei uma Placa</h2>
+      <div class="form-group">
+        <label for="achei-tipo">Tipo de Placa:</label>
+        <select id="achei-tipo">
+          <option value="comum">Comum</option>
+          <option value="mercosul">Mercosul</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="achei-placa">Número da Placa:</label>
+        <input type="text" id="achei-placa" placeholder="Ex: ABC1234 ou ABC1D23">
+      </div>
+      <div class="form-group" id="achei-localizacao-group">
+        <label for="achei-uf">Estado (UF):</label>
+        <select id="achei-uf">
+          <option value="" disabled selected>Selecione o estado</option>
+          <option value="AC">AC</option>
+          <option value="AL">AL</option>
+          <option value="AM">AM</option>
+          <option value="AP">AP</option>
+          <option value="BA">BA</option>
+          <option value="CE">CE</option>
+          <option value="DF">DF</option>
+          <option value="ES">ES</option>
+          <option value="GO">GO</option>
+          <option value="MA">MA</option>
+          <option value="MG">MG</option>
+          <option value="MS">MS</option>
+          <option value="MT">MT</option>
+          <option value="PA">PA</option>
+          <option value="PB">PB</option>
+          <option value="PE">PE</option>
+          <option value="PI">PI</option>
+          <option value="PR">PR</option>
+          <option value="RJ">RJ</option>
+          <option value="RN">RN</option>
+          <option value="RO">RO</option>
+          <option value="RR">RR</option>
+          <option value="RS">RS</option>
+          <option value="SC">SC</option>
+          <option value="SE">SE</option>
+          <option value="SP">SP</option>
+          <option value="TO">TO</option>
+        </select>
+        <label for="achei-municipio">Município:</label>
+        <select id="achei-municipio">
+          <option value="" disabled selected>Selecione o município</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="achei-nome">Seu nome:</label>
+        <input type="text" id="achei-nome" placeholder="Digite seu nome">
+      </div>
+      <div class="form-group">
+        <label for="achei-telefone">Telefone para contato:</label>
+        <input type="tel" id="achei-telefone" placeholder="(00) 00000-0000">
+      </div>
+      <button id="achei-salvar" class="btn btn-success">Salvar Placa</button>
+      <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
+      <div id="achei-result" class="result"></div>
+    </div>
   </div>
 
-  <!-- Tela Buscar/Cadastrar Placas -->
-  <div id="placas-screen" class="screen">
-    <h2>Buscar/Cadastrar Placas</h2>
-    <button id="btn-perdi" class="btn">Perdi uma placa</button>
-    <button id="btn-achei" class="btn">Achei uma placa</button>
-    <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
-  </div>
-
-  <!-- Tela Minhas Placas -->
-  <div id="minhas-placas-screen" class="screen">
-    <h2>Minhas Placas Perdidas</h2>
-    <div id="minhas-placas-content">
-      <!-- Conteúdo será preenchido dinamicamente -->
-    </div>
-    <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
-  </div>
-
-  <!-- Tela Perfil -->
-  <div id="perfil-screen" class="screen">
-    <h2>Meu Perfil</h2>
-    <div id="perfil-content">
-      <!-- Conteúdo será preenchido dinamicamente -->
-    </div>
-    <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
-  </div>
-
-  <!-- Tela Login -->
-  <div id="login-screen" class="screen">
-    <h2>Login</h2>
-    <div class="form-group">
-      <label for="login-email">E-mail:</label>
-      <input type="email" id="login-email" placeholder="Digite seu e-mail" required>
-    </div>
-    <div class="form-group">
-      <label for="login-senha">Senha:</label>
-      <input type="password" id="login-senha" placeholder="Digite sua senha" required>
-    </div>
-    <button id="btn-login" class="btn btn-success">Entrar</button>
-    <button id="btn-ir-cadastro" class="btn">Não tem conta? Cadastre-se</button>
-    <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
-    <div id="login-result" class="result"></div>
-  </div>
-
-  <!-- Tela Cadastro -->
-  <div id="cadastro-screen" class="screen">
-    <h2>Cadastro</h2>
-    <div class="form-group">
-      <label for="cadastro-nome">Nome Completo:</label>
-      <input type="text" id="cadastro-nome" placeholder="Digite seu nome completo" required>
-    </div>
-    <div class="form-group">
-      <label for="cadastro-email">E-mail:</label>
-      <input type="email" id="cadastro-email" placeholder="Digite seu e-mail" required>
-    </div>
-    <div class="form-group">
-      <label for="cadastro-telefone">Telefone:</label>
-      <input type="tel" id="cadastro-telefone" placeholder="(00) 00000-0000" required>
-    </div>
-    <div class="form-group">
-      <label for="cadastro-senha">Senha:</label>
-      <input type="password" id="cadastro-senha" placeholder="Digite sua senha" required>
-    </div>
-    <div class="form-group">
-      <label for="cadastro-confirmar-senha">Confirmar Senha:</label>
-      <input type="password" id="cadastro-confirmar-senha" placeholder="Confirme sua senha" required>
-    </div>
-    <button id="btn-cadastrar" class="btn btn-success">Cadastrar</button>
-    <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
-    <div id="cadastro-result" class="result"></div>
-  </div>
-
-  <!-- Tela Perdi uma Placa -->
-  <div id="perdi-screen" class="screen">
-    <h2>Perdi uma Placa</h2>
-    <div class="form-group">
-      <label for="perdi-tipo">Tipo de Placa:</label>
-      <select id="perdi-tipo">
-        <option value="comum">Comum</option>
-        <option value="mercosul">Mercosul</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="perdi-placa">Número da Placa:</label>
-      <input type="text" id="perdi-placa" placeholder="Ex: ABC1234 ou ABC1D23">
-    </div>
-    <div class="form-group" id="perdi-localizacao-group">
-      <label for="perdi-uf">Estado (UF):</label>
-      <select id="perdi-uf">
-        <option value="" disabled selected>Selecione o estado</option>
-        <option value="AC">AC</option>
-        <option value="AL">AL</option>
-        <option value="AM">AM</option>
-        <option value="AP">AP</option>
-        <option value="BA">BA</option>
-        <option value="CE">CE</option>
-        <option value="DF">DF</option>
-        <option value="ES">ES</option>
-        <option value="GO">GO</option>
-        <option value="MA">MA</option>
-        <option value="MG">MG</option>
-        <option value="MS">MS</option>
-        <option value="MT">MT</option>
-        <option value="PA">PA</option>
-        <option value="PB">PB</option>
-        <option value="PE">PE</option>
-        <option value="PI">PI</option>
-        <option value="PR">PR</option>
-        <option value="RJ">RJ</option>
-        <option value="RN">RN</option>
-        <option value="RO">RO</option>
-        <option value="RR">RR</option>
-        <option value="RS">RS</option>
-        <option value="SC">SC</option>
-        <option value="SE">SE</option>
-        <option value="SP">SP</option>
-        <option value="TO">TO</option>
-      </select>
-      <label for="perdi-municipio">Município:</label>
-      <select id="perdi-municipio">
-        <option value="" disabled selected>Selecione o município</option>
-      </select>
-    </div>
-    <button id="perdi-verificar" class="btn btn-success">Verificar Placa</button>
-    <button id="perdi-salvar" class="btn btn-success">Salvar Placa Perdida</button>
-    <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
-    <div id="perdi-result" class="result"></div>
-  </div>
-
-  <!-- Tela Achei uma Placa -->
-  <div id="achei-screen" class="screen">
-    <h2>Achei uma Placa</h2>
-    <div class="form-group">
-      <label for="achei-tipo">Tipo de Placa:</label>
-      <select id="achei-tipo">
-        <option value="comum">Comum</option>
-        <option value="mercosul">Mercosul</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="achei-placa">Número da Placa:</label>
-      <input type="text" id="achei-placa" placeholder="Ex: ABC1234 ou ABC1D23">
-    </div>
-    <div class="form-group" id="achei-localizacao-group">
-      <label for="achei-uf">Estado (UF):</label>
-      <select id="achei-uf">
-        <option value="" disabled selected>Selecione o estado</option>
-        <option value="AC">AC</option>
-        <option value="AL">AL</option>
-        <option value="AM">AM</option>
-        <option value="AP">AP</option>
-        <option value="BA">BA</option>
-        <option value="CE">CE</option>
-        <option value="DF">DF</option>
-        <option value="ES">ES</option>
-        <option value="GO">GO</option>
-        <option value="MA">MA</option>
-        <option value="MG">MG</option>
-        <option value="MS">MS</option>
-        <option value="MT">MT</option>
-        <option value="PA">PA</option>
-        <option value="PB">PB</option>
-        <option value="PE">PE</option>
-        <option value="PI">PI</option>
-        <option value="PR">PR</option>
-        <option value="RJ">RJ</option>
-        <option value="RN">RN</option>
-        <option value="RO">RO</option>
-        <option value="RR">RR</option>
-        <option value="RS">RS</option>
-        <option value="SC">SC</option>
-        <option value="SE">SE</option>
-        <option value="SP">SP</option>
-        <option value="TO">TO</option>
-      </select>
-      <label for="achei-municipio">Município:</label>
-      <select id="achei-municipio">
-        <option value="" disabled selected>Selecione o município</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="achei-nome">Seu nome:</label>
-      <input type="text" id="achei-nome" placeholder="Digite seu nome">
-    </div>
-    <div class="form-group">
-      <label for="achei-telefone">Telefone para contato:</label>
-      <input type="tel" id="achei-telefone" placeholder="(00) 00000-0000">
-    </div>
-    <button id="achei-salvar" class="btn btn-success">Salvar Placa</button>
-    <button class="btn btn-secondary" onclick="voltarMenu()">Voltar</button>
-    <div id="achei-result" class="result"></div>
-  </div>
-
-</div>
-
-<footer>
-  💙 Ajude a manter esse projeto!<br>
-  <strong>PIX:</strong> sosplaca.app@gmail.com
-</footer>
+  <footer>
+    💙 Ajude a manter esse projeto!<br>
+    <strong>PIX:</strong> sosplaca.app@gmail.com
+  </footer>
   <!-- Parte 2: Scripts JavaScript para comunicação com Firebase e lógica da página -->
   <!-- Inclua estas linhas logo antes do fechamento das tags </body></html> -->
 
@@ -330,13 +338,10 @@
       addDoc,
       getDocs,
       query,
-      where,
-      doc,
-      updateDoc
+      where
     } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
     // ---------------------------- Configuração Firebase ----------------------------
-    // Valores obtidos do arquivo DefaultFirebaseOptions (aplicação Android, mas serve para Web)
     const firebaseConfig = {
       apiKey: 'AIzaSyBn6cCXLnU6LUH7kOjVtvpuceQ2lVzzczg',
       authDomain: 'sosplaca-73cf7.firebaseapp.com',
@@ -442,24 +447,13 @@
     btnPerdi.addEventListener("click", () => showScreen(perdiScreen));
     btnAchei.addEventListener("click", () => showScreen(acheiScreen));
     btnIrCadastro.addEventListener("click", () => showScreen(cadastroScreen));
-    // O botão “Voltar” já chama voltarMenu() via onclick inline
+    // Botões "Voltar" já chamam voltarMenu() via onclick inline
 
-    // ---------------------------- Listener de Autenticação ----------------------------
-    onAuthStateChanged(auth, user => {
-      if (user) {
-        // Se o usuário estiver logado, volta para o menu principal
-        showScreen(menuScreen);
-      } else {
-        // Se não estiver logado, exibe a tela de login
-        showScreen(loginScreen);
-      }
-    });
-
-    // ---------------------------- Funções de Login e Cadastro ----------------------------
+    // ---------------------------- Login e Cadastro (sem obrigatoriedade na inicial) ----------------------------
     btnLogin.addEventListener("click", async () => {
       const email = loginEmail.value.trim();
       const senha = loginSenha.value.trim();
-      loginResult.className = "result"; // limpa classes
+      loginResult.className = "result";
       loginResult.textContent = "";
 
       if (!email || !senha) {
@@ -472,7 +466,8 @@
         await signInWithEmailAndPassword(auth, email, senha);
         loginResult.classList.add("success");
         loginResult.textContent = "Login efetuado com sucesso!";
-        // onAuthStateChanged cuidará de redirecionar p/ menu
+        // Depois de logar, volta ao menu principal
+        setTimeout(() => showScreen(menuScreen), 800);
       } catch (error) {
         loginResult.classList.add("error");
         loginResult.textContent = "Erro no login: " + error.message;
@@ -500,14 +495,10 @@
       }
       try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
-        // Após criar conta, salva o displayName e telefones no profile
-        await updateProfile(userCredential.user, {
-          displayName: nome
-        });
-        // Poderíamos armazenar telefone no Firestore, mas deixamos apenas no profile
+        await updateProfile(userCredential.user, { displayName: nome });
         cadastroResult.classList.add("success");
         cadastroResult.textContent = "Usuário criado com sucesso!";
-        // Após breve tempo, redireciona para menu via onAuthStateChanged
+        setTimeout(() => showScreen(menuScreen), 800);
       } catch (error) {
         cadastroResult.classList.add("error");
         cadastroResult.textContent = "Erro no cadastro: " + error.message;
@@ -515,7 +506,7 @@
     });
 
     // ---------------------------- Funções “Perdi uma Placa” ----------------------------
-    // Ajusta obrigatoriedade de UF/Município apenas se “comum” estiver selecionado
+    // Ajusta visibilidade de UF/Município se “comum” ou “mercosul”
     perdiTipo.addEventListener("change", () => {
       if (perdiTipo.value === "comum") {
         perdiLocalGroup.style.display = "block";
@@ -523,12 +514,12 @@
         perdiLocalGroup.style.display = "none";
       }
     });
-    // Inicialmente, mantém visível (comportamento padrão HTML); se for “mercosul” => oculta
+    // Inicialmente, se mercosul, esconde
     if (perdiTipo.value === "mercosul") {
       perdiLocalGroup.style.display = "none";
     }
 
-    // Botão “Verificar Placa” em “Perdi”
+    // Verificar Placa (perdida) — consulta coleç∫õe foundPlates
     perdiVerificar.addEventListener("click", async () => {
       const tipo = perdiTipo.value;
       const placa = perdiPlaca.value.trim().toUpperCase();
@@ -542,13 +533,11 @@
         perdiResult.textContent = "Informe o número da placa.";
         return;
       }
-      // Monta query para procurar na coleção “foundPlates” (placas encontradas)
       try {
         const foundCollection = collection(db, "foundPlates");
         const q = query(foundCollection, where("placa", "==", placa), where("tipo", "==", tipo));
         const querySnapshot = await getDocs(q);
         if (!querySnapshot.empty) {
-          // Se pelo menos um registro encontrado, exibe informação do primeiro
           const docFound = querySnapshot.docs[0].data();
           let mensagem = `Alguém encontrou sua placa!\n`;
           mensagem += `Nome: ${docFound.nome}\n`;
@@ -568,7 +557,7 @@
       }
     });
 
-    // Botão “Salvar Placa Perdida” em “Perdi”
+    // Salvar Placa Perdida — grava em lostPlates
     perdiSalvar.addEventListener("click", async () => {
       const user = auth.currentUser;
       if (!user) {
@@ -617,7 +606,6 @@
     });
 
     // ---------------------------- Funções “Achei uma Placa” ----------------------------
-    // Ajusta obrigatoriedade de UF/Município apenas se “comum” estiver selecionado
     acheiTipo.addEventListener("change", () => {
       if (acheiTipo.value === "comum") {
         acheiLocalGroup.style.display = "block";
@@ -680,7 +668,7 @@
       const user = auth.currentUser;
       minhasPlacasContent.innerHTML = ""; // limpa antes de preencher
       if (!user) {
-        minhasPlacasContent.innerHTML = "<p>Você precisa estar logado.</p>";
+        minhasPlacasContent.innerHTML = "<p>Você precisa estar logado para ver suas placas.</p>";
         return;
       }
       try {
@@ -691,7 +679,6 @@
           minhasPlacasContent.innerHTML = "<p>Você não possui placas perdidas cadastradas.</p>";
           return;
         }
-        // Para cada placa perdida, cria um card com “Verificar Status”
         querySnapshot.forEach(docSnap => {
           const data = docSnap.data();
           const divCard = document.createElement("div");
@@ -705,7 +692,6 @@
           `;
           minhasPlacasContent.appendChild(divCard);
         });
-        // Associa evento a todos os botões “Verificar Status”
         document.querySelectorAll(".btn-verificar-status").forEach(btn => {
           btn.addEventListener("click", async (e) => {
             const placa = e.currentTarget.getAttribute("data-placa");
@@ -748,13 +734,11 @@
       const user = auth.currentUser;
       perfilContent.innerHTML = "";
       if (!user) {
-        perfilContent.innerHTML = "<p>Você precisa estar logado.</p>";
+        perfilContent.innerHTML = "<p>Você precisa estar logado para ver o perfil.</p>";
         return;
       }
-      // Exibe informações básicas de Authentication (nome, e-mail)
       const nome = user.displayName || "(sem nome)";
       const email = user.email || "(sem e-mail)";
-      // Buscar telefone no profile? Não há telefone salvo no auth, seria preciso Firestore. Por enquanto exibimos o campo vazio
       perfilContent.innerHTML = `
         <div class="profile-info">
           <p><strong>Nome:</strong> ${nome}</p>
@@ -765,11 +749,21 @@
       `;
       document.getElementById("btn-logout").addEventListener("click", async () => {
         await signOut(auth);
+        showScreen(menuScreen);
       });
     }
 
+    // ---------------------------- Clique no Header volta ao Menu ----------------------------
+    document.getElementById("header-home").addEventListener("click", () => {
+      showScreen(menuScreen);
+    });
+
     // ---------------------------- Carregamento Inicial ----------------------------
-    // Quando a página carrega, aguarda o estado de autenticação (onAuthStateChanged) para exibir tela correta.
-    // As funções showMinhasPlacas() e mostrarPerfil() são chamadas quando o usuário clica nos botões correspondentes.
+    // Ao carregar a página, mostra o menu principal.
+    window.addEventListener("load", () => {
+      showScreen(menuScreen);
+    });
 
   </script>
+</body>
+</html>
