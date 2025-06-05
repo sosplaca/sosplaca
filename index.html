@@ -460,16 +460,32 @@
     window.voltarMenu = voltarMenu;
 
     // ─────────── ELEMENTOS E EVENTOS DE NAVEGAÇÃO ───────────
-    document.getElementById('header-home').addEventListener('click', () =>
-      mostrarTela('menu-screen')
-    );
+    document.getElementById('header-home').addEventListener('click', () => {
+  mostrarTela('menu-screen');
+  atualizarContadorDePlacas(); // atualiza os números sempre que voltar ao menu
+});
 
+    async function atualizarContadorDePlacas() {
+  try {
+    const foundSnapshot = await getDocs(collection(firestore, 'foundPlates'));
+    const lostSnapshot = await getDocs(collection(firestore, 'lostPlates'));
+
+    const totalEncontradas = foundSnapshot.size;
+    const totalPerdidas = lostSnapshot.size;
+
+    const resumoDiv = document.getElementById('placas-resumo');
+    resumoDiv.textContent = `Placas cadastradas: Encontradas: ${totalEncontradas} | Perdidas: ${totalPerdidas}`;
+  } catch (error) {
+    console.error('Erro ao contar placas:', error);
+  }
+}
     document.addEventListener('DOMContentLoaded', () => {
       // Ao carregar, exibe sempre o menu
       mostrarTela('menu-screen');
       // Inicializa seleção de “Comum” em “Achei” e “Perdi”
       document.getElementById('btn-achei-comum').click();
       document.getElementById('btn-perdi-comum').click();
+      atualizarContadorDePlacas();
     });
 
     document.getElementById('btn-placas').addEventListener('click', () =>
