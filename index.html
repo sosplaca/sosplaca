@@ -286,7 +286,7 @@
       </div>
       <div class="form-group">
         <label for="perdi-placa">Número da placa:</label>
-        <input type="text" id="perdi-placa" placeholder="AAA-0000 ou AAA0A00" required>
+        <input type="text" id="perdi-placa" placeholder="AAA-1234 ou AAA1C34" required>
       </div>
       <div class="form-group" id="perdi-localizacao">
         <label for="perdi-uf">UF:</label>
@@ -345,7 +345,7 @@
       </div>
       <div class="form-group">
         <label for="achei-placa">Número da placa:</label>
-        <input type="text" id="achei-placa" placeholder="AAA-0000 ou AAA0A00" required>
+        <input type="text" id="achei-placa" placeholder="AAA-1234 ou AAA1C34" required>
       </div>
       <div class="form-group" id="achei-localizacao">
         <label for="achei-uf">UF:</label>
@@ -551,6 +551,14 @@ resumoDiv.textContent = `${total} placas já cadastradas por aqui!`;
     document.getElementById('perdi-placa').addEventListener('input', function() {
   const isComum = document.getElementById('btn-perdi-comum').classList.contains('ativo');
   aplicarMascaraPlaca('perdi-placa', isComum);
+    });
+
+// Máscara para telefone (formato brasileiro: (XX) XXXXX-XXXX)
+    document.getElementById('achei-telefone').addEventListener('input', function() {
+  let value = this.value.replace(/\D/g, '').slice(0, 11); // Remove não-dígitos e limita a 11 caracteres
+  if (value.length > 2) value = `(${value.substring(0, 2)}) ${value.substring(2)}`; // Adiciona parênteses
+  if (value.length > 10) value = `${value.substring(0, 10)}-${value.substring(10)}`; // Adiciona hífen
+  this.value = value;
     });
 
     // ─────────── FUNÇÕES DE LOGIN/CADASTRO ───────────
@@ -785,10 +793,10 @@ resumoDiv.textContent = `${total} placas já cadastradas por aqui!`;
   const input = document.getElementById(inputId);
   let value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); // Remove caracteres não alfanuméricos
   if (isComum) {
-    value = value.slice(0, 7); // Limita a 7 caracteres (AAA0000)
+    value = value.slice(0, 7); // Limita a 7 caracteres (AAA1234)
     if (value.length > 3) value = `${value.slice(0, 3)}-${value.slice(3)}`; // Adiciona hífen após 3 letras
   } else {
-    value = value.slice(0, 7); // Limita a 7 caracteres (AAA0A00)
+    value = value.slice(0, 7); // Limita a 7 caracteres (AAA1C34)
   }
   input.value = value;
 	}
@@ -912,13 +920,13 @@ resumoDiv.textContent = `${total} placas já cadastradas por aqui!`;
       this.classList.add('ativo');
       document.getElementById('btn-achei-mercosul').classList.remove('ativo');
       document.getElementById('achei-localizacao').style.display = 'block';
-      document.getElementById('achei-placa').placeholder = 'AAA-0000';
+      document.getElementById('achei-placa').placeholder = 'AAA-1234';
     });
     document.getElementById('btn-achei-mercosul').addEventListener('click', function() {
       this.classList.add('ativo');
       document.getElementById('btn-achei-comum').classList.remove('ativo');
       document.getElementById('achei-localizacao').style.display = 'none';
-      document.getElementById('achei-placa').placeholder = 'AAA0A00';
+      document.getElementById('achei-placa').placeholder = 'AAA1C34';
     });
     // Inicial: mostra campos de localização (“comum”)
     document.getElementById('btn-achei-comum').click();
