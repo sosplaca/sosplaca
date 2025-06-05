@@ -98,7 +98,7 @@
       background-color: #F8961E;
     }
     .btn-secondary {
-      background-color: #ADB5BD;
+      background-color: #d40b04;
     }
     .btn-danger {
       background-color: #e74c3c;
@@ -622,12 +622,11 @@ resumoDiv.textContent = `${total} placas já cadastradas por aqui!`;
         const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
         const userId = userCredential.user.uid;
         // Salvar dados adicionais no Firestore, coleção "users"
-        await addDoc(collection(firestore, 'users'), {
-          uid: userId,
-          name: nome,
-          phoneNumber: telefone,
-          createdAt: serverTimestamp()
-        });
+        await setDoc(doc(firestore, 'users', userId), {
+  name: nome,
+  phoneNumber: telefone,
+  createdAt: serverTimestamp()
+});
         result.textContent = 'Cadastro realizado com sucesso!';
         result.classList.add('success');
         result.style.display = 'block';
@@ -758,24 +757,24 @@ resumoDiv.textContent = `${total} placas já cadastradas por aqui!`;
       perfilContent.innerHTML = '';
       try {
         const colUsers = collection(firestore, 'users');
-        const q = query(colUsers, where('uid', '==', uid));
-        const snap = await getDocs(q);
-        if (snap.empty) {
-          perfilContent.innerHTML = `
-            <p>Dados do usuário não encontrados.</p>
-            <button id="btn-logout" class="btn btn-danger" style="margin-top:20px;">Sair</button>
-          `;
-        } else {
-          const userData = snap.docs[0].data();
-          perfilContent.innerHTML = `
-            <div class="profile-info">
-              <p><strong>Nome:</strong> ${userData.name || '(sem nome)'}</p>
-              <p><strong>Telefone:</strong> ${userData.phoneNumber || '-'}</p>
-              <p><strong>E-mail:</strong> ${auth.currentUser.email}</p>
-              <button id="btn-logout" class="btn btn-danger" style="margin-top:20px;">Sair</button>
-            </div>
-          `;
-        }
+        const docSnap = await getDoc(doc(firestore, 'users', uid));
+
+if (!docSnap.exists()) {
+  perfilContent.innerHTML = `
+    <p>Dados do usuário não encontrados.</p>
+    <button id="btn-logout" class="btn btn-danger" style="margin-top:20px;">Sair</button>
+  `;
+} else {
+  const userData = docSnap.data();
+  perfilContent.innerHTML = `
+    <div class="profile-info">
+      <p><strong>Nome:</strong> ${userData.name || '(sem nome)'}</p>
+      <p><strong>Telefone:</strong> ${userData.phoneNumber || '-'}</p>
+      <p><strong>E-mail:</strong> ${auth.currentUser.email}</p>
+      <button id="btn-logout" class="btn btn-danger" style="margin-top:20px;">Sair</button>
+    </div>
+  `;
+}
         document.getElementById('btn-logout').addEventListener('click', fazerLogout);
       } catch (error) {
         perfilContent.innerHTML =
