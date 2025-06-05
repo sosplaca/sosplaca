@@ -894,72 +894,68 @@
     document.getElementById('btn-achei-comum').click();
 
     document.getElementById('achei-salvar').addEventListener('click', async () => {
-      const isComum = document.getElementById('btn-achei-comum').classList.contains('ativo');
-      const placa = document.getElementById('achei-placa').value.trim().toUpperCase();
-      const nome = document.getElementById('achei-nome').value.trim();
-      const telefone = document.getElementById('achei-telefone').value.trim();
-      const uf = document.getElementById('achei-uf').value;
-      const cidade = document.getElementById('achei-municipio').value;
-      const result = document.getElementById('achei-result');
-      result.className = 'result';
-      result.style.display = 'none';
+  const isComum = document.getElementById('btn-achei-comum').classList.contains('ativo');
+  const placa = document.getElementById('achei-placa').value.trim().toUpperCase();
+  const nome = document.getElementById('achei-nome').value.trim();
+  const telefone = document.getElementById('achei-telefone').value.trim();
+  const uf = document.getElementById('achei-uf').value;
+  const cidade = document.getElementById('achei-municipio').value;
+  const result = document.getElementById('achei-result');
 
-      if (!placa || !nome || !telefone || (isComum && (!uf || !cidade))) {
-        result.textContent = 'Preencha todos os campos obrigatórios.';
-        result.classList.add('error');
-        result.style.display = 'block';
-        return;
-      }
+  result.className = 'result';
+  result.style.display = 'none';
 
-      const firestoreData = {
-        plate: placa,
-        founderName: nome,
-        founderPhone: telefone,
-        foundDate: serverTimestamp(),
-        location: {
-          uf: isComum ? uf : 'null',
-          city: isComum ? cidade : 'null'
-        }
-      };
+  if (!placa || !nome || !telefone || (isComum && (!uf || !cidade))) {
+    result.textContent = 'Preencha todos os campos obrigatórios.';
+    result.classList.add('error');
+    result.style.display = 'block';
+    return;
+  }
 
-      const keyRealtime = isComum
-        ? `${placa}:${uf}:${cidade}`
-        : `${placa}:null:null`;
+  const firestoreData = {
+    plate: placa,
+    founderName: nome,
+    founderPhone: telefone,
+    foundDate: serverTimestamp(),
+    location: {
+      uf: isComum ? uf : 'null',
+      city: isComum ? cidade : 'null'
+    }
+  };
 
-      try {
-        // Grava no Firestore (coleção "foundPlates")
-        await addDoc(collection(firestore, 'foundPlates'), {
-  plate: placa,
-  founderName: nome,
-  founderPhone: telefone,
-  foundDate: serverTimestamp(),
-  location: {
-    uf: isComum ? uf : 'null',
-    city: isComum ? cidade : 'null'
+  const keyRealtime = isComum
+    ? `${placa}:${uf}:${cidade}`
+    : `${placa}:null:null`;
+
+  try {
+    // Grava no Firestore
+    await addDoc(collection(firestore, 'foundPlates'), firestoreData);
+
+    // Grava no Realtime
+    await set(ref(realtimeDb, keyRealtime), true);
+
+    // Se deu tudo certo, mostra sucesso
+    result.textContent = 'Placa cadastrada com sucesso!';
+    result.classList.add('success');
+    result.style.display = 'block';
+
+    // Limpa os campos
+    document.getElementById('achei-placa').value = '';
+    document.getElementById('achei-nome').value = '';
+    document.getElementById('achei-telefone').value = '';
+    document.getElementById('achei-uf').value = '';
+    document.getElementById('achei-municipio').innerHTML =
+      '<option value="" disabled selected>Selecione o município</option>';
+
+    // Atualiza contador
+    atualizarContadorDePlacas?.();
+  } catch (error) {
+    console.error('Erro ao salvar:', error);
+    result.textContent = 'Erro ao cadastrar. Tente novamente.';
+    result.classList.add('error');
+    result.style.display = 'block';
   }
 });
-
-        // Grava no Realtime Database
-        await set(ref(realtimeDb, keyRealtime), true);
-
-        result.textContent = 'Placa cadastrada com sucesso!';
-        result.classList.add('success');
-        result.style.display = 'block';
-
-        // Limpa campos após cadastro
-        document.getElementById('achei-placa').value = '';
-        document.getElementById('achei-nome').value = '';
-        document.getElementById('achei-telefone').value = '';
-        document.getElementById('achei-uf').value = '';
-        document.getElementById('achei-municipio').innerHTML =
-          '<option value="" disabled selected>Selecione o município</option>';
-      } catch (error) {
-        console.error('Erro ao salvar:', error);
-        result.textContent = 'Erro ao cadastrar. Tente novamente.';
-        result.classList.add('error');
-        result.style.display = 'block';
-      }
-    });
 
     // ─────────── ATUALIZAÇÃO DE MUNICÍPIOS ───────────
     const cidadesPorEstado = {
