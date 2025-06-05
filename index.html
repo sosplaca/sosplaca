@@ -928,7 +928,17 @@
 
       try {
         // Grava no Firestore (coleção "foundPlates")
-        await addDoc(collection(firestore, 'foundPlates'), firestoreData);
+        await addDoc(collection(firestore, 'foundPlates'), {
+  plate: placa,
+  founderName: nome,
+  founderPhone: telefone,
+  foundDate: serverTimestamp(),
+  location: {
+    uf: isComum ? uf : 'null',
+    city: isComum ? cidade : 'null'
+  }
+});
+
         // Grava no Realtime Database
         await set(ref(realtimeDb, keyRealtime), true);
 
