@@ -226,6 +226,7 @@
         <!-- Conteúdo dinâmico: se não logado, mostra botão “Entrar” -->
       </div>
       <button id="btn-voltar-perfil" class="btn btn-secondary">Voltar</button>
+<button id="btn-logout" class="btn btn-secondary" style="display: none;">Sair</button>
     </div>
 
     <!-- Tela Login -->
@@ -506,6 +507,8 @@ resumoDiv.textContent = `${total} placas já cadastradas por aqui!`;
       verificarLoginParaPerfil()
     );
 
+    document.getElementById('btn-logout').addEventListener('click', fazerLogout);
+
     document.getElementById('btn-perdi').addEventListener('click', () =>
       mostrarTela('perdi-screen')
     );
@@ -624,13 +627,17 @@ resumoDiv.textContent = `${total} placas já cadastradas por aqui!`;
     });
 
     // ─────────── OBSERVAR ESTADO DE AUTENTICAÇÃO ───────────
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        console.log('Usuário logado:', user.email);
-      } else {
-        console.log('Usuário não logado');
-      }
-    });
+   onAuthStateChanged(auth, (user) => {
+  const btnLogout = document.getElementById('btn-logout');
+
+  if (user) {
+    console.log('Usuário logado:', user.email);
+    if (btnLogout) btnLogout.style.display = 'inline-block';
+  } else {
+    console.log('Usuário não logado');
+    if (btnLogout) btnLogout.style.display = 'none';
+  }
+});
 
     // ─────────── “Minhas Placas Perdidas” ───────────
     async function verificarLoginParaMinhasPlacas() {
