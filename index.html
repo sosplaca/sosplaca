@@ -479,7 +479,7 @@
     const totalPerdidas = lostSnapshot.size;
 
     const resumoDiv = document.getElementById('placas-resumo');
-    resumoDiv.textContent = `Placas cadastradas: Encontradas: ${totalEncontradas} | Perdidas: ${totalPerdidas}`;
+    resumoDiv.textContent = `Já são 1${totalEncontradas} placas encontradas e 1${totalPerdidas} perdidas cadastradas aqui!`;
   } catch (error) {
     console.error('Erro ao contar placas:', error);
   }
