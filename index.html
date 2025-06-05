@@ -543,6 +543,16 @@ resumoDiv.textContent = `${total} placas já cadastradas por aqui!`;
       mostrarTela('placas-screen')
     );
 
+    document.getElementById('achei-placa').addEventListener('input', function() {
+  const isComum = document.getElementById('btn-achei-comum').classList.contains('ativo');
+  aplicarMascaraPlaca('achei-placa', isComum);
+    });
+
+    document.getElementById('perdi-placa').addEventListener('input', function() {
+  const isComum = document.getElementById('btn-perdi-comum').classList.contains('ativo');
+  aplicarMascaraPlaca('perdi-placa', isComum);
+    });
+
     // ─────────── FUNÇÕES DE LOGIN/CADASTRO ───────────
     document.getElementById('btn-login').addEventListener('click', async () => {
       const email = document.getElementById('login-email').value.trim();
@@ -771,7 +781,19 @@ resumoDiv.textContent = `${total} placas já cadastradas por aqui!`;
         .catch(error => console.error('Erro ao fazer logout:', error));
     }
 
-    // ─────────── “Perdi uma Placa” ───────────
+    function aplicarMascaraPlaca(inputId, isComum) {
+  const input = document.getElementById(inputId);
+  let value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); // Remove caracteres não alfanuméricos
+  if (isComum) {
+    value = value.slice(0, 7); // Limita a 7 caracteres (AAA0000)
+    if (value.length > 3) value = `${value.slice(0, 3)}-${value.slice(3)}`; // Adiciona hífen após 3 letras
+  } else {
+    value = value.slice(0, 7); // Limita a 7 caracteres (AAA0A00)
+  }
+  input.value = value;
+	}
+
+	// ─────────── “Perdi uma Placa” ───────────
     document.getElementById('btn-perdi-comum').addEventListener('click', function() {
       this.classList.add('ativo');
       document.getElementById('btn-perdi-mercosul').classList.remove('ativo');
