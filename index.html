@@ -868,10 +868,37 @@ if (!docSnap.exists()) {
         const snapshot = await get(child(ref(realtimeDb), keyRealtime));
         if (!snapshot.exists()) {
   resultDiv.classList.add('error');
-  resultDiv.innerHTML = `<p>Infelizmente essa placa ainda não foi cadastrada. Tente novamente mais tarde ou se cadastre para receber uma notificação assim que ela for encontrada.</p>`;
-  resultDiv.style.display = 'block';
-  return;
-}
+  resultDiv.innerHTML = `
+  <p>Infelizmente essa placa ainda não foi cadastrada.</p>
+  <p>Se desejar, você pode receber uma notificação quando ela for localizada.</p>
+  <button id="btn-criar-alerta" class="btn btn-primary" style="margin-top: 15px;">Receber alerta quando for encontrada</button>
+`;
+resultDiv.style.display = 'block';
+
+document.getElementById('btn-criar-alerta').addEventListener('click', async () => {
+  const user = auth.currentUser;
+  if (!user) {
+    alert('Você precisa estar logado para criar um alerta.');
+    mostrarTela('login-screen');
+    return;
+  }
+
+  try {
+    const docData = {
+      plate: placaInput,
+      type: isComum ? 'comum' : 'mercosul',
+      location: isComum ? { uf, city: cidade } : { uf: 'null', city: 'null' },
+      ownerId: user.uid,
+      createdAt: serverTimestamp()
+    };
+
+    await addDoc(collection(firestore, 'lostPlates'), docData);
+    alert('Alerta cadastrado com sucesso! Você pode acompanhá-lo em “Minhas Placas”.');
+  } catch (error) {
+    console.error('Erro ao criar alerta:', error);
+    alert('Não foi possível cadastrar o alerta. Tente novamente.');
+  }
+});
 
         // Se existe no Realtime, consulta os detalhes no Firestore
         const colRef = collection(firestore, 'foundPlates');
