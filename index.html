@@ -819,9 +819,7 @@ if (!docSnap.exists()) {
 
     document.getElementById('perdi-verificar').addEventListener('click', async () => {
       const isComum = document.getElementById('btn-perdi-comum').classList.contains('ativo');
-      const placaInput = document.getElementById('perdi-placa').value.trim()
-        .toUpperCase()
-        .replace(/[^A-Z0-9]/g, "");
+      const placaInput = document.getElementById('perdi-placa').value.trim().toUpperCase();
       const uf = document.getElementById('perdi-uf').value;
       const cidade = document.getElementById('perdi-municipio').value;
       const resultDiv = document.getElementById('perdi-result');
@@ -934,62 +932,77 @@ if (!docSnap.exists()) {
     document.getElementById('btn-achei-comum').click();
 
     document.getElementById('achei-salvar').addEventListener('click', async () => {
-      const isComum = document.getElementById('btn-achei-comum').classList.contains('ativo');
-      const placa = document.getElementById('achei-placa').value.trim().toUpperCase();
-      const nome = document.getElementById('achei-nome').value.trim();
-      const telefone = document.getElementById('achei-telefone').value.trim();
-      const uf = document.getElementById('achei-uf').value;
-      const cidade = document.getElementById('achei-municipio').value;
-      const result = document.getElementById('achei-result');
-      result.className = 'result';
-      result.style.display = 'none';
+  const isComum = document.getElementById('btn-achei-comum').classList.contains('ativo');
+  const placaBruta = document.getElementById('achei-placa').value.trim().toUpperCase();
+  const nome = document.getElementById('achei-nome').value.trim();
+  const telefone = document.getElementById('achei-telefone').value.trim();
+  const uf = document.getElementById('achei-uf').value;
+  const cidade = document.getElementById('achei-municipio').value;
+  const result = document.getElementById('achei-result');
 
-      if (!placa || !nome || !telefone || (isComum && (!uf || !cidade))) {
-        result.textContent = 'Preencha todos os campos obrigatórios.';
-        result.classList.add('error');
-        result.style.display = 'block';
-        return;
-      }
+  result.className = 'result';
+  result.style.display = 'none';
 
-      const firestoreData = {
-        plate: placa,
-        founderName: nome,
-        founderPhone: telefone,
-        foundDate: serverTimestamp(),
-        location: {
-          uf: isComum ? uf : 'null',
-          city: isComum ? cidade : 'null'
-        }
-      };
+  // 🔎 Validação de formato da placa
+  if (isComum && !/^[A-Z]{3}-\d{4}$/.test(placaBruta)) {
+    result.textContent = 'A placa comum deve estar no formato AAA-1234.';
+    result.classList.add('error');
+    result.style.display = 'block';
+    return;
+  }
 
-      const keyRealtime = isComum
-        ? `${placa}:${uf}:${cidade}`
-        : `${placa}:null:null`;
+  if (!isComum && !/^[A-Z0-9]{7}$/.test(placaBruta)) {
+    result.textContent = 'A placa Mercosul deve conter exatamente 7 letras/números, sem hífen.';
+    result.classList.add('error');
+    result.style.display = 'block';
+    return;
+  }
 
-      try {
-        // Grava no Firestore (coleção "foundPlates")
-        await addDoc(collection(firestore, 'foundPlates'), firestoreData);
-        // Grava no Realtime Database
-        await set(ref(realtimeDb, keyRealtime), true);
+  if (!placaBruta || !nome || !telefone || (isComum && (!uf || !cidade))) {
+    result.textContent = 'Preencha todos os campos obrigatórios.';
+    result.classList.add('error');
+    result.style.display = 'block';
+    return;
+  }
 
-        result.textContent = 'Placa cadastrada com sucesso!';
-        result.classList.add('success');
-        result.style.display = 'block';
+  const firestoreData = {
+    plate: placaBruta,
+    founderName: nome,
+    founderPhone: telefone,
+    foundDate: serverTimestamp(),
+    location: {
+      uf: isComum ? uf : 'null',
+      city: isComum ? cidade : 'null'
+    }
+  };
 
-        // Limpa campos após cadastro
-        document.getElementById('achei-placa').value = '';
-        document.getElementById('achei-nome').value = '';
-        document.getElementById('achei-telefone').value = '';
-        document.getElementById('achei-uf').value = '';
-        document.getElementById('achei-municipio').innerHTML =
-          '<option value="" disabled selected>Selecione o município</option>';
-      } catch (error) {
-        console.error('Erro ao salvar:', error);
-        result.textContent = 'Erro ao cadastrar. Tente novamente.';
-        result.classList.add('error');
-        result.style.display = 'block';
-      }
-    });
+  const keyRealtime = isComum
+    ? `${placaBruta}:${uf}:${cidade}`
+    : `${placaBruta}:null:null`;
+
+  try {
+    await addDoc(collection(firestore, 'foundPlates'), firestoreData);
+    await set(ref(realtimeDb, keyRealtime), true);
+
+    result.textContent = 'Placa cadastrada com sucesso!';
+    result.classList.add('success');
+    result.style.display = 'block';
+
+    document.getElementById('achei-placa').value = '';
+    document.getElementById('achei-nome').value = '';
+    document.getElementById('achei-telefone').value = '';
+    document.getElementById('achei-uf').value = '';
+    document.getElementById('achei-municipio').innerHTML =
+      '<option value="" disabled selected>Selecione o município</option>';
+
+    atualizarContadorDePlacas?.();
+  } catch (error) {
+    console.error('Erro ao salvar:', error);
+    result.textContent = 'Erro ao cadastrar. Tente novamente.';
+    result.classList.add('error');
+    result.style.display = 'block';
+  }
+});
 
     // ─────────── ATUALIZAÇÃO DE MUNICÍPIOS ───────────
     const cidadesPorEstado = {
