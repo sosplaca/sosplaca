@@ -900,6 +900,7 @@ document.getElementById('btn-criar-alerta').addEventListener('click', async () =
   }
 });
 
+
         // Se existe no Realtime, consulta os detalhes no Firestore
         const colRef = collection(firestore, 'foundPlates');
         const q = query(colRef, where('plate', '==', placaInput));
