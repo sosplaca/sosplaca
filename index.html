@@ -866,10 +866,8 @@ if (!docSnap.exists()) {
           : `${placaInput}:null:null`;
 
         const snapshot = await get(child(ref(realtimeDb), keyRealtime));
-        if (!snapshot.exists()) {
-  resultDiv.classList.add('error');
-  resultDiv.innerHTML = `
-  resultDiv.innerHTML = `
+        resultDiv.classList.add('error');
+resultDiv.innerHTML = `
   <p>Infelizmente essa placa ainda não foi cadastrada.</p>
   <p>Se desejar, você pode receber uma notificação quando ela for localizada.</p>
   <button id="btn-criar-alerta" class="btn btn-primary" style="margin-top: 15px;">Receber alerta quando for encontrada</button>
