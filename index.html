@@ -671,53 +671,59 @@ resumoDiv.textContent = `${total} placas já cadastradas por aqui!`;
     }
 
     async function carregarMinhasPlacas(uid) {
-      const minhasPlacasContent = document.getElementById('minhas-placas-content');
-      minhasPlacasContent.innerHTML = '';
-      try {
-        const lostCollection = collection(firestore, 'lostPlates');
-        const q = query(lostCollection, where('ownerId', '==', uid));
-        const querySnapshot = await getDocs(q);
-        if (querySnapshot.empty) {
-          minhasPlacasContent.innerHTML = '<p>Você não possui placas perdidas cadastradas.</p>';
-          return;
-        }
-        querySnapshot.forEach(docSnap => {
-          const data = docSnap.data();
-          const divCard = document.createElement('div');
-          divCard.classList.add('plate-card');
-          divCard.innerHTML = `
-            <p><strong>Placa:</strong> ${data.placa} (${data.tipo === 'comum' ? data.uf + ' / ' + data.municipio : 'Mercosul'})</p>
-            <button class="btn btn-success btn-verificar-status" data-placa="${data.placa}" data-tipo="${data.tipo}">
-              Verificar Status
-            </button>
-            <div class="result status-result" style="margin-top:10px; display:none;"></div>
-          `;
-          minhasPlacasContent.appendChild(divCard);
-        });
-        document.querySelectorAll('.btn-verificar-status').forEach(btn => {
-          btn.addEventListener('click', async (e) => {
-            const placa = e.currentTarget.getAttribute('data-placa');
-            const tipo = e.currentTarget.getAttribute('data-tipo');
-            const resultadoDiv = e.currentTarget.nextElementSibling;
-            resultadoDiv.className = 'result status-result';
-            resultadoDiv.textContent = '';
-            try {
-              // Monta chave Realtime para verificar se existe
-              const keyRealtime = tipo === 'comum'
-                ? `${placa}:${data.uf}:${data.municipio}`
-                : `${placa}:null:null`;
-              const snapshot = await get(child(ref(realtimeDb), keyRealtime));
-              if (!snapshot.exists()) {
-  resultadoDiv.className = 'result error';
-  resultadoDiv.innerHTML = `
-    <p>Infelizmente ainda não encontramos sua placa.</p>
-    <p>Se desejar, você pode receber uma notificação quando ela for localizada:</p>
-    <button id="btn-criar-alerta" class="btn btn-primary" style="margin-top: 15px;">
-      Receber alerta quando for encontrada
-    </button>
-  `;
-  resultadoDiv.style.display = 'block';
-
+        const minhasPlacasContent = document.getElementById('minhas-placas-content');
+        minhasPlacasContent.innerHTML = '';
+        try {
+            const lostCollection = collection(firestore, 'lostPlates');
+            const q = query(lostCollection, where('ownerId', '==', uid));
+            const querySnapshot = await getDocs(q);
+            if (querySnapshot.empty) {
+                minhasPlacasContent.innerHTML = '<p>Você não possui placas perdidas cadastradas.</p>';
+                return;
+            }
+            querySnapshot.forEach(docSnap => {
+                const data = docSnap.data();
+                const divCard = document.createElement('div');
+                divCard.classList.add('plate-card');
+                
+                // Ajuste para mostrar informações corretamente com a nova estrutura
+                const locationInfo = data.location ? 
+                    `${data.location.uf} / ${data.location.city}` : 'Mercosul';
+                
+                divCard.innerHTML = `
+                    <p><strong>Placa:</strong> ${data.placa} (${locationInfo})</p>
+                    <button class="btn btn-success btn-verificar-status" data-placa="${data.placa}" data-has-location="${!!data.location}">
+                        Verificar Status
+                    </button>
+                    <div class="result status-result" style="margin-top:10px; display:none;"></div>
+                `;
+                minhasPlacasContent.appendChild(divCard);
+            });
+            
+            document.querySelectorAll('.btn-verificar-status').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const placa = e.currentTarget.getAttribute('data-placa');
+                    const hasLocation = e.currentTarget.getAttribute('data-has-location') === 'true';
+                    const resultadoDiv = e.currentTarget.nextElementSibling;
+                    resultadoDiv.className = 'result status-result';
+                    resultadoDiv.textContent = '';
+                    
+                    try {
+                        // Monta chave Realtime para verificar se existe
+                        const keyRealtime = hasLocation
+                            ? `${placa}:${data.location.uf}:${data.location.city}`
+                            : `${placa}:null:null`;
+                            
+                        const snapshot = await get(child(ref(realtimeDb), keyRealtime));
+                        
+                        if (!snapshot.exists()) {
+                            resultadoDiv.className = 'result error';
+                            resultadoDiv.innerHTML = `
+                                <p>Infelizmente ainda não encontramos sua placa.</p>
+                            `;
+                            resultadoDiv.style.display = 'block';
+                            return;
+                        }
   document
     .getElementById('btn-criar-alerta')
     .addEventListener('click', async () => {
@@ -764,16 +770,16 @@ resumoDiv.textContent = `${total} placas já cadastradas por aqui!`;
                 resultadoDiv.textContent = 'Ainda não encontramos sua placa.';
               }
             } catch (error) {
-              resultadoDiv.classList.add('error');
-              resultadoDiv.textContent = 'Erro ao verificar status: ' + error.message;
-            }
-            resultadoDiv.style.display = 'block';
-          });
-        });
-      } catch (error) {
-        document.getElementById('minhas-placas-content').innerHTML =
-          `<p class="error">Erro ao buscar suas placas: ${error.message}</p>`;
-      }
+                        resultadoDiv.classList.add('error');
+                        resultadoDiv.textContent = 'Erro ao verificar status: ' + error.message;
+                    }
+                    resultadoDiv.style.display = 'block';
+                });
+            });
+        } catch (error) {
+            document.getElementById('minhas-placas-content').innerHTML =
+                `<p class="error">Erro ao buscar suas placas: ${error.message}</p>`;
+        }
     }
 
     // ─────────── “Meu Perfil” ───────────
@@ -875,66 +881,74 @@ if (!docSnap.exists()) {
     document.getElementById('btn-perdi-comum').click();
 
     document.getElementById('perdi-verificar').addEventListener('click', async () => {
-  const isComum = document.getElementById('btn-perdi-comum').classList.contains('ativo');
-  const placaInput = document.getElementById('perdi-placa').value.trim().toUpperCase();
-  const uf = document.getElementById('perdi-uf').value;
-  const cidade = document.getElementById('perdi-municipio').value;
-  const resultDiv = document.getElementById('perdi-result');
-  resultDiv.className = 'result';
-  resultDiv.innerHTML = '';
-  resultDiv.style.display = 'none';
+        const isComum = document.getElementById('btn-perdi-comum').classList.contains('ativo');
+        const placaInput = document.getElementById('perdi-placa').value.trim().toUpperCase();
+        const uf = document.getElementById('perdi-uf').value;
+        const cidade = document.getElementById('perdi-municipio').value;
+        const resultDiv = document.getElementById('perdi-result');
+        resultDiv.className = 'result';
+        resultDiv.innerHTML = '';
+        resultDiv.style.display = 'none';
 
-  if (!placaInput || (isComum && (!uf || !cidade))) {
-    resultDiv.textContent = 'Preencha todos os campos obrigatórios.';
-    resultDiv.classList.add('error');
-    resultDiv.style.display = 'block';
-    return;
-  }
-
-  try {
-    // Primeiro, consulta no Realtime Database
-    const keyRealtime = isComum
-      ? `${placaInput}:${uf}:${cidade}`
-      : `${placaInput}:null:null`;
-
-    const snapshot = await get(child(ref(realtimeDb), keyRealtime));
-    
-    if (!snapshot.exists()) {
-      resultDiv.classList.add('error');
-      resultDiv.innerHTML = `
-        <p>Infelizmente essa placa ainda não foi cadastrada.</p>
-        <p>Se desejar, você pode receber uma notificação quando ela for localizada.</p>
-        <button id="btn-criar-alerta" class="btn btn-primary" style="margin-top: 15px;">Receber alerta quando for encontrada</button>
-      `;
-      resultDiv.style.display = 'block';
-
-      document.getElementById('btn-criar-alerta').addEventListener('click', async () => {
-        const user = auth.currentUser;
-        if (!user) {
-          alert('Você precisa estar logado para criar um alerta.');
-          mostrarTela('login-screen');
-          return;
+        if (!placaInput || (isComum && (!uf || !cidade))) {
+            resultDiv.textContent = 'Preencha todos os campos obrigatórios.';
+            resultDiv.classList.add('error');
+            resultDiv.style.display = 'block';
+            return;
         }
 
         try {
-          const docData = {
-            plate: placaInput,
-            type: isComum ? 'comum' : 'mercosul',
-            location: isComum ? { uf, city: cidade } : { uf: 'null', city: 'null' },
-            ownerId: user.uid,
-            createdAt: serverTimestamp()
-          };
+            // Primeiro, consulta no Realtime Database
+            const keyRealtime = isComum
+                ? `${placaInput}:${uf}:${cidade}`
+                : `${placaInput}:null:null`;
 
-          await addDoc(collection(firestore, 'lostPlates'), docData);
-          alert('Alerta cadastrado com sucesso! Você pode acompanhá-lo em "Minhas Placas".');
-        } catch (error) {
-          console.error('Erro ao criar alerta:', error);
-          alert('Não foi possível cadastrar o alerta. Tente novamente.');
-        }
-      });
-      
-      return; // Adicione esta linha para sair da função se a placa não foi encontrada
-    }
+            const snapshot = await get(child(ref(realtimeDb), keyRealtime));
+            
+            if (!snapshot.exists()) {
+                resultDiv.classList.add('error');
+                resultDiv.innerHTML = `
+                    <p>Infelizmente essa placa ainda não foi cadastrada.</p>
+                    <p>Se desejar, você pode receber uma notificação quando ela for localizada.</p>
+                    <button id="btn-criar-alerta" class="btn btn-primary" style="margin-top: 15px;">Receber alerta quando for encontrada</button>
+                `;
+                resultDiv.style.display = 'block';
+
+                document.getElementById('btn-criar-alerta').addEventListener('click', async () => {
+                    const user = auth.currentUser;
+                    if (!user) {
+                        alert('Você precisa estar logado para criar um alerta.');
+                        mostrarTela('login-screen');
+                        return;
+                    }
+
+                    try {
+                        const docData = {
+                            plate: placaInput,
+                            ownerId: user.uid
+                        };
+
+                        // Adiciona localização apenas para placas comuns
+                        if (isComum) {
+                            docData.location = {
+                                uf: uf,
+                                city: cidade
+                            };
+                        } else {
+                            docData.location = null;
+                        }
+
+                        await addDoc(collection(firestore, 'lostPlates'), docData);
+                        alert('Alerta cadastrado com sucesso! Você pode acompanhá-lo em "Minhas Placas".');
+                    } catch (error) {
+                        console.error('Erro ao criar alerta:', error);
+                        alert('Não foi possível cadastrar o alerta. Tente novamente.');
+                    }
+                });
+                
+                return;
+            }
+
 
     // Se chegou aqui, a placa existe no Realtime, então consulta os detalhes no Firestore
     const colRef = collection(firestore, 'foundPlates');
@@ -995,12 +1009,12 @@ if (!docSnap.exists()) {
     resultDiv.innerHTML = html;
     resultDiv.style.display = 'block';
   } catch (error) {
-    console.error('Erro ao buscar placa:', error);
-    resultDiv.classList.add('error');
-    resultDiv.innerHTML = `<p>Houve um erro ao verificar a placa. Tente novamente em instantes.</p>`;
-    resultDiv.style.display = 'block';
-  }
-});
+            console.error('Erro ao buscar placa:', error);
+            resultDiv.classList.add('error');
+            resultDiv.innerHTML = `<p>Houve um erro ao verificar a placa. Tente novamente em instantes.</p>`;
+            resultDiv.style.display = 'block';
+        }
+    });
     // ─────────── “Achei uma Placa” ───────────
     document.getElementById('btn-achei-comum').addEventListener('click', function() {
       this.classList.add('ativo');
