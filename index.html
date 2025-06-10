@@ -708,11 +708,45 @@ resumoDiv.textContent = `${total} placas já cadastradas por aqui!`;
                 : `${placa}:null:null`;
               const snapshot = await get(child(ref(realtimeDb), keyRealtime));
               if (!snapshot.exists()) {
-                resultadoDiv.classList.add('error');
-                resultadoDiv.textContent = 'Ainda não encontramos sua placa.';
-                resultadoDiv.style.display = 'block';
-                return;
-              }
+  resultadoDiv.className = 'result error';
+  resultadoDiv.innerHTML = `
+    <p>Infelizmente ainda não encontramos sua placa.</p>
+    <p>Se desejar, pode receber um alerta quando ela for localizada:</p>
+    <button id="btn-criar-alerta" class="btn btn-primary" style="margin-top: 15px;">
+      Receber alerta quando for encontrada
+    </button>
+  `;
+  resultadoDiv.style.display = 'block';
+
+  // Listener para criar o alerta
+  document
+    .getElementById('btn-criar-alerta')
+    .addEventListener('click', async () => {
+      const user = auth.currentUser;
+      if (!user) {
+        alert('Você precisa estar logado para criar um alerta.');
+        mostrarTela('login-screen');
+        return;
+      }
+      try {
+        await addDoc(collection(firestore, 'lostPlates'), {
+          plate: placa,
+          type: tipo,
+          uf: tipo === 'comum' ? data.uf : 'null',
+          city: tipo === 'comum' ? data.municipio : 'null',
+          ownerId: user.uid,
+          createdAt: serverTimestamp()
+        });
+        alert('Alerta cadastrado! Você pode ver em “Minhas Placas”.');
+      } catch (err) {
+        console.error('Erro ao criar alerta:', err);
+        alert('Não foi possível cadastrar o alerta. Tente novamente.');
+      }
+    });
+
+  return; // interrompe aqui, não executa mais consultas ao Firestore
+}
+
               // Se existe no Realtime, faz query no Firestore
               const foundCollection = collection(firestore, 'foundPlates');
               const q2 = query(foundCollection, where('plate', '==', placa));
